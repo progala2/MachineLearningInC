@@ -47,10 +47,10 @@ namespace UnitTests
 			fclose(fp);
 
 			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");
-			const auto table = ReadCsvFile(fp, 5);
+			const auto table = TReadFile(fp, 5);
 			fclose(fp);
 
-			const auto csvTable = ReadCsvTable(table);
+			const auto csvTable = CsvReadTable(table);
 			Assert::AreEqual("class", csvTable->ClassName);
 			/*for (auto i = 0; i < linesNr; ++i)
 			{
@@ -80,7 +80,7 @@ namespace UnitTests
 			fclose(fp);
 
 			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");
-			const auto table = ReadCsvFile(fp, 5);
+			const auto table = TReadFile(fp, 5);
 			fclose(fp);
 
 			for (auto i = 0; i < linesNr; ++i)

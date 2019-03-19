@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClCompile Include="..\RandomTree\Node.c" />
     <ClCompile Include="CharRow.c" />
+    <ClCompile Include="CharsTable.c" />
     <ClCompile Include="CsvReader.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
