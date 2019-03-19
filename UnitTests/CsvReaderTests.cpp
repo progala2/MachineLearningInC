@@ -27,35 +27,70 @@ namespace UnitTests
 
 	public:
 
-		TEST_METHOD(CsvTableDestroy_HeadersDestroyed)
+		TEST_METHOD(ReadCsvTable_ReturnsCsvTable)
 		{
-			const auto headersNr = 5;
-			auto table = static_cast<struct CsvTable*>(malloc(sizeof(struct CsvTable)));
-			const auto headers = static_cast<char**>(malloc(sizeof(char*) * headersNr));
-			for (int i = 0; i < headersNr; ++i)
+			const auto linesNr = 50;
+			std::stringstream ss;
+			const auto headerLine = "class, a, b, c, d";
+			ss << headerLine << "\n";
+			const auto lines = static_cast<char**>(malloc(sizeof(char*) * linesNr));
+			for (auto i = 0; i < linesNr; ++i)
 			{
-				headers[i] = static_cast<char*>(malloc(sizeof(char) * headersNr));
-				headers[i][0] = 'a';
+				lines[i] = static_cast<char*>(malloc(sizeof(char) * 20));
+				snprintf(lines[i], 20, "1, 2.3, 3, 4.567, 5");
+				ss << lines[i] << "\n";
 			}
-			table->HeadersLen = headersNr;
-			table->Headers = headers;
-			DestroyCsvTable(&table);
-			Assert::IsNull(table);
-			for (int i = 0; i < headersNr; ++i)
+
+			FILE* fp;
+			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "w+");
+			fprintf(fp, ss.str().c_str());
+			fclose(fp);
+
+			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");
+			const auto table = ReadCsvFile(fp, 5);
+			fclose(fp);
+
+			const auto csvTable = ReadCsvTable(table);
+			Assert::AreEqual("class", csvTable->ClassName);
+			/*for (auto i = 0; i < linesNr; ++i)
 			{
-				Assert::IsTrue(ThrowsException(headers[i]));
-			}
+				Assert::AreEqual(static_cast<const char*>(lines[i]), static_cast<const char*>(table->Data[i]->Data));
+				free(lines[i]);
+			}*/
+			free(lines);
+
+			TFreeMemory(table, true);
 		}
 
-		TEST_METHOD(Read_OnlyHeaders_ReturnsTableWithHeaders)
+		TEST_METHOD(ReadCsvFile_ReturnsCharsTable)
 		{
-			auto className = "class";
+			const auto linesNr = 50;
 			std::stringstream ss;
-			ss << className << ",a,b\n";
-			auto table = ReadCsv(ss.str().c_str());
-			Assert::AreEqual("class", table->ClassName);
+			const auto lines = static_cast<char**>(malloc(sizeof(char*) * linesNr));
+			for (auto i = 0; i < linesNr; ++i)
+			{
+				lines[i] = static_cast<char*>(malloc(sizeof(char) * 20));
+				snprintf(lines[i], 20, "long line %d", i);
+				ss << lines[i] << "\n";
+			}
 
-			DestroyCsvTable(&table);
+			FILE* fp;
+			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "w+");
+			fprintf(fp, ss.str().c_str());
+			fclose(fp);
+
+			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");
+			const auto table = ReadCsvFile(fp, 5);
+			fclose(fp);
+
+			for (auto i = 0; i < linesNr; ++i)
+			{
+				Assert::AreEqual(static_cast<const char*>(lines[i]), static_cast<const char*>(table->Data[i]->Data));
+				free(lines[i]);
+			}
+			free(lines);
+
+			TFreeMemory(table, true);
 		}
 
 	};

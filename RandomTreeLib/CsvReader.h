@@ -1,17 +1,21 @@
 #ifndef CsvReader_H_INCLUDE_GUARD
 #define CsvReader_H_INCLUDE_GUARD
+#include <stdio.h>
+#include "CharsTable.h"
 
-struct CsvTable
+typedef struct
 {
-	int HeadersLen;
+	int ParametersLen;
 	long RowsNumber;
 	char** Headers;
-	char*** Parameters;
-	char** ClassColumn;
+	double** Parameters;
+	double* ClassColumn;
 	char* ClassName;
-};
+} CsvTable;
 
-struct CsvTable* ReadCsv(const char* input);
-void DestroyCsvTable(struct CsvTable** table);
+void CsvInit(CsvTable* input);
+CsvTable* CsvReadTable(const CharsTable* input);
+CharsTable* TReadFile(FILE* input, const unsigned int bufferLen);
+void CsvFreeMemory(CsvTable* table);
 
 #endif

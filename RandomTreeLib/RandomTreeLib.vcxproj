@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RandomTree\Node.h" />
+    <ClInclude Include="CharRow.h" />
+    <ClInclude Include="CharsTable.h" />
     <ClInclude Include="CsvReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\RandomTree\Node.c" />
+    <ClCompile Include="CharRow.c" />
     <ClCompile Include="CsvReader.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

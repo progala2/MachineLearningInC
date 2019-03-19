@@ -1,20 +1,91 @@
 #include "CsvReader.h"
 #include <stdlib.h>
+#include "CharsTable.h"
+#include <string.h>
 
-struct CsvTable* ReadCsv(const char* input)
+void CsvInit(CsvTable* input)
 {
-	return malloc(sizeof(struct CsvTable));
+	input->ClassName = NULL;
+	input->ClassColumn = NULL;
+	input->Headers = NULL;
+	input->ParametersLen = 0;
+	input->Parameters = NULL;
+	input->RowsNumber = 0;
 }
 
-void DestroyCsvTable(struct CsvTable** table)
+CsvTable* CsvReadTable(const CharsTable* input)
 {
-	struct CsvTable* locTable = (*table);
-	for(int i = 0; i < (*table)->HeadersLen; ++i)
-	{
-		free(locTable->Headers[i]);
-	}
-	free(locTable->Headers);
+	if (input->Size < 2)
+		return (CsvTable*)-1;
 	
-	free(*table);
-	(*table) = NULL;
+	CsvTable* table = malloc(sizeof(CsvTable));
+	CsvInit(table);
+
+
+	for (int i = 1; i < input->Size; ++i)
+	{
+		
+	}
+	return NULL;
+}
+
+char** ParseFirstRow(const CharRow* row)
+{
+	const char s[2] = ","; 
+    char* tok;
+  
+    // Use of strtok 
+    // get first token 
+    tok = strtok_s(row->Data, s, ); 
+  
+    // Checks for delimeter 
+    while (tok != 0) { 
+        printf("%s, ", tok); 
+  
+        // Use of strtok 
+        // go through other tokens 
+        tok = strtok(0, s); 
+    } 
+}
+
+CharsTable* TReadFile(FILE* input, const unsigned int bufferLen)
+{
+	char* buffer = malloc(sizeof(char)*bufferLen);
+	size_t lineLen = 0;
+	CharRow* row = NULL;
+	CharsTable* table = malloc(sizeof(CharsTable));
+	TInit(table);
+	while (fgets(buffer, bufferLen, input) != NULL)
+	{
+		if (row == NULL)
+		{
+			row = malloc(sizeof(CharRow));
+			CrInit(row);
+			TAppend(table, row);
+		}
+		lineLen = strcspn(buffer, "\n");
+		if (buffer[lineLen] == '\n')
+		{
+			buffer[lineLen] = 0;
+
+			CrAppend(row, buffer, lineLen);
+			row = NULL;
+		}
+		else
+		{
+			CrAppend(row, buffer, lineLen);
+		}
+
+	}
+	free(buffer);
+	return table;
+}
+
+void CsvFreeMemory(CsvTable* table)
+{
+	for (int i = 0; i < table->ParametersLen; ++i)
+	{
+		free(table->Headers[i]);
+	}
+	free(table->Headers);
 }
