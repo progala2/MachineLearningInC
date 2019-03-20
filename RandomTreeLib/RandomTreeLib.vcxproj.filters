@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\RandomTree\Node.h">
+    <ClInclude Include="Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CsvReader.h">
@@ -32,7 +32,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\RandomTree\Node.c">
+    <ClCompile Include="Node.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CsvReader.c">
