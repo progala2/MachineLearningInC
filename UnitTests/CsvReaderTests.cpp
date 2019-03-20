@@ -33,7 +33,7 @@ namespace UnitTests
 			std::stringstream ss;
 			const auto headerLine = "class, a, b, c, d";
 			ss << headerLine << "\n";
-			auto lines = static_cast<double**>(malloc(sizeof(double*) * linesNr));
+			const auto lines = static_cast<double**>(malloc(sizeof(double*) * linesNr));
 			srand(1);
 			for (auto i = 0; i < linesNr; ++i)
 			{
@@ -43,13 +43,13 @@ namespace UnitTests
 					lines[i][j] = rand()*0.001;
 					ss << lines[i][j] << ",";
 				}
-				ss.seekp(-1, ss.cur);
+				ss.seekp(-1, std::stringstream::cur);
 				ss << "\n";
 			}
 
 			FILE* fp;
 			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "w+");
-			fprintf(fp, ss.str().c_str());
+			fprintf(fp, "%s", ss.str().c_str());
 			fclose(fp);
 
 			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");
@@ -63,8 +63,8 @@ namespace UnitTests
 			for (auto i = 0; i < linesNr; ++i)
 			{
 				Assert::IsTrue(fabs(lines[i][0] - csvTable->ClassColumn[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[i][0]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[i][1]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < 0.00000001);
 
 				free(lines[i]);
 			}
@@ -86,7 +86,7 @@ namespace UnitTests
 
 			FILE* fp;
 			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "w+");
-			fprintf(fp, ss.str().c_str());
+			fprintf(fp, "%s", ss.str().c_str());
 			fclose(fp);
 
 			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");

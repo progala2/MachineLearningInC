@@ -1,7 +1,7 @@
 #include "CppUnitTest.h"
 #include "stdafx.h"
 extern "C" {
-#include "../RandomTree/Node.h"
+#include "../RandomTreeLib/Node.h"
 }
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

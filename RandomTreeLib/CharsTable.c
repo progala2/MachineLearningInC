@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "utils.h"
+#include <string.h>
 
 void TInit(CharsTable *vector)
 {
@@ -26,7 +27,7 @@ void TResize(CharsTable *vector)
 	}
 }
 
-CharsTable* TReadFile(FILE* input, const uint bufferLen)
+CharsTable* TReadFile(FILE* input, const unsigned int bufferLen)
 {
 	char* buffer = malloc(sizeof(char)*bufferLen);
 	size_t lineLen = 0;

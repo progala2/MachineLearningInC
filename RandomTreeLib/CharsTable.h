@@ -4,16 +4,19 @@
 #define VECTOR_INITIAL_CAPACITY 16
 #include "CharRow.h"
 #include <stdbool.h>
+#include <stdio.h>
+#include "utils.h"
 
 typedef struct {
-    int Size;
-    int Capacity;
+    uint Size;
+    uint Capacity;
     CharRow** Data;
 } CharsTable;
 
 void TInit(CharsTable *vector);
 void TAppend(CharsTable *vector, CharRow* value);
 void TResize(CharsTable *vector);
+CharsTable* TReadFile(FILE* input, const unsigned int bufferLen);
 void TFreeMemory(CharsTable *vector, bool removeRows);
 
 #endif
