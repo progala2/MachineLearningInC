@@ -33,12 +33,18 @@ namespace UnitTests
 			std::stringstream ss;
 			const auto headerLine = "class, a, b, c, d";
 			ss << headerLine << "\n";
-			const auto lines = static_cast<char**>(malloc(sizeof(char*) * linesNr));
+			auto lines = static_cast<double**>(malloc(sizeof(double*) * linesNr));
+			srand(1);
 			for (auto i = 0; i < linesNr; ++i)
 			{
-				lines[i] = static_cast<char*>(malloc(sizeof(char) * 20));
-				snprintf(lines[i], 20, "1, 2.3, 3, 4.567, 5");
-				ss << lines[i] << "\n";
+				lines[i] = static_cast<double*>(malloc(sizeof(double) * 5));
+				for (auto j = 0; j < 5; ++j)
+				{
+					lines[i][j] = rand()*0.001;
+					ss << lines[i][j] << ",";
+				}
+				ss.seekp(-1, ss.cur);
+				ss << "\n";
 			}
 
 			FILE* fp;
@@ -51,15 +57,19 @@ namespace UnitTests
 			fclose(fp);
 
 			const auto csvTable = CsvReadTable(table);
-			Assert::AreEqual("class", csvTable->ClassName);
-			/*for (auto i = 0; i < linesNr; ++i)
-			{
-				Assert::AreEqual(static_cast<const char*>(lines[i]), static_cast<const char*>(table->Data[i]->Data));
-				free(lines[i]);
-			}*/
-			free(lines);
 
 			TFreeMemory(table, true);
+			Assert::AreEqual("class", csvTable->ClassName);
+			for (auto i = 0; i < linesNr; ++i)
+			{
+				Assert::IsTrue(fabs(lines[i][0] - csvTable->ClassColumn[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[i][0]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[i][1]) < 0.00000001);
+
+				free(lines[i]);
+			}
+			free(lines);
+			CsvFreeMemory(csvTable);
 		}
 
 		TEST_METHOD(ReadCsvFile_ReturnsCharsTable)

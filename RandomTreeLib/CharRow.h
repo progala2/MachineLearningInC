@@ -9,5 +9,6 @@ typedef struct {
 void CrInit(CharRow *vector);
 int CrAppend(CharRow *vector, const char* value, const unsigned int valueLen);
 void CrFreeMemory(CharRow *vector);
+char* CrCopyData(const CharRow* row);
 
 #endif

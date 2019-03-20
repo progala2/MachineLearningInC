@@ -29,6 +29,13 @@ int CrAppend(CharRow *vector, const char* value, const unsigned int valueLen)
 	return newSize;
 }
 
+char* CrCopyData(const CharRow* row)
+{
+	char* tempStr = malloc(sizeof(char)*(row->Size + 1));
+	memcpy(tempStr, row->Data, sizeof(char)*(row->Size + 1));
+	return tempStr;
+}
+
 void CrFreeMemory(CharRow *vector)
 {
 	free(vector->Data);
