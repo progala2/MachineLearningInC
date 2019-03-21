@@ -39,7 +39,7 @@ CsvTable* CsvReadTable(const CharsTable* input)
 		table->ClassColumn[i - 1] = parsedDoubles[0];
 		for (uint j = 0; j < parLen; ++j)
 		{
-			CsvSetParameterColumn(table, i - 1, j, parsedDoubles[j + j]);
+			CsvSetParameterColumn(table, i - 1, j, parsedDoubles[j + 1]);
 		}
 		free(parsedDoubles);
 	}

@@ -28,9 +28,9 @@ int main()
 			continue;
 		}
 		FILE* fp;
-		if (fopen_s(&fp, buffer, "r") < 0)
+		if (fopen_s(&fp, buffer, "r") < 0 || fp == NULL)
 		{
-			printf("Something wrong with you file...\n");
+			printf("Something wrong with you file...\n");		
 			continue;
 		}
 		CharsTable* charsTable = NULL;
@@ -51,9 +51,24 @@ int main()
 			printf("YES OR NO?!\n");
 			continue;
 		}
-		if (buffer[0] != 'y')
+		if (buffer[0] != 'n')
 		{
 			CsvNormalize(table);
+		}
+		printf("%s, ", table->ClassName);
+		for (uint j = 0; j < table->ParametersCount; j++)
+		{
+			printf("%s, ", table->Headers[j]);
+		}
+		printf("\n");
+		for (uint i = 0; i < table->RowsCount; i++)
+		{
+			printf("%lf,", table->ClassColumn[i]);
+			for (uint j = 0; j < table->ParametersCount; j++)
+			{
+				printf("%lf,", table->Parameters[j].Column[i]);
+			}
+			printf("\n");
 		}
 		break;
 	}

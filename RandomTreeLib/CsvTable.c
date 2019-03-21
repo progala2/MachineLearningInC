@@ -22,8 +22,8 @@ void CsvInitParameters(CsvTable* table, const uint parLen)
 	for (uint j = 0; j < parLen; ++j)
 	{
 		table->Parameters[j].Column = malloc(sizeof(double) * table->RowsCount);
-		table->Parameters->MaxValue = DBL_MAX;
-		table->Parameters->MinValue = DBL_MIN;
+		table->Parameters[j].MaxValue = DBL_MIN;
+		table->Parameters[j].MinValue = DBL_MAX;
 	}
 }
 
