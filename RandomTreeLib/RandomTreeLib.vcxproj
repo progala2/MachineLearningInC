@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CsvTable.h" />
+    <ClInclude Include="RtConfigs.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="CharRow.h" />
     <ClInclude Include="CharsTable.h" />
@@ -32,6 +33,8 @@
     <ClCompile Include="CharRow.c" />
     <ClCompile Include="CharsTable.c" />
     <ClCompile Include="CsvReader.c" />
+    <ClCompile Include="RtConfigs.c" />
+    <ClCompile Include="Utils.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

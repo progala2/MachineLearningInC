@@ -33,6 +33,9 @@
     <ClInclude Include="CsvTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RtConfigs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Node.c">
@@ -48,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CsvTable.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RtConfigs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

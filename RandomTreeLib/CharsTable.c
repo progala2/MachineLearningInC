@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include "utils.h"
 #include <string.h>
 
 void TInit(CharsTable *vector)
@@ -60,16 +59,15 @@ CharsTable* TReadFile(FILE* input, const unsigned int bufferLen)
 	return table;
 }
 
-void TFreeMemory(CharsTable *vector, bool removeRows)
+void TFreeMemory(CharsTable *vector, const bool removeRows)
 {
 	if (removeRows)
 	{
-		for (int i = 0; i < vector->Size; ++i)
+		for (uint i = 0; i < vector->Size; ++i)
 		{
 			CrFreeMemory(vector->Data[i]);
 			free(vector->Data[i]);
 		}
-
 	}
 	free(vector->Data);
 	vector->Data = NULL;

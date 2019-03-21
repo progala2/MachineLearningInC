@@ -3,8 +3,6 @@
 #include "CharsTable.h"
 #include <string.h>
 #include "utils.h"
-#include <math.h>
-#include <float.h>
 
 static double* ParseNextRow(const CharRow* row, const uint colLen);
 char** ParseFirstRow(const CharRow* row, uint* colLen);
@@ -15,18 +13,18 @@ CsvTable* CsvReadTable(const CharsTable* input)
 		return (CsvTable*)-1;
 
 	uint colLen = 0;
-	//TODO universal table deleter
 	char** headers = ParseFirstRow(input->Data[0], &colLen);
 	if (colLen < 2)
+	{
+		FreeTab(headers, colLen);
 		return (CsvTable*)-1;
-
+	}
 	CsvTable* table = malloc(sizeof(CsvTable));
 	CsvInit(table);
 
 	const uint parLen = colLen - 1;
 	table->ClassName = headers[0];
-	table->Headers = malloc(sizeof(char*) * parLen);
-	memcpy(table->Headers, headers + 1, sizeof(char*)*parLen);
+	table->Headers = MemCopyAlloc(headers + 1, sizeof(char*)*parLen);
 	free(headers);
 
 	table->ParametersCount = parLen;
@@ -58,9 +56,7 @@ char** ParseFirstRow(const CharRow* row, uint* colLen)
 
 	while (token != 0)
 	{
-		const size_t tokenLen = strlen(token) + 1;
-		ret[*colLen] = malloc(sizeof(char)*tokenLen);
-		memcpy(ret[*colLen], token, tokenLen);
+		ret[*colLen] = MemCopyChars(token);
 		++(*colLen);
 		token = strtok_s(NULL, s, &context);
 	}

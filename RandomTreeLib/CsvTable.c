@@ -49,7 +49,7 @@ void CsvNormalize(CsvTable * table)
 
 void CsvFreeMemory(CsvTable* table)
 {
-	for (int i = 0; i < table->ParametersCount; ++i)
+	for (uint i = 0; i < table->ParametersCount; ++i)
 	{
 		free(table->Headers[i]);
 		free(table->Parameters[i].Column);
