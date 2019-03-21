@@ -5,15 +5,6 @@
 #include <stdio.h>
 #include "../RandomTreeLib/CsvReader.h"
 
-int Comp(const void * elem1, const void * elem2)
-{
-	int* f = (int*)elem1;
-	int* s = (int*)elem2;
-	if (f[0] > s[0]) return  1;
-	if (f[0] < s[0]) return -1;
-	return 0;
-}
-
 int main()
 {
 	char buffer[255];
@@ -75,6 +66,14 @@ int main()
 
 }
 //
+//int Comp(const void * elem1, const void * elem2)
+//{
+//	int* f = (int*)elem1;
+//	int* s = (int*)elem2;
+//	if (f[0] > s[0]) return  1;
+//	if (f[0] < s[0]) return -1;
+//	return 0;
+//}
 //int data[45][2];
 //int classNumbers[2];
 //int classNumbers1[2];
