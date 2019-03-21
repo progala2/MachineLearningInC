@@ -18,7 +18,7 @@ int main()
 {
 	char buffer[255];
 	printf("Hello Traveler!\n");
-	CharsTable* charsTable = NULL;
+	CsvTable * table = NULL;
 	while (1)
 	{
 		printf("Give me your CSV file! (Max path size: 255): ");
@@ -33,13 +33,15 @@ int main()
 			printf("Something wrong with you file...\n");
 			continue;
 		}
+		CharsTable* charsTable = NULL;
 		if ((charsTable = TReadFile(fp, 1024)) < 0 ||
-			CsvTable * table = CsvReadTable(charsTable);)
+			 (table = CsvReadTable(charsTable)) < 0)
 		{
 			printf("Something wrong with you file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
 			printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
 			continue;
 		}
+		break;
 	}
 	while (1)
 	{
@@ -49,7 +51,11 @@ int main()
 			printf("YES OR NO?!\n");
 			continue;
 		}
-
+		if (buffer[0] != 'y')
+		{
+			CsvNormalize(table);
+		}
+		break;
 	}
 
 }
