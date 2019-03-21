@@ -1,7 +1,6 @@
 // RandomTree.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "pch.h"
 #include <stdio.h>
 #include "../RandomTreeLib/CsvReader.h"
 
@@ -54,10 +53,10 @@ int main()
 		printf("\n");
 		for (uint i = 0; i < table->RowsCount; i++)
 		{
-			printf("%lf,", table->ClassColumn[i]);
+			printf("%lf, ", table->ClassColumn[i]);
 			for (uint j = 0; j < table->ParametersCount; j++)
 			{
-				printf("%lf,", table->Parameters[j].Column[i]);
+				printf("%lf, ", table->Parameters[j].Column[i]);
 			}
 			printf("\n");
 		}
