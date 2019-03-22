@@ -10,7 +10,7 @@
 typedef struct {
     uint Size;
     uint Capacity;
-    CharRow** Data;
+    CharRow** Table;
 } CharsTable;
 
 void TInit(CharsTable *vector);

@@ -13,7 +13,7 @@ CsvTable* CsvReadTable(const CharsTable* input)
 		return (CsvTable*)-1;
 
 	uint colLen = 0;
-	char** headers = ParseFirstRow(input->Data[0], &colLen);
+	char** headers = ParseFirstRow(input->Table[0], &colLen);
 	if (colLen < 2)
 	{
 		FreeTab(headers, colLen);
@@ -33,7 +33,7 @@ CsvTable* CsvReadTable(const CharsTable* input)
 	CsvInitParameters(table, parLen);
 	for (uint i = 1; i < input->Size; ++i)
 	{
-		double* parsedDoubles = ParseNextRow(input->Data[i], colLen);
+		double* parsedDoubles = ParseNextRow(input->Table[i], colLen);
 		table->ClassColumn[i - 1] = parsedDoubles[0];
 		for (uint j = 0; j < parLen; ++j)
 		{

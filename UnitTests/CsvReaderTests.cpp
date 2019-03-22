@@ -95,7 +95,7 @@ namespace UnitTests
 
 			for (auto i = 0; i < linesNr; ++i)
 			{
-				Assert::AreEqual(static_cast<const char*>(lines[i]), static_cast<const char*>(table->Data[i]->Data));
+				Assert::AreEqual(static_cast<const char*>(lines[i]), static_cast<const char*>(table->Table[i]->Data));
 				free(lines[i]);
 			}
 			free(lines);

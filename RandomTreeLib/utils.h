@@ -4,12 +4,15 @@
 #include <stdlib.h>
 
 typedef unsigned int uint;
+typedef char**const void_ptr_ref;
 
 void* MemCopyAlloc(const void* source, const size_t size);
 
 void FreeTab(char** tab, const size_t count);
 
 void FreeTabVoid(char** tab, const size_t count, const size_t movingSize);
+
+void FreeN(void_ptr_ref ptr);  // NOLINT
 
 inline size_t MemSizeChars(const char* source)
 {
@@ -20,4 +23,6 @@ inline char* MemCopyChars(const char* source)
 {
 	return (char*)MemCopyAlloc(source, MemSizeChars(source));
 }
+
+char* MemCopyCharsNoEnter(const char* source);
 #endif

@@ -18,6 +18,22 @@ void FreeTabVoid(char** tab, const size_t count, const size_t movingSize)
 	free(tab);
 }
 
+void FreeN(void_ptr_ref ptr)  // NOLINT
+{
+	free(*ptr);
+	(*ptr) = NULL;
+}
+
+char* MemCopyCharsNoEnter(const char* source)
+{
+	const size_t memLen = MemSizeChars(source);
+	const size_t len = memLen/sizeof(char);
+	char* ptr = MemCopyAlloc(source, memLen);
+	if (ptr[len - 2] =='\n')
+		ptr[len - 2] = '\0';
+	return ptr;
+}
+
 void FreeTab(char** tab, const size_t count)
 {
 	FreeTabVoid(tab, count, sizeof(char));
