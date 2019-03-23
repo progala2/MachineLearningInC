@@ -1,5 +1,7 @@
-#include "CppUnitTest.h"
 #include "stdafx.h"
+#include "CppUnitTest.h"
+#include "Helpers.h"
+
 extern "C" {
 #include "../RandomTreeLib/CsvReader.h"
 }
@@ -29,30 +31,10 @@ namespace UnitTests
 
 		TEST_METHOD(ReadCsvTable_ReturnsCsvTable)
 		{
-			const auto linesNr = 50;
-			std::stringstream ss;
-			const auto headerLine = "class, a, b, c, d";
-			ss << headerLine << "\n";
-			const auto lines = static_cast<double**>(malloc(sizeof(double*) * linesNr));
-			srand(1);
-			for (auto i = 0; i < linesNr; ++i)
-			{
-				lines[i] = static_cast<double*>(malloc(sizeof(double) * 5));
-				for (auto j = 0; j < 5; ++j)
-				{
-					lines[i][j] = rand()*0.001;
-					ss << lines[i][j] << ",";
-				}
-				ss.seekp(-1, std::stringstream::cur);
-				ss << "\n";
-			}
+			const auto lines = Helpers::GenerateCsvFile("ReadCsvFile_ReturnsTable.txt");
 
 			FILE* fp;
-			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "w+");
-			fprintf(fp, "%s", ss.str().c_str());
-			fclose(fp);
-
-			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");
+			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "r");
 			const auto table = TReadFile(fp, 5);
 			fclose(fp);
 
@@ -60,15 +42,12 @@ namespace UnitTests
 
 			TFreeMemory(table, true);
 			Assert::AreEqual("class", csvTable->ClassName);
-			for (auto i = 0; i < linesNr; ++i)
+			for (unsigned i = 0; i < lines.size(); ++i)
 			{
 				Assert::IsTrue(fabs(lines[i][0] - csvTable->ClassColumn[i]) < 0.00000001);
 				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < 0.00000001);
 				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < 0.00000001);
-
-				free(lines[i]);
 			}
-			free(lines);
 			CsvFreeMemory(csvTable);
 		}
 
@@ -85,11 +64,11 @@ namespace UnitTests
 			}
 
 			FILE* fp;
-			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "w+");
+			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "w+");
 			fprintf(fp, "%s", ss.str().c_str());
 			fclose(fp);
 
-			fopen_s(&fp,"ReadCsvFile_ReturnsTable.txt", "r");
+			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "r");
 			const auto table = TReadFile(fp, 5);
 			fclose(fp);
 

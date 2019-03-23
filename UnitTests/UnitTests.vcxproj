@@ -159,6 +159,8 @@
   <ItemGroup>
     <ClCompile Include="CharRowTests.cpp" />
     <ClCompile Include="CsvReaderTests.cpp" />
+    <ClCompile Include="Helpers.h" />
+    <ClCompile Include="RtConfigsTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

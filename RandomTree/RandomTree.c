@@ -8,7 +8,7 @@ int main()
 {
 	char buffer[255];
 	printf("Hello Traveler!\n");
-	CsvTable * table = NULL;
+	CsvTable * table;
 	while (1)
 	{
 		printf("Give me your CSV file! (Max path size: 255): ");
@@ -23,7 +23,7 @@ int main()
 			printf("Something wrong with you file...\n");		
 			continue;
 		}
-		CharsTable* charsTable = NULL;
+		CharsTable* charsTable;
 		if ((charsTable = TReadFile(fp, 1024)) < 0 ||
 			 (table = CsvReadTable(charsTable)) < 0)
 		{

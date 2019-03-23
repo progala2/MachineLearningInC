@@ -2,11 +2,11 @@
 #include <stdbool.h>
 #include "Node.h"
 
-struct Node* CreateNodeLeaf(const int classNumbers[2])
+Node* CreateNodeLeaf(const int classNumbers[2])
 {
 	if (classNumbers == NULL)
 		return NULL;
-	struct Node* nd = malloc(sizeof(struct Node));
+	Node* nd = malloc(sizeof(Node));
 	nd->ClassNumbers[0] = classNumbers[0];
 	nd->ClassNumbers[1] = classNumbers[1];
 	nd->Left = NULL;
@@ -14,13 +14,13 @@ struct Node* CreateNodeLeaf(const int classNumbers[2])
 	return nd;
 }
 
-struct Node* CreateNodeParent(const int parameterIndex, const int parameterValueSeparator, const bool moreThanSeparator,
-	const int classNumbers[2], struct Node* left, struct Node* right)
+Node* CreateNodeParent(const int parameterIndex, const int parameterValueSeparator, const bool moreThanSeparator,
+	const int classNumbers[2], Node* left, Node* right)
 {
 	if (left == right)
 		return NULL;
 	
-	struct Node* nd = CreateNodeLeaf(classNumbers);
+	Node* nd = CreateNodeLeaf(classNumbers);
 	nd->Left = left;
 	nd->Right = right;
 	nd->ParameterIndex = parameterIndex;
@@ -29,12 +29,12 @@ struct Node* CreateNodeParent(const int parameterIndex, const int parameterValue
 	return  nd;
 }
 
-bool IsLeaf(struct Node* nd)
+bool IsLeaf(const Node* nd)
 {
 	return nd->Left == nd->Right && nd->Right == NULL;
 }
 
-void DestroyNode(struct Node* nd)
+void DestroyNode(Node* nd)
 {
 	if (nd != NULL)
 	{

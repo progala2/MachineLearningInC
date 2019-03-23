@@ -2,23 +2,25 @@
 #define Node_H_INCLUDE_GUARD
 
 #include <stdbool.h>
-struct Node
+
+typedef struct Node Node;
+typedef struct Node
 {
-	struct Node* Left;
-	struct Node* Right;
+	Node* Left;
+	Node* Right;
 	int ParameterIndex;
 	int ParameterValueSeparator;
 	bool MoreThanSeparator;
 	int ClassNumbers[2];
-};
+} Node;
 
-struct Node* CreateNodeLeaf(const int classNumbers[2]);
+Node* CreateNodeLeaf(const int classNumbers[2]);
 
-struct Node* CreateNodeParent(const int parameterIndex, const int parameterValueSeparator, const bool moreThanSeparator,
-	const int classNumbers[2], struct Node* left, struct Node* right);
+Node* CreateNodeParent(const int parameterIndex, const int parameterValueSeparator, const bool moreThanSeparator,
+	const int classNumbers[2], Node* left, Node* right);
 
-bool IsLeaf(struct Node* nd);
+bool IsLeaf(const Node* nd);
 
-void DestroyNode(struct Node* nd);
+void DestroyNode(Node* nd);
 
 #endif
