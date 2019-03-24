@@ -1,26 +1,28 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "Node.h"
+#include "RtConfigs.h"
 
-Node* CreateNodeLeaf(const int classNumbers[2])
+Node* NdCreateLeaf(const int* classNumbers, const size_t size)
 {
 	if (classNumbers == NULL)
 		return NULL;
+	if (size < 2)
+		return NULL;
 	Node* nd = malloc(sizeof(Node));
-	nd->ClassNumbers[0] = classNumbers[0];
-	nd->ClassNumbers[1] = classNumbers[1];
+	nd->ClassNumbers = MemCopyAlloc(classNumbers, size);
 	nd->Left = NULL;
 	nd->Right = NULL;
 	return nd;
 }
 
-Node* CreateNodeParent(const int parameterIndex, const int parameterValueSeparator, const bool moreThanSeparator,
-	const int classNumbers[2], Node* left, Node* right)
+Node* NdCreateParent(const int parameterIndex, const double parameterValueSeparator, const bool moreThanSeparator,
+                     const int* classNumbers, const size_t paramSize, Node* left, Node* right)
 {
 	if (left == right)
 		return NULL;
-	
-	Node* nd = CreateNodeLeaf(classNumbers);
+
+	Node* nd = NdCreateLeaf(classNumbers, paramSize);
 	nd->Left = left;
 	nd->Right = right;
 	nd->ParameterIndex = parameterIndex;
@@ -29,17 +31,15 @@ Node* CreateNodeParent(const int parameterIndex, const int parameterValueSeparat
 	return  nd;
 }
 
-bool IsLeaf(const Node* nd)
+bool NdIsLeaf(const Node* nd)
 {
 	return nd->Left == nd->Right && nd->Right == NULL;
 }
 
-void DestroyNode(Node* nd)
+void NdFree(Node* nd)
 {
-	if (nd != NULL)
-	{
-		DestroyNode(nd->Left);
-		DestroyNode(nd->Right);
-		free(nd);
-	}
+	NdFree(nd->Left);
+	NdFree(nd->Right);
+	free(nd->ClassNumbers);
+	free(nd);
 }

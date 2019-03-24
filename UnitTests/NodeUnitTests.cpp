@@ -1,5 +1,5 @@
-#include "CppUnitTest.h"
 #include "stdafx.h"
+#include "CppUnitTest.h"
 extern "C" {
 #include "../RandomTreeLib/Node.h"
 }
@@ -13,10 +13,10 @@ namespace UnitTests
 		
 		TEST_METHOD(CreateNodeParent_StructFilled)
 		{
-			int class_number[2] {10, 20};
-			const auto value_separator = 2;
-			const auto node = CreateNodeParent(1, value_separator, true, class_number, CreateNodeLeaf(class_number), CreateNodeLeaf(class_number));
-			Assert::AreEqual(value_separator, node->ParameterValueSeparator);
+			int classNumber[2] {10, 20};
+			const auto valueSeparator = 2.;
+			const auto node = NdCreateParent(1, valueSeparator, true, classNumber, 2 , NdCreateLeaf(classNumber, 2), NdCreateLeaf(classNumber, 2));
+			Assert::AreEqual(valueSeparator, node->ParameterValueSeparator);
 		}
 
 	};

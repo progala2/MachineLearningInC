@@ -33,6 +33,8 @@
     <ClCompile Include="CharRow.c" />
     <ClCompile Include="CharsTable.c" />
     <ClCompile Include="CsvReader.c" />
+    <ClCompile Include="NodeGenerator.c" />
+    <ClCompile Include="NodeGenerator.h" />
     <ClCompile Include="RtConfigs.c" />
     <ClCompile Include="Utils.c" />
   </ItemGroup>

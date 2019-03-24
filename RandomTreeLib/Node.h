@@ -9,18 +9,18 @@ typedef struct Node
 	Node* Left;
 	Node* Right;
 	int ParameterIndex;
-	int ParameterValueSeparator;
+	double ParameterValueSeparator;
 	bool MoreThanSeparator;
-	int ClassNumbers[2];
+	int* ClassNumbers;
 } Node;
 
-Node* CreateNodeLeaf(const int classNumbers[2]);
+Node* NdCreateLeaf(const int* classNumbers, const size_t size);
 
-Node* CreateNodeParent(const int parameterIndex, const int parameterValueSeparator, const bool moreThanSeparator,
-	const int classNumbers[2], Node* left, Node* right);
+Node* NdCreateParent(const int parameterIndex, const double parameterValueSeparator, const bool moreThanSeparator,
+                     const int* classNumbers, const size_t paramSize, Node* left, Node* right);
 
-bool IsLeaf(const Node* nd);
+bool NdIsLeaf(const Node* nd);
 
-void DestroyNode(Node* nd);
+void NdFree(Node* nd);
 
 #endif
