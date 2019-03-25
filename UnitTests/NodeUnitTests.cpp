@@ -13,9 +13,9 @@ namespace UnitTests
 		
 		TEST_METHOD(CreateNodeParent_StructFilled)
 		{
-			int classNumber[2] {10, 20};
+			double classNumber[2] {10, 20};
 			const auto valueSeparator = 2.;
-			const auto node = NdCreateParent(1, valueSeparator, classNumber, 2, NdCreateLeaf(classNumber, 2) , NdCreateLeaf(classNumber, 2));
+			const auto node = TreeCreateRoot(1, valueSeparator, TreeCreateLeaf(classNumber, 2), TreeCreateLeaf(classNumber, 2));
 			Assert::AreEqual(valueSeparator, node->ParameterValueSeparator);
 		}
 

@@ -11,15 +11,27 @@ typedef struct Node
 	Node* Right;
 	int ParameterIndex;
 	double ParameterValueSeparator;
-	size_t* ClassNumbers;
+	double Entropy;
+	double* ClassesProbability;
 } Node;
 
-Node* NdCreateLeaf(const size_t* classNumbers, const size_t size);
+typedef struct
+{
+	Node* Left;
+	Node* Right;
+	int ParameterIndex;
+	double ParameterValueSeparator;
+} Root;
 
-Node* NdCreateParent(const int parameterIndex, const double parameterValueSeparator, const size_t* classNumbers, const size_t paramSize, Node* left, Node* right);
+Node* TreeCreateLeaf(const double* classesProbability, const size_t size);
 
-bool NdIsLeaf(const Node* nd);
+Root* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator, Node* left,
+                   Node* right);
 
-void NdFree(Node* nd);
+bool TreeIsLeaf(const Node* nd);
+
+void TreeFreeNd(Node**const nd);
+
+void TreeFree(Root**const nd);
 
 #endif

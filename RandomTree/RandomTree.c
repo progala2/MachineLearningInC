@@ -10,7 +10,7 @@ int main()
 	char buffer[255];
 	printf("Hello Traveler!\n");
 	CsvTable * table;
-	NdGenerateTree();
+	//NdGenerateTree();
 
 	while (1)
 	{
