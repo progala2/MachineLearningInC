@@ -36,6 +36,9 @@
     <ClInclude Include="RtConfigs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConfMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Node.c">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="NodeGenerator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfMatric.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,7 +18,7 @@ void FreeTabVoid(char** tab, const size_t count, const size_t movingSize)
 	free(tab);
 }
 
-void FreeN(void_ptr_ref ptr)  // NOLINT
+void FreeN(void_tab_ptr ptr)  // NOLINT
 {
 	free(*ptr);
 	(*ptr) = NULL;

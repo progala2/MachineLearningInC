@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConfMatrix.h" />
     <ClInclude Include="CsvTable.h" />
     <ClInclude Include="RtConfigs.h" />
     <ClInclude Include="Node.h" />
@@ -28,6 +29,7 @@
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConfMatric.c" />
     <ClCompile Include="CsvTable.c" />
     <ClCompile Include="Node.c" />
     <ClCompile Include="CharRow.c" />

@@ -65,5 +65,5 @@ void RtFreeMemory(RtConfigs**const input)
 {
 	FreeN(&(*input)->FileName);
 	FreeN(&(*input)->OutputFolder);
-	FreeN((void_ptr_ref)input);
+	FreeN((void_tab_ptr)input);
 }

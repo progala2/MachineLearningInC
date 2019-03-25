@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 typedef unsigned int uint;
-typedef char**const void_ptr_ref;
+typedef char**const void_tab_ptr;
 
 void* MemCopyAlloc(const void* source, const size_t size);
 
@@ -12,7 +12,7 @@ void FreeTab(char** tab, const size_t count);
 
 void FreeTabVoid(char** tab, const size_t count, const size_t movingSize);
 
-void FreeN(void_ptr_ref ptr);  // NOLINT
+void FreeN(void_tab_ptr ptr);  // NOLINT
 
 inline size_t MemSizeChars(const char* source)
 {
