@@ -3,12 +3,15 @@
 
 #include <stdio.h>
 #include "../RandomTreeLib/CsvReader.h"
+#include "../RandomTreeLib/NodeGenerator.h"
 
 int main()
 {
 	char buffer[255];
 	printf("Hello Traveler!\n");
 	CsvTable * table;
+	NdGenerateTree();
+
 	while (1)
 	{
 		printf("Give me your CSV file! (Max path size: 255): ");

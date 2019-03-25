@@ -3,21 +3,21 @@
 #include "Node.h"
 #include "RtConfigs.h"
 
-Node* NdCreateLeaf(const int* classNumbers, const size_t size)
+Node* NdCreateLeaf(const size_t* classNumbers, const size_t size)
 {
 	if (classNumbers == NULL)
 		return NULL;
 	if (size < 2)
 		return NULL;
 	Node* nd = malloc(sizeof(Node));
-	nd->ClassNumbers = MemCopyAlloc(classNumbers, size);
+	nd->ClassNumbers = MemCopyAlloc(classNumbers, sizeof(size_t)*size);
 	nd->Left = NULL;
 	nd->Right = NULL;
 	return nd;
 }
 
-Node* NdCreateParent(const int parameterIndex, const double parameterValueSeparator, const bool moreThanSeparator,
-                     const int* classNumbers, const size_t paramSize, Node* left, Node* right)
+Node* NdCreateParent(const int parameterIndex, const double parameterValueSeparator,
+                     const size_t* classNumbers, const size_t paramSize, Node* left, Node* right)
 {
 	if (left == right)
 		return NULL;
@@ -27,7 +27,6 @@ Node* NdCreateParent(const int parameterIndex, const double parameterValueSepara
 	nd->Right = right;
 	nd->ParameterIndex = parameterIndex;
 	nd->ParameterValueSeparator = parameterValueSeparator;
-	nd->MoreThanSeparator = moreThanSeparator;
 	return  nd;
 }
 

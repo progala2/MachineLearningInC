@@ -15,7 +15,7 @@ namespace UnitTests
 		{
 			int classNumber[2] {10, 20};
 			const auto valueSeparator = 2.;
-			const auto node = NdCreateParent(1, valueSeparator, true, classNumber, 2 , NdCreateLeaf(classNumber, 2), NdCreateLeaf(classNumber, 2));
+			const auto node = NdCreateParent(1, valueSeparator, classNumber, 2, NdCreateLeaf(classNumber, 2) , NdCreateLeaf(classNumber, 2));
 			Assert::AreEqual(valueSeparator, node->ParameterValueSeparator);
 		}
 

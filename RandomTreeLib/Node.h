@@ -2,6 +2,7 @@
 #define Node_H_INCLUDE_GUARD
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 typedef struct Node Node;
 typedef struct Node
@@ -10,14 +11,12 @@ typedef struct Node
 	Node* Right;
 	int ParameterIndex;
 	double ParameterValueSeparator;
-	bool MoreThanSeparator;
-	int* ClassNumbers;
+	size_t* ClassNumbers;
 } Node;
 
-Node* NdCreateLeaf(const int* classNumbers, const size_t size);
+Node* NdCreateLeaf(const size_t* classNumbers, const size_t size);
 
-Node* NdCreateParent(const int parameterIndex, const double parameterValueSeparator, const bool moreThanSeparator,
-                     const int* classNumbers, const size_t paramSize, Node* left, Node* right);
+Node* NdCreateParent(const int parameterIndex, const double parameterValueSeparator, const size_t* classNumbers, const size_t paramSize, Node* left, Node* right);
 
 bool NdIsLeaf(const Node* nd);
 
