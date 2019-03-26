@@ -1,7 +1,8 @@
 #ifndef UTILS_H_INCLUDE_GUARD
 #define UTILS_H_INCLUDE_GUARD
 #include <string.h>
-#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 typedef unsigned int uint;
 typedef char**const void_tab_ptr;
@@ -25,4 +26,14 @@ inline char* MemCopyChars(const char* source)
 }
 
 char* MemCopyCharsNoEnter(const char* source);
+
+inline void DbgPrint(const char* const format, ...)
+{
+#ifdef _DEBUG
+	va_list args;
+	va_start(args, format);
+	printf(format, args);
+	va_end(args);
+#endif
+}
 #endif

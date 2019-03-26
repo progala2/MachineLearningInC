@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-#include <processthreadsapi.h>
 #include "RtConfigs.h"
 
 double CalculateEntropy(const unsigned countByClass[], const size_t classCount, const size_t elemCount)
@@ -12,17 +11,16 @@ double CalculateEntropy(const unsigned countByClass[], const size_t classCount, 
 	for (size_t i = 0; i < classCount; ++i)
 	{
 		const double p = (double)countByClass[i] / elemCount;
-#ifdef DEBUG
-		printf("p: %f\n", p);
-#endif
+
+		DbgPrint("p: %f\n", p);
 		entropy -= p == 0 ? 0 : p * log2(p);
 	}
 	return entropy;
 }
 
-unsigned* CountByClass(const size_t classesColumn[], const size_t size, const size_t classesCount)
+unsigned* CountByClass(const int* classesColumn, const size_t size, const size_t classesCount)
 {
-	unsigned* countByClass = calloc(classesCount,sizeof(unsigned));
+	uint* countByClass = calloc(classesCount, sizeof(uint));
 
 	for (size_t i = 0; i < size; ++i)
 	{
@@ -31,30 +29,34 @@ unsigned* CountByClass(const size_t classesColumn[], const size_t size, const si
 	return countByClass;
 }
 
-extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const size_t classesColumn[], const size_t size, const int classes[], const unsigned countByClass)
+extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const int* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
 {
-	srand(GetCurrentProcessId() + parameterIndex);
 	const double entropy = CalculateEntropy(countByClass, 2, 10);
 
 	double* v = malloc(sizeof(double)*configs->MaxFeaturesPerNode);
-	for (int i = 0; i < configs->MaxFeaturesPerNode; ++i)
+	for (uint i = 0; i < configs->MaxFeaturesPerNode; ++i)
 	{
-		v[i] = values[rand() % size]; 
-		printf("0: %f \n", v[i]);
+		v[i] = values[rand() % size];
+		DbgPrint("0: %f \n", v[i]);
 	}
 
-	printf("entropy: %f\n", entropy);
+	DbgPrint("entropy: %f\n", entropy);
 	double newEntropy = 2;
 	size_t bestI = 0;
 
-	double countByClassB1[2] = { 0, 0 };
-	double countByClassB2[2] = { 0, 0 };
-	for (int i = 0; i < 3; ++i)
+	double* probabilityB1 = calloc(classCount, sizeof(double));
+	double* probabilityB2 = calloc(classCount, sizeof(double));
+
+	uint* countByClass1 = calloc(classCount, sizeof(uint));
+	uint* countByClass2 = calloc(classCount, sizeof(uint));
+	double entropyB1 = 0;
+	double entropyB2 = 0;
+	for (uint i = 0; i < configs->MaxFeaturesPerNode; ++i)
 	{
 		size_t size1 = 0;
 		size_t size2 = 0;
-		size_t countByClass1[2] = { 0, 0 };
-		size_t countByClass2[2] = { 0, 0 };
+		memset(countByClass1, 0, sizeof(uint)*classCount);
+		memset(countByClass2, 0, sizeof(uint)*classCount);
 		for (size_t j = 0; j < size; ++j)
 		{
 			if (values[j] <= v[i])
@@ -71,25 +73,45 @@ extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterI
 		if (size1 == 0 || size2 == 0)
 			continue;
 
-		const double entropy1 = CalculateEntropy(countByClass1, 2, size1);
-		const double entropy2 = CalculateEntropy(countByClass2, 2, size2);
+		const double entropy1 = CalculateEntropy(countByClass1, classCount, size1);
+		const double entropy2 = CalculateEntropy(countByClass2, classCount, size2);
 		const double tmpEntropy = (size1*entropy1 + size2 * entropy2) / size;
-		printf("new entropy: %f, e1: %f e2:%f\n", tmpEntropy, entropy1, entropy2);
+		DbgPrint("new entropy: %f, e1: %f e2:%f\n", tmpEntropy, entropy1, entropy2);
 		if (tmpEntropy < newEntropy)
 		{
+			entropyB1 = entropy1;
+			entropyB2 = entropy2;
 			newEntropy = tmpEntropy;
 			bestI = i;
-			countByClassB1[0] = (double)countByClass1[0]/countByClass[0];
-			countByClassB1[1] = (double)countByClass1[1]/countByClass[1];
-			countByClassB2[0] = (double)countByClass2[0]/countByClass[0];
-			countByClassB2[1] = (double)countByClass2[1]/countByClass[1];
-			
-		printf("B10: %f, B11: %f B20:%f\n", countByClassB1[0], countByClassB1[1], countByClassB2[0]);
+			for (uint j = 0; j < classCount; ++j)
+			{
+				probabilityB1[j] = (double)countByClass1[j] / countByClass[j];
+				probabilityB2[j] = (double)countByClass2[j] / countByClass[j];
+
+				DbgPrint("Probability %d: B1: %f B2:%f\n", probabilityB1[j], probabilityB2[j]);
+			}
 		}
 	}
 
-	Root* node = TreeCreateRoot(1, v[bestI], TreeCreateLeaf(countByClassB1, 2), TreeCreateLeaf(countByClassB2, 2));
+	Root* node = TreeCreateRoot(parameterIndex, v[bestI], TreeCreateLeaf(probabilityB1, classCount, entropyB1), TreeCreateLeaf(probabilityB2, classCount, entropyB2));
+	free(countByClass1);
+	free(countByClass2);
+	free(probabilityB1);
+	free(probabilityB2);
 	free(v);
 	return node;
+}
+
+Root** NdGenerateForest(const RtConfigs* const configs, const CsvTable* const table)
+{
+	Root** forest = malloc(sizeof(Root*) * configs->TreeCount);
+	uint* countByClass = CountByClass(table->ClassColumn, table->RowsCount, table->ClassesCount);
+	for (uint i = 0; i < configs->TreeCount; ++i)
+	{
+		const uint paramIndex = rand() % table->ParametersCount;
+		forest[i] = NdGenerateTree(configs, paramIndex, table->Parameters[paramIndex].Column, table->ClassColumn, table->RowsCount, countByClass, table->ClassesCount);
+	}
+	free(countByClass);
+	return forest;
 }
 

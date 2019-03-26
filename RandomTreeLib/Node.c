@@ -3,7 +3,7 @@
 #include "Node.h"
 #include "RtConfigs.h"
 
-Node* TreeCreateLeaf(const double* classesProbability, const size_t size)
+Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy)
 {
 	if (classesProbability == NULL)
 		return NULL;
@@ -13,6 +13,7 @@ Node* TreeCreateLeaf(const double* classesProbability, const size_t size)
 	nd->ClassesProbability = MemCopyAlloc(classesProbability, sizeof(double) * size);
 	nd->Left = NULL;
 	nd->Right = NULL;
+	nd->Entropy = entropy;
 	return nd;
 }
 
@@ -29,9 +30,14 @@ Root* TreeCreateRoot(const int parameterIndex, const double parameterValueSepara
 	return  nd;
 }
 
-bool TreeIsLeaf(const Node* nd)
+bool TreeIsWeakLeaf(const Node*const nd)
 {
 	return nd->Left == nd->Right && nd->Right == NULL;
+}
+
+bool TreeIsLeaf(const Node*const nd)
+{
+	return nd->Entropy == 1;
 }
 
 void TreeFreeNd(Node**const nd)

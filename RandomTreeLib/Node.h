@@ -23,12 +23,13 @@ typedef struct
 	double ParameterValueSeparator;
 } Root;
 
-Node* TreeCreateLeaf(const double* classesProbability, const size_t size);
+Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy);
 
-Root* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator, Node* left,
-                   Node* right);
+Root* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator, Node* left, Node* right);
 
-bool TreeIsLeaf(const Node* nd);
+bool TreeIsWeakLeaf(const Node*const nd);
+
+bool TreeIsLeaf(const Node*const nd);
 
 void TreeFreeNd(Node**const nd);
 

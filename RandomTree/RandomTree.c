@@ -4,17 +4,19 @@
 #include <stdio.h>
 #include "../RandomTreeLib/CsvReader.h"
 #include "../RandomTreeLib/NodeGenerator.h"
+#include <processthreadsapi.h>
 
 int main()
 {
 	char buffer[255];
 	printf("Hello Traveler!\n");
 	CsvTable * table;
-	//NdGenerateTree();
+	RtConfigs* configs;
 
+	srand(GetCurrentProcessId());
 	while (1)
 	{
-		printf("Give me your CSV file! (Max path size: 255): ");
+		printf("Give me your config file! (Max path size: 255): ");
 		if (scanf_s("%254s", buffer, (size_t)255) < 1)
 		{
 			printf("Something wrong with your filename...\n");
@@ -23,7 +25,24 @@ int main()
 		FILE* fp;
 		if (fopen_s(&fp, buffer, "r") < 0 || fp == NULL)
 		{
-			printf("Something wrong with you file...\n");		
+			printf("Something wrong with your config file...\n");		
+			fclose(fp);
+			continue;
+		}
+		configs = RtReadConfig(fp);
+		if (configs == NULL)
+		{
+			printf("Something wrong with your config file...\nEnsure that you don't put spaces next to '='\n");
+			fclose(fp);
+			continue;
+		}
+		fclose(fp);
+
+		if (fopen_s(&fp, configs->FileName, "r") < 0 || fp == NULL)
+		{
+			printf("Something wrong with your csv file...\n");
+			fclose(fp);
+			free(configs);
 			continue;
 		}
 		CharsTable* charsTable;
@@ -32,8 +51,13 @@ int main()
 		{
 			printf("Something wrong with you file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
 			printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
+			fclose(fp);
+			free(configs);
+			free(charsTable);
 			continue;
 		}
+		free(charsTable);
+		fclose(fp);
 		break;
 	}
 	while (1)
@@ -54,17 +78,23 @@ int main()
 			printf("%s, ", table->Headers[j]);
 		}
 		printf("\n");
-		for (uint i = 0; i < table->RowsCount; i++)
-		{
-			printf("%lf, ", table->ClassColumn[i]);
-			for (uint j = 0; j < table->ParametersCount; j++)
-			{
-				printf("%lf, ", table->Parameters[j].Column[i]);
-			}
-			printf("\n");
-		}
 		break;
 	}
+	for (uint i = 0; i < table->RowsCount; i++)
+	{
+		printf("%d, ", table->ClassColumn[i]);
+		for (uint j = 0; j < table->ParametersCount; j++)
+		{
+			printf("%lf, ", table->Parameters[j].Column[i]);
+		}
+		printf("\n");
+	}
+	Root** forest = NdGenerateForest(configs, table);
+	for (uint i = 0; i < configs->TreeCount; ++i)
+	{
+		TreeFree(&forest[i]);	
+	}
+	
 
 }
 //

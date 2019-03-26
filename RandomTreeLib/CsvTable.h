@@ -16,9 +16,11 @@ typedef struct
 	uint RowsCount;
 	char** Headers;
 	ParameterColumn* Parameters;
-	double* ClassColumn;
+	int* ClassColumn;
+	//char** ClassColumnNames;
 	char* ClassName;
 	bool Normalized;
+	size_t ClassesCount;
 } CsvTable;
 
 void CsvInit(CsvTable* input);

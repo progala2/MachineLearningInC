@@ -29,7 +29,6 @@ void TResize(CharsTable *vector)
 CharsTable* TReadFile(FILE* input, const unsigned int bufferLen)
 {
 	char* buffer = malloc(sizeof(char)*bufferLen);
-	size_t lineLen = 0;
 	CharRow* row = NULL;
 	CharsTable* table = malloc(sizeof(CharsTable));
 	TInit(table);
@@ -41,7 +40,7 @@ CharsTable* TReadFile(FILE* input, const unsigned int bufferLen)
 			CrInit(row);
 			TAppend(table, row);
 		}
-		lineLen = strcspn(buffer, "\n");
+		const size_t lineLen = strcspn(buffer, "\n");
 		if (buffer[lineLen] == '\n')
 		{
 			buffer[lineLen] = 0;
