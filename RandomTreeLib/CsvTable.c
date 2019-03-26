@@ -8,7 +8,7 @@
 void CsvInit(CsvTable* input)
 {
 	input->ClassName = NULL;
-	input->ClassColumn = NULL;
+	input->ClassesColumn = NULL;
 	input->Headers = NULL;
 	input->ParametersCount = 0;
 	input->Parameters = NULL;
@@ -47,19 +47,22 @@ void CsvNormalize(CsvTable * table)
 	table->Normalized = true;
 }
 
-void CsvFreeMemory(CsvTable* table)
+void CsvFreeMemory(CsvTable** const tbl)
 {
+	CsvTable* table = (*tbl);
 	for (uint i = 0; i < table->ParametersCount; ++i)
 	{
 		free(table->Headers[i]);
 		free(table->Parameters[i].Column);
 	}
 	free(table->Parameters);
-	table->Parameters = NULL;
-	free(table->ClassColumn);
-	table->ClassColumn = NULL;
+	for (uint i = 0; i < table->RowsCount; ++i)
+	{
+		free(table->ClassesColumn[i].Name);	
+	}
+	free(table->ClassesColumn);
 	free(table->Headers);
-	table->Headers = NULL;
 	free(table->ClassName);
-	table->ClassName = NULL;
+	free(table);
+	*tbl = NULL;
 }

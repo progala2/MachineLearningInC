@@ -5,10 +5,9 @@
 
 Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy)
 {
-	if (classesProbability == NULL)
+	if (classesProbability == NULL || size < 2 || entropy > 1)
 		return NULL;
-	if (size < 2)
-		return NULL;
+
 	Node* nd = malloc(sizeof(Node));
 	nd->ClassesProbability = MemCopyAlloc(classesProbability, sizeof(double) * size);
 	nd->Left = NULL;

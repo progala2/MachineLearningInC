@@ -12,11 +12,13 @@ namespace Helpers
 		std::stringstream ss;
 		const auto headerLine = "class, a, b, c, d";
 		ss << headerLine << "\n";
-		std::array<std::array<double, 5>, 50> lines {};
+		std::array<std::array<double, 5>, 50> lines{};
 		srand(1);
 		for (auto i = 0; i < linesNr; ++i)
 		{
-			for (auto j = 0; j < 5; ++j)
+			lines[i][0] = rand() % 3;
+			ss << lines[i][0] << ",";
+			for (auto j = 1; j < 5; ++j)
 			{
 				lines[i][j] = rand()*0.001;
 				ss << lines[i][j] << ",";

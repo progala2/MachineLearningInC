@@ -4,12 +4,12 @@
 #include <string.h>
 #include "utils.h"
 
-static double* ParseNextRow(const CharRow* row, const uint colLen);
+static double* ParseNextRow(const CharRow* row, const uint colLen, char** retTuple);
 char** ParseFirstRow(const CharRow* row, uint* colLen);
 
 CsvTable* CsvReadTable(const CharsTable* input)
 {
-	if (input->Size < 2)
+	if (input->VecBase.Size < 2)
 		return (CsvTable*)-1;
 
 	uint colLen = 0;
@@ -28,13 +28,14 @@ CsvTable* CsvReadTable(const CharsTable* input)
 	free(headers);
 
 	table->ParametersCount = parLen;
-	table->RowsCount = input->Size - 1;
-	table->ClassColumn = malloc(sizeof(double)*table->RowsCount);
+	table->RowsCount = input->VecBase.Size - 1;
+	table->ClassesColumn = malloc(sizeof(CsvClassTuple)*table->RowsCount);
 	CsvInitParameters(table, parLen);
-	for (uint i = 1; i < input->Size; ++i)
+	for (uint i = 1; i < input->VecBase.Size; ++i)
 	{
-		double* parsedDoubles = ParseNextRow(input->Table[i], colLen);
-		table->ClassColumn[i - 1] = parsedDoubles[0];
+		char* name = NULL;
+		double* parsedDoubles = ParseNextRow(input->Table[i], colLen, &name);
+		table->ClassesColumn[i - 1].Name = name;
 		for (uint j = 0; j < parLen; ++j)
 		{
 			CsvSetParameterColumn(table, i - 1, j, parsedDoubles[j + 1]);
@@ -64,16 +65,18 @@ char** ParseFirstRow(const CharRow* row, uint* colLen)
 	return ret;
 }
 
-double* ParseNextRow(const CharRow* row, const uint colLen)
+double* ParseNextRow(const CharRow* row, const uint colLen, char** retTuple)
 {
 	const char s[2] = ",";
 	char *endPrt, *context;
 	double* ret = malloc(sizeof(double)*colLen);
 	char* tempStr = CrCopyData(row);
 	char* token = strtok_s(tempStr, s, &context);
-
+	*retTuple = MemCopyChars(token);
+	
+	token = strtok_s(NULL, s, &context);
 	uint i = 0;
-	while (token != 0 && i < colLen)
+	while (token != 0 && i < (colLen-1))
 	{
 		ret[i++] = strtold(token, &endPrt);
 		token = strtok_s(NULL, s, &context);

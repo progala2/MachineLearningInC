@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CharsVector.h" />
     <ClInclude Include="ConfMatrix.h" />
     <ClInclude Include="CsvTable.h" />
     <ClInclude Include="RtConfigs.h" />
@@ -27,8 +28,10 @@
     <ClInclude Include="CharsTable.h" />
     <ClInclude Include="CsvReader.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CharsVector.c" />
     <ClCompile Include="ConfMatric.c" />
     <ClCompile Include="CsvTable.c" />
     <ClCompile Include="Node.c" />
@@ -39,6 +42,7 @@
     <ClCompile Include="NodeGenerator.h" />
     <ClCompile Include="RtConfigs.c" />
     <ClCompile Include="Utils.c" />
+    <ClCompile Include="Vector.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

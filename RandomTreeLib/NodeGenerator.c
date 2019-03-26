@@ -2,7 +2,6 @@
 #include "Node.h"
 #include <stdlib.h>
 #include <math.h>
-#include <stdio.h>
 #include "RtConfigs.h"
 
 double CalculateEntropy(const unsigned countByClass[], const size_t classCount, const size_t elemCount)
@@ -18,18 +17,18 @@ double CalculateEntropy(const unsigned countByClass[], const size_t classCount, 
 	return entropy;
 }
 
-unsigned* CountByClass(const int* classesColumn, const size_t size, const size_t classesCount)
+unsigned* CountByClass(const CsvClassTuple* classesColumn, const size_t size, const size_t classesCount)
 {
 	uint* countByClass = calloc(classesCount, sizeof(uint));
 
 	for (size_t i = 0; i < size; ++i)
 	{
-		countByClass[classesColumn[i]]++;
+		countByClass[classesColumn[i].Value]++;
 	}
 	return countByClass;
 }
 
-extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const int* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
+extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const CsvClassTuple* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
 {
 	const double entropy = CalculateEntropy(countByClass, 2, 10);
 
@@ -62,12 +61,12 @@ extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterI
 			if (values[j] <= v[i])
 			{
 				size1++;
-				countByClass1[classesColumn[j]]++;
+				countByClass1[classesColumn[j].Value]++;
 			}
 			else
 			{
 				size2++;
-				countByClass2[classesColumn[j]]++;
+				countByClass2[classesColumn[j].Value]++;
 			}
 		}
 		if (size1 == 0 || size2 == 0)
@@ -102,14 +101,14 @@ extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterI
 	return node;
 }
 
-Root** NdGenerateForest(const RtConfigs* const configs, const CsvTable* const table)
+extern Root** NdGenerateForest(const RtConfigs* const configs, const CsvTable* const table)
 {
 	Root** forest = malloc(sizeof(Root*) * configs->TreeCount);
-	uint* countByClass = CountByClass(table->ClassColumn, table->RowsCount, table->ClassesCount);
+	uint* countByClass = CountByClass(table->ClassesColumn, table->RowsCount, table->ClassesCount);
 	for (uint i = 0; i < configs->TreeCount; ++i)
 	{
 		const uint paramIndex = rand() % table->ParametersCount;
-		forest[i] = NdGenerateTree(configs, paramIndex, table->Parameters[paramIndex].Column, table->ClassColumn, table->RowsCount, countByClass, table->ClassesCount);
+		forest[i] = NdGenerateTree(configs, paramIndex, table->Parameters[paramIndex].Column, table->ClassesColumn, table->RowsCount, countByClass, table->ClassesCount);
 	}
 	free(countByClass);
 	return forest;

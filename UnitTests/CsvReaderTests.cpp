@@ -38,17 +38,21 @@ namespace UnitTests
 			const auto table = TReadFile(fp, 5);
 			fclose(fp);
 
-			const auto csvTable = CsvReadTable(table);
+			auto csvTable = CsvReadTable(table);
 
 			TFreeMemory(table, true);
 			Assert::AreEqual("class", csvTable->ClassName);
 			for (unsigned i = 0; i < lines.size(); ++i)
 			{
-				Assert::IsTrue(fabs(lines[i][0] - csvTable->ClassColumn[i]) < 0.00000001);
+				Assert::IsTrue(static_cast<int>(lines[i][0]) - strtol(csvTable->ClassesColumn[i].Name, nullptr, 10) == 0);
+				Assert::IsTrue(static_cast<int>(lines[i][0]) - csvTable->ClassesColumn[i].Value == 0);
 				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < 0.00000001);
 				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[1].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[1].Column[i]) < 0.00000001);
+				//Assert::AreEqual(0, csvTable->ClassColumn)
 			}
-			CsvFreeMemory(csvTable);
+			CsvFreeMemory(&csvTable);
 		}
 
 		TEST_METHOD(ReadCsvFile_ReturnsCharsTable)

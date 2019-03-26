@@ -3,27 +3,21 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "Vector.h"
 
 void TInit(CharsTable *vector)
 {
-	vector->Size = 0;
-	vector->Capacity = VECTOR_INITIAL_CAPACITY;
-	vector->Table = malloc(sizeof(CharRow*) * vector->Capacity);
+	vector->VecBase = VecInit((pointer_ptr)&vector->Table, sizeof(CharRow*));
 }
 
 void TAppend(CharsTable *vector, CharRow* value)
 {
-	TResize(vector);
-
-	vector->Table[vector->Size++] = value;
+	VecAppend(&vector->VecBase, &value);
 }
 
 void TResize(CharsTable *vector)
 {
-	if (vector->Size >= vector->Capacity) {
-		vector->Capacity *= 2;
-		vector->Table = realloc(vector->Table, sizeof(CharRow*) * vector->Capacity);
-	}
+	VecResize(&vector->VecBase);
 }
 
 CharsTable* TReadFile(FILE* input, const unsigned int bufferLen)
@@ -62,7 +56,7 @@ void TFreeMemory(CharsTable *vector, const bool removeRows)
 {
 	if (removeRows)
 	{
-		for (uint i = 0; i < vector->Size; ++i)
+		for (uint i = 0; i < vector->VecBase.Size; ++i)
 		{
 			CrFreeMemory(vector->Table[i]);
 			free(vector->Table[i]);
@@ -70,6 +64,4 @@ void TFreeMemory(CharsTable *vector, const bool removeRows)
 	}
 	free(vector->Table);
 	vector->Table = NULL;
-	vector->Size = -1;
-	vector->Capacity = -1;
 }

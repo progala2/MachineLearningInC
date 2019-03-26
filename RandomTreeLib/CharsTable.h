@@ -5,18 +5,17 @@
 #include "CharRow.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "utils.h"
+#include "Vector.h"
 
 typedef struct {
-    uint Size;
-    uint Capacity;
     CharRow** Table;
+    Vector VecBase;
 } CharsTable;
 
 void TInit(CharsTable *vector);
 void TAppend(CharsTable *vector, CharRow* value);
 void TResize(CharsTable *vector);
 CharsTable* TReadFile(FILE* input, const unsigned int bufferLen);
-void TFreeMemory(CharsTable *vector, bool removeRows);
+void TFreeMemory(CharsTable *vector, const bool removeRows);
 
 #endif

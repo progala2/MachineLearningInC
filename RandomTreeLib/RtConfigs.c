@@ -5,7 +5,7 @@
 RtConfigs* RtReadConfig(FILE* fp)
 {
 	CharsTable* table = TReadFile(fp, 1024);
-	if (table->Size < 1)
+	if (table->VecBase.Size < 1)
 		return NULL;
 
 	#define BUFFER_LEN 255
@@ -20,7 +20,7 @@ RtConfigs* RtReadConfig(FILE* fp)
 	configs->TreeCount = 30;
 	configs->CvType = Cv_None;
 	configs->FileName = MemCopyChars(buffer);
-	for (uint i = 1; i < table->Size; ++i)
+	for (uint i = 1; i < table->VecBase.Size; ++i)
 	{
 		if (sscanf_s(table->Table[i]->Data, "MaxFeaturesPerNode=%254s", buffer, (uint)BUFFER_LEN) == 1)
 		{
