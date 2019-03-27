@@ -14,7 +14,9 @@ typedef struct {
 
 Vector VecInit(pointer_ptr ptr, const size_t typeSize);
 void VecAppend(Vector* vector, const void* const value);
+void VecAppendRange(Vector* vector, const void* const value, const size_t len);
+void VecRepOrInsRangeAt(Vector* vector, uint index, const void* const value, const size_t len);
 void VecResize(Vector *vector);
-//void VecFreeMemory(Vector *vector, bool removeRows);
+void VecResizeRange(Vector *vector, const size_t len);
 
 #endif

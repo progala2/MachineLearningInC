@@ -28,7 +28,7 @@ unsigned* CountByClass(const CsvClassTuple* classesColumn, const size_t size, co
 	return countByClass;
 }
 
-extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const CsvClassTuple* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
+Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const CsvClassTuple* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
 {
 	const double entropy = CalculateEntropy(countByClass, 2, 10);
 

@@ -31,10 +31,13 @@ CsvTable* CsvReadTable(const CharsTable* input)
 	table->RowsCount = input->VecBase.Size - 1;
 	table->ClassesColumn = malloc(sizeof(CsvClassTuple)*table->RowsCount);
 	CsvInitParameters(table, parLen);
+	StringVector* charRow = SvInit();
 	for (uint i = 1; i < input->VecBase.Size; ++i)
 	{
 		char* name = NULL;
 		double* parsedDoubles = ParseNextRow(input->Table[i], colLen, &name);
+		// TODO contains
+		if (charRow->Table[i - 1] == name)
 		table->ClassesColumn[i - 1].Name = name;
 		for (uint j = 0; j < parLen; ++j)
 		{
@@ -42,6 +45,7 @@ CsvTable* CsvReadTable(const CharsTable* input)
 		}
 		free(parsedDoubles);
 	}
+	
 	return table;
 }
 
@@ -50,7 +54,7 @@ char** ParseFirstRow(const CharRow* row, uint* colLen)
 	const char s[2] = ",";
 	char*context;
 	*colLen = 0;
-	char** ret = malloc(sizeof(char*)*row->Size);
+	char** ret = malloc(sizeof(char*)*row->VecBase.Size);
 	char* tempStr = CrCopyData(row);
 
 	char* token = strtok_s(tempStr, s, &context);

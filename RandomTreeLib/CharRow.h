@@ -1,13 +1,14 @@
 #ifndef CharRow_H_INCLUDE_GUARD
 #define CharRow_H_INCLUDE_GUARD
+#include "CharsVector.h"
 
 typedef struct {
-    int Size;
     char* Data;
+	Vector VecBase;
 } CharRow;
 
 void CrInit(CharRow *vector);
-int CrAppend(CharRow *vector, const char* value, const unsigned int valueLen);
+void CrAppend(CharRow* vector, const char* value, const uint valueLen);
 void CrFreeMemory(CharRow *vector);
 char* CrCopyData(const CharRow* row);
 

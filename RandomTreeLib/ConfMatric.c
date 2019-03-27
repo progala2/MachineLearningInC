@@ -10,7 +10,7 @@ ConfMatrix* CmCreate(const int actual[], const int predicted[], const char* head
 
 	ConfMatrix* matrix = malloc(sizeof(ConfMatrix));
 	
-	matrix->Headers = malloc(sizeof(const char*)*headSize);
+	matrix->Headers = malloc(sizeof(char*)*headSize);
 	matrix->TableData = malloc(sizeof(int*)*headSize);
 	for (size_t i = 0; i < headSize; ++i)
 	{

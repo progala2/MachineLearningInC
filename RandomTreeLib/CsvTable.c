@@ -56,10 +56,6 @@ void CsvFreeMemory(CsvTable** const tbl)
 		free(table->Parameters[i].Column);
 	}
 	free(table->Parameters);
-	for (uint i = 0; i < table->RowsCount; ++i)
-	{
-		free(table->ClassesColumn[i].Name);	
-	}
 	free(table->ClassesColumn);
 	free(table->Headers);
 	free(table->ClassName);
