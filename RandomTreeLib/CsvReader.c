@@ -10,14 +10,14 @@ char** ParseFirstRow(const CharRow* row, uint* colLen);
 CsvTable* CsvReadTable(const CharsTable* input)
 {
 	if (input->VecBase.Size < 2)
-		return (CsvTable*)-1;
+		return NULL;
 
 	uint colLen = 0;
 	char** headers = ParseFirstRow(input->Table[0], &colLen);
 	if (colLen < 2)
 	{
 		FreeTab(headers, colLen);
-		return (CsvTable*)-1;
+		return NULL;
 	}
 	CsvTable* table = malloc(sizeof(CsvTable));
 	CsvInit(table);
