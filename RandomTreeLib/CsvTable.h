@@ -2,7 +2,7 @@
 #define CsvTable_H_INCLUDE_GUARD
 #include "utils.h"
 #include <stdbool.h>
-#include "CharsVector.h"
+#include "StringVector.h"
 
 typedef struct
 {
@@ -13,24 +13,21 @@ typedef struct
 
 typedef struct
 {
+	int Value;
+	const char* Name;
+} CsvClassTuple;
+
+typedef struct
+{
 	uint ParametersCount;
 	uint RowsCount;
 	char** Headers;
 	StringVector* Classes;
-
 	ParameterColumn* Parameters;
-	
-	struct CsvClassColumn
-	{
-		int Value;
-		const char* Name;
-	} *ClassesColumn;
-	
+	CsvClassTuple *ClassesColumn;
 	char* ClassName;
 	bool Normalized;
 } CsvTable;
-
-typedef struct CsvClassColumn CsvClassTuple;
 
 void CsvInit(CsvTable* input);
 void CsvInitParameters(CsvTable* table, const uint parLen);

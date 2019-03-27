@@ -1,24 +1,31 @@
-#include "Vector.h"
+#include "VecBase.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
-Vector VecInit(pointer_ptr ptr, const size_t typeSize)
+VecBase VecInit(pointer_ptr ptr, const size_t typeSize)
 {
-	Vector vec;
+	return VecInit_C(ptr, typeSize, 0);
+}
+
+VecBase VecInit_C(pointer_ptr ptr, const size_t typeSize, size_t capacity)
+{
+	if (capacity <= 0)
+		capacity = VECTOR_INITIAL_CAPACITY;
+	VecBase vec;
 	vec.Size = 0;
-	vec.Capacity = VECTOR_INITIAL_CAPACITY;
+	vec.Capacity = capacity;
 	vec.TypeSize = typeSize;
 	vec.Array = ptr;
 	*vec.Array = malloc(typeSize * vec.Capacity);
 	return vec;
 }
 
-void VecResize(Vector* vector)
+void VecResize(VecBase* vector)
 {
 	VecResizeRange(vector, 1);
 }
 
-void VecResizeRange(Vector* vector, const size_t len)
+void VecResizeRange(VecBase* vector, const size_t len)
 {
 	if (vector->Size + len >= vector->Capacity)
 	{
@@ -31,18 +38,16 @@ void VecResizeRange(Vector* vector, const size_t len)
 	
 }
 
-void VecAppend(Vector * vector, const void* const value)
+void VecAppend(VecBase * vector, gen_value_cptr value)
 {
 	VecAppendRange(vector, value, 1);
 }
 
-bool VecContains(const Vector*const vecBase, const void* const value, compare_func eqFuncPtr, void*(*getter)(const void*const vect, const uint ind), const
-                 void* const vector, uint* foundId)
+bool VecContains(VectorConstPtr vecBase, gen_value_cptr value, compare_func eqFuncPtr, getter_func getter, gen_vector_cptr vector, uint * foundId)
 {
 	for (uint i = 0; i < vecBase->Size; ++i)
 	{
-		void* ptr = getter(vector, i);
-		if (0 == eqFuncPtr(ptr, value))
+		if (0 == eqFuncPtr(getter(vector, i), value))
 		{
 			*foundId = i;
 			return true;
@@ -52,12 +57,12 @@ bool VecContains(const Vector*const vecBase, const void* const value, compare_fu
 	return false;
 }
 
-void VecAppendRange(Vector* vector, const void* const value, const size_t len)
+void VecAppendRange(VecBase* vector, gen_value_cptr value, const size_t len)
 {
 	VecRepOrInsRangeAt(vector, vector->Size, value, len);
 }
 
-void VecRepOrInsRangeAt(Vector* vector, const uint index, const void* const value, const size_t len)
+void VecRepOrInsRangeAt(VecBase* vector, const uint index, gen_value_cptr value, const size_t len)
 {
 	const size_t newSize = len - vector->Size + index;
 	VecResizeRange(vector, len - vector->Size + index);

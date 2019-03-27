@@ -28,7 +28,7 @@ unsigned* CountByClass(const CsvClassTuple* classesColumn, const size_t size, co
 	return countByClass;
 }
 
-extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const CsvClassTuple* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
+Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const CsvClassTuple* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
 {
 	const double entropy = CalculateEntropy(countByClass, classCount, size);
 
@@ -101,7 +101,7 @@ extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterI
 	return node;
 }
 
-extern Root** NdGenerateForest(const RtConfigs* const configs, const CsvTable* const table)
+Root** NdGenerateForest(const RtConfigs* const configs, const CsvTable* const table)
 {
 	Root** forest = malloc(sizeof(Root*) * configs->TreeCount);
 	uint* countByClass = CountByClass(table->ClassesColumn, table->RowsCount, table->Classes->VecBase.Size);

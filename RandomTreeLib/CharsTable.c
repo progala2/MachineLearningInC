@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include "Vector.h"
+#include "VecBase.h"
 
 void TInit(CharsTable *vector)
 {

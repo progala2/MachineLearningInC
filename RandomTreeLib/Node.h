@@ -4,11 +4,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-typedef struct Node Node;
 typedef struct Node
 {
-	Node* Left;
-	Node* Right;
+	struct Node* Left;
+	struct Node* Right;
 	int ParameterIndex;
 	double ParameterValueSeparator;
 	double Entropy;

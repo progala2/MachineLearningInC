@@ -24,5 +24,5 @@ typedef struct
 
 RtConfigs* RtReadConfig(FILE* fp);
 
-void RtFreeMemory(RtConfigs** input);
+void RtFreeMemory(RtConfigs**const input);
 #endif

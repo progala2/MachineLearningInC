@@ -1,11 +1,11 @@
 #ifndef CharsVector_H_INCLUDE_GUARD
 #define CharsVector_H_INCLUDE_GUARD
 
-#include "Vector.h"
+#include "VecBase.h"
 
 typedef struct {
     char** Table;
-	Vector VecBase;
+	VecBase VecBase;
 } StringVector;
 
 StringVector* SvInit();
@@ -16,7 +16,5 @@ inline void SvAppend(StringVector* vector, char* value)
 }
 
 bool SvContains(const StringVector* const vector, const char* const value, uint* foundId);
-
-
 
 #endif

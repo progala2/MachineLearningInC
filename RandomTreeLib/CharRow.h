@@ -1,10 +1,10 @@
 #ifndef CharRow_H_INCLUDE_GUARD
 #define CharRow_H_INCLUDE_GUARD
-#include "CharsVector.h"
+#include "VecBase.h"
 
 typedef struct {
     char* Data;
-	Vector VecBase;
+	VecBase VecBase;
 } CharRow;
 
 void CrInit(CharRow *vector);

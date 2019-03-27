@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CharsVector.h" />
+    <ClInclude Include="StringVector.h" />
     <ClInclude Include="ConfMatrix.h" />
     <ClInclude Include="CsvTable.h" />
     <ClInclude Include="RtConfigs.h" />
@@ -28,10 +28,11 @@
     <ClInclude Include="CharsTable.h" />
     <ClInclude Include="CsvReader.h" />
     <ClInclude Include="utils.h" />
-    <ClInclude Include="Vector.h" />
+    <ClInclude Include="VecBase.h" />
+    <ClCompile Include="NodeGenerator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CharsVector.c" />
+    <ClCompile Include="StringVector.c" />
     <ClCompile Include="ConfMatric.c" />
     <ClCompile Include="CsvTable.c" />
     <ClCompile Include="Node.c" />
@@ -39,10 +40,9 @@
     <ClCompile Include="CharsTable.c" />
     <ClCompile Include="CsvReader.c" />
     <ClCompile Include="NodeGenerator.c" />
-    <ClCompile Include="NodeGenerator.h" />
     <ClCompile Include="RtConfigs.c" />
     <ClCompile Include="Utils.c" />
-    <ClCompile Include="Vector.c" />
+    <ClCompile Include="VecBase.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

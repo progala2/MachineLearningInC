@@ -1,15 +1,14 @@
 #ifndef CharsTable_H_INCLUDE_GUARD
 #define CharsTable_H_INCLUDE_GUARD
 
-#define VECTOR_INITIAL_CAPACITY 16
 #include "CharRow.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "Vector.h"
+#include "VecBase.h"
 
 typedef struct {
     CharRow** Table;
-    Vector VecBase;
+    VecBase VecBase;
 } CharsTable;
 
 void TInit(CharsTable *vector);
