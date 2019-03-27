@@ -15,4 +15,8 @@ inline void SvAppend(StringVector* vector, char* value)
 	VecAppend(&vector->VecBase, &value);
 }
 
+bool SvContains(const StringVector* const vector, const char* const value, uint* foundId);
+
+
+
 #endif

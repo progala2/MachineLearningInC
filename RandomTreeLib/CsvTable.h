@@ -2,6 +2,7 @@
 #define CsvTable_H_INCLUDE_GUARD
 #include "utils.h"
 #include <stdbool.h>
+#include "CharsVector.h"
 
 typedef struct
 {
@@ -15,8 +16,7 @@ typedef struct
 	uint ParametersCount;
 	uint RowsCount;
 	char** Headers;
-	char** Classes;
-	size_t ClassesCount;
+	StringVector* Classes;
 
 	ParameterColumn* Parameters;
 	

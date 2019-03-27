@@ -31,20 +31,32 @@ CsvTable* CsvReadTable(const CharsTable* input)
 	table->RowsCount = input->VecBase.Size - 1;
 	table->ClassesColumn = malloc(sizeof(CsvClassTuple)*table->RowsCount);
 	CsvInitParameters(table, parLen);
-	StringVector* charRow = SvInit();
+	StringVector* stringVector = SvInit();
 	for (uint i = 1; i < input->VecBase.Size; ++i)
 	{
 		char* name = NULL;
+		uint foundId = 0;
 		double* parsedDoubles = ParseNextRow(input->Table[i], colLen, &name);
-		// TODO contains
-		if (charRow->Table[i - 1] == name)
-		table->ClassesColumn[i - 1].Name = name;
+		if (SvContains(stringVector, name, &foundId))
+		{
+			table->ClassesColumn[i - 1].Name = stringVector->Table[foundId];
+			table->ClassesColumn[i - 1].Value = foundId;
+			free(name);
+		}
+		else
+		{
+			SvAppend(stringVector, name);
+			table->ClassesColumn[i - 1].Name = name;
+			table->ClassesColumn[i - 1].Value = stringVector->VecBase.Size - 1;
+		}
+		
 		for (uint j = 0; j < parLen; ++j)
 		{
-			CsvSetParameterColumn(table, i - 1, j, parsedDoubles[j + 1]);
+			CsvSetParameterColumn(table, i - 1, j, parsedDoubles[j]);
 		}
 		free(parsedDoubles);
 	}
+	table->Classes = stringVector;
 	
 	return table;
 }
@@ -85,6 +97,7 @@ double* ParseNextRow(const CharRow* row, const uint colLen, char** retTuple)
 		ret[i++] = strtold(token, &endPrt);
 		token = strtok_s(NULL, s, &context);
 	}
+
 	free(tempStr);
 	return ret;
 }

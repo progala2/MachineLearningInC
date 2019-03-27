@@ -42,15 +42,21 @@ namespace UnitTests
 
 			TFreeMemory(table, true);
 			Assert::AreEqual("class", csvTable->ClassName);
+			Assert::IsNotNull(csvTable->Classes);
+			Assert::AreEqual(3u, csvTable->Classes->VecBase.Size, L"Classes count is wrong.");
 			for (unsigned i = 0; i < lines.size(); ++i)
 			{
-				Assert::IsTrue(static_cast<int>(lines[i][0]) - strtol(csvTable->ClassesColumn[i].Name, nullptr, 10) == 0);
-				Assert::IsTrue(static_cast<int>(lines[i][0]) - csvTable->ClassesColumn[i].Value == 0);
+				Assert::IsTrue(static_cast<int>(lines[i][0]) - strtol(csvTable->ClassesColumn[i].Name, nullptr, 10) == 0, L"Wrong class name");
+				for (uint j = 0; j < 3; ++j)
+				{
+					if (csvTable->Classes->Table[j] == csvTable->ClassesColumn[i].Name)
+						Assert::IsTrue(csvTable->ClassesColumn[i].Value == j, L"Wrong class value");
+				}
 				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < 0.00000001);
 				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[1].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[1].Column[i]) < 0.00000001);
-				//Assert::AreEqual(0, csvTable->ClassColumn)
+				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Column[i]) < 0.00000001);
+				
 			}
 			CsvFreeMemory(&csvTable);
 		}

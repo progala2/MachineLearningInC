@@ -1,5 +1,6 @@
 #include "Vector.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 Vector VecInit(pointer_ptr ptr, const size_t typeSize)
 {
@@ -33,6 +34,22 @@ void VecResizeRange(Vector* vector, const size_t len)
 void VecAppend(Vector * vector, const void* const value)
 {
 	VecAppendRange(vector, value, 1);
+}
+
+bool VecContains(const Vector*const vecBase, const void* const value, compare_func eqFuncPtr, void*(*getter)(const void*const vect, const uint ind), const
+                 void* const vector, uint* foundId)
+{
+	for (uint i = 0; i < vecBase->Size; ++i)
+	{
+		void* ptr = getter(vector, i);
+		if (0 == eqFuncPtr(ptr, value))
+		{
+			*foundId = i;
+			return true;
+		}
+	}
+	*foundId = vecBase->Size;
+	return false;
 }
 
 void VecAppendRange(Vector* vector, const void* const value, const size_t len)
