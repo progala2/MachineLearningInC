@@ -11,7 +11,7 @@ double CalculateEntropy(const unsigned countByClass[], const size_t classCount, 
 	{
 		const double p = (double)countByClass[i] / elemCount;
 
-		DbgPrint("p: %f\n", p);
+		DbgPrint(("p: %f\n", p));
 		entropy -= p == 0 ? 0 : p * log2(p);
 	}
 	return entropy;
@@ -30,17 +30,17 @@ unsigned* CountByClass(const CsvClassTuple* classesColumn, const size_t size, co
 
 extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, const double values[], const CsvClassTuple* classesColumn, const size_t size, const unsigned countByClass[], const size_t classCount)
 {
-	const double entropy = CalculateEntropy(countByClass, 2, 10);
+	const double entropy = CalculateEntropy(countByClass, classCount, size);
 
 	double* v = malloc(sizeof(double)*configs->MaxFeaturesPerNode);
 	for (uint i = 0; i < configs->MaxFeaturesPerNode; ++i)
 	{
 		v[i] = values[rand() % size];
-		DbgPrint("0: %f \n", v[i]);
+		DbgPrint(("0: %f \n", v[i]));
 	}
 
-	DbgPrint("entropy: %f\n", entropy);
-	double newEntropy = 2;
+	DbgPrint(("entropy: %f\n", entropy));
+	double newEntropy = entropy + 1;
 	size_t bestI = 0;
 
 	double* probabilityB1 = calloc(classCount, sizeof(double));
@@ -75,7 +75,7 @@ extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterI
 		const double entropy1 = CalculateEntropy(countByClass1, classCount, size1);
 		const double entropy2 = CalculateEntropy(countByClass2, classCount, size2);
 		const double tmpEntropy = (size1*entropy1 + size2 * entropy2) / size;
-		DbgPrint("new entropy: %f, e1: %f e2:%f\n", tmpEntropy, entropy1, entropy2);
+		DbgPrint(("new entropy: %f, e1: %f e2:%f\n", tmpEntropy, entropy1, entropy2));
 		if (tmpEntropy < newEntropy)
 		{
 			entropyB1 = entropy1;
@@ -87,7 +87,7 @@ extern Root* NdGenerateTree(const RtConfigs* const configs, const int parameterI
 				probabilityB1[j] = (double)countByClass1[j] / countByClass[j];
 				probabilityB2[j] = (double)countByClass2[j] / countByClass[j];
 
-				DbgPrint("Probability %d: B1: %f B2:%f\n", probabilityB1[j], probabilityB2[j]);
+				DbgPrint(("Probability %d: B1: %f B2:%f\n", j, probabilityB1[j], probabilityB2[j]));
 			}
 		}
 	}

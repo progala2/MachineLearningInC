@@ -55,6 +55,7 @@ int main()
 			free(charsTable);
 			continue;
 		}
+		TFreeMemory(charsTable, true);
 		free(charsTable);
 		fclose(fp);
 		break;

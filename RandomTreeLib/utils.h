@@ -27,13 +27,9 @@ inline char* MemCopyChars(const char* source)
 
 char* MemCopyCharsNoEnter(const char* source);
 
-inline void DbgPrint(const char* const format, ...)
-{
 #ifdef _DEBUG
-	va_list args;
-	va_start(args, format);
-	printf(format, args);
-	va_end(args);
+#define DbgPrint(x) printf x
+#else
+#define DbgPrint(x) /*nothing*/
 #endif
-}
 #endif

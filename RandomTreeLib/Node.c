@@ -5,7 +5,7 @@
 
 Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy)
 {
-	if (classesProbability == NULL || size < 2 || entropy > 1)
+	if (classesProbability == NULL || size < 2 || entropy < 0)
 		return NULL;
 
 	Node* nd = malloc(sizeof(Node));
@@ -41,6 +41,8 @@ bool TreeIsLeaf(const Node*const nd)
 
 void TreeFreeNd(Node**const nd)
 {
+	if (*nd == NULL)
+		return;
 	TreeFreeNd(&(*nd)->Left);
 	TreeFreeNd(&(*nd)->Right);
 	free((*nd)->ClassesProbability);
@@ -50,6 +52,8 @@ void TreeFreeNd(Node**const nd)
 
 void TreeFree(Root** const nd)
 {
+	if (*nd == NULL)
+		return;
 	TreeFreeNd(&(*nd)->Left);
 	TreeFreeNd(&(*nd)->Right);
 	free(*nd);

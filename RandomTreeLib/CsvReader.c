@@ -23,7 +23,7 @@ CsvTable* CsvReadTable(const CharsTable* input)
 	CsvInit(table);
 
 	const uint parLen = colLen - 1;
-	table->ClassName = headers[0];
+	table->ClassName = MemCopyChars(headers[0]);
 	table->Headers = MemCopyAlloc(headers + 1, sizeof(char*)*parLen);
 	free(headers);
 
