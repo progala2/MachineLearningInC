@@ -45,7 +45,7 @@ int main()
 
 		if (fopen_s(&fp, configs->TrainingFileName, "r") < 0 || fp == NULL)
 		{
-			printf("Something wrong with your trainging csv file...\n");
+			printf("Something wrong with your training csv file...\n");
 			fclose(fp);
 			free(configs);
 			continue;
@@ -62,7 +62,7 @@ int main()
 		}
 		fclose(fp);
 
-		if (configs->TestFileName == CONFIG_DEFAULT_TEST_FILE_NAME)
+		if (configs->TestFileName == CFG_TEST_FILE_NAME)
 		{
 			TFreeMemory(charsTable, true);
 			free(charsTable);

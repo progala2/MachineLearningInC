@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdarg.h>
 
+#define STRIFY(x) #x
+#define XSTRIFY(x) STRIFY(x)
+
 typedef unsigned int uint;
 typedef char**const void_tab_ptr;
 typedef char**const void_ptr_ref;
