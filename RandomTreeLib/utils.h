@@ -11,7 +11,7 @@ void* MemCopyAlloc(const void* source, const size_t size);
 
 void FreeTab(char** tab, const size_t count);
 
-void FreeTabVoid(char** tab, const size_t count, const size_t movingSize);
+void FreeTabVoid(void_tab_ptr tab, const size_t count, const size_t movingSize);
 
 void FreeN(void_tab_ptr ptr);  // NOLINT
 

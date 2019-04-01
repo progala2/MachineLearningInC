@@ -32,7 +32,7 @@ namespace UnitTests
 			auto config = RtReadConfig(fp);
 			fclose(fp);
 			
-			Assert::AreEqual("RtReadConfig_ReturnsConfigs.txt", config->FileName);
+			Assert::AreEqual("RtReadConfig_ReturnsConfigs.txt", config->TrainingFileName);
 			Assert::AreEqual(14u, config->TreeCount);
 			RtFreeMemory(&config);
 		}

@@ -3,6 +3,13 @@
 #include "utils.h"
 #include <stdio.h>
 
+#define CONFIG_DEFAULT_OUTPUT_FOLDER ""
+#define CONFIG_DEFAULT_TREE_COUNT 30
+#define CONFIG_DEFAULT_MAX_FEATURE_PER_NODE 3
+#define CONFIG_DEFAULT_CROSSVALIDATION_COUNT 0
+#define CONFIG_DEFAULT_CROSSVALIDATION_TYPE Cv_None
+#define CONFIG_DEFAULT_TEST_FILE_NAME NULL
+
 typedef enum
 {
 	Cv_Min = 0,
@@ -14,7 +21,8 @@ typedef enum
 
 typedef struct
 {
-	char* FileName;
+	char* TrainingFileName;
+	char* TestFileName;
 	char* OutputFolder;
 	uint TreeCount;
 	uint MaxFeaturesPerNode;

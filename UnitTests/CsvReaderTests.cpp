@@ -38,7 +38,7 @@ namespace UnitTests
 			const auto table = TReadFile(fp, 5);
 			fclose(fp);
 
-			auto csvTable = CsvReadTable(table);
+			auto csvTable = LrnReadData(table, table);
 
 			TFreeMemory(table, true);
 			Assert::AreEqual("class", csvTable->ClassName);
@@ -58,7 +58,7 @@ namespace UnitTests
 				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Column[i]) < 0.00000001);
 				
 			}
-			CsvFreeMemory(&csvTable);
+			LrnFreeMemory(&csvTable);
 		}
 
 		TEST_METHOD(ReadCsvFile_ReturnsCharsTable)

@@ -15,7 +15,14 @@ typedef struct
 {
 	int Value;
 	const char* Name;
-} CsvClassTuple;
+} LrnClassTuple;
+
+typedef struct
+{
+	uint RowsCount;
+	double** Parameters;
+	LrnClassTuple *ClassesColumn;
+} TestData;
 
 typedef struct
 {
@@ -24,15 +31,16 @@ typedef struct
 	char** Headers;
 	StringVector* Classes;
 	ParameterColumn* Parameters;
-	CsvClassTuple *ClassesColumn;
+	TestData TestData;
+	LrnClassTuple *ClassesColumn;
 	char* ClassName;
 	bool Normalized;
-} CsvTable;
+} LearnData;
 
-void CsvInit(CsvTable* input);
-void CsvInitParameters(CsvTable* table, const uint parLen);
-void CsvSetParameterColumn(CsvTable* table, const uint i, const uint j, const double value);
-void CsvNormalize(CsvTable* table);
-void CsvFreeMemory(CsvTable** const tbl);
+void LrnInit(LearnData* input);
+void LrnInitParameters(LearnData* table, const uint parLen);
+void LrnSetParameterColumn(LearnData* table, const uint i, const uint j, const double value);
+void LrnNormalize(LearnData* table);
+void LrnFreeMemory(LearnData** const tbl);
 
 #endif

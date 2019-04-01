@@ -5,22 +5,27 @@
 #include "../RandomTreeLib/CsvReader.h"
 #include "../RandomTreeLib/NodeGenerator.h"
 
+#define CONFIG_DEFAULT_CONFIG_FILE "configs.cfg"
+
 int main()
 {
 	char buffer[255];
 	printf("Hello Traveler!\n");
-	CsvTable * table;
+	LearnData * table;
 	RtConfigs* configs;
 
 	srand((unsigned)buffer);
 	while (1)
 	{
-		printf("Give me your config file! (Max path size: 255): ");
+		printf("Give me your config file! (Max path size: 255; Hit enter for default name - " CONFIG_DEFAULT_CONFIG_FILE  "): ");
 		if (scanf_s("%254s", buffer, (size_t)255) < 1)
 		{
 			printf("Something wrong with your filename...\n");
 			continue;
 		}
+		if (buffer[0] == '\n')
+			strcpy_s(buffer, strlen(CONFIG_DEFAULT_CONFIG_FILE), CONFIG_DEFAULT_CONFIG_FILE);
+
 		FILE* fp;
 		if (fopen_s(&fp, buffer, "r") < 0 || fp == NULL)
 		{
@@ -37,27 +42,55 @@ int main()
 		}
 		fclose(fp);
 
-		if (fopen_s(&fp, configs->FileName, "r") < 0 || fp == NULL)
+		if (fopen_s(&fp, configs->TrainingFileName, "r") < 0 || fp == NULL)
 		{
-			printf("Something wrong with your csv file...\n");
+			printf("Something wrong with your trainging csv file...\n");
 			fclose(fp);
 			free(configs);
 			continue;
 		}
 		CharsTable* charsTable;
-		if ((charsTable = TReadFile(fp, 1024)) < 0 ||
-			 (table = CsvReadTable(charsTable)) < 0)
+		if ((charsTable = TReadFile(fp, 1024)) < 0)
 		{
-			printf("Something wrong with you file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
+			printf("Something wrong with your training file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
 			printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
 			fclose(fp);
 			free(configs);
 			free(charsTable);
 			continue;
 		}
-		TFreeMemory(charsTable, true);
-		free(charsTable);
 		fclose(fp);
+
+		if (configs->TestFileName == CONFIG_DEFAULT_TEST_FILE_NAME)
+		{
+			TFreeMemory(charsTable, true);
+			free(charsTable);
+			fclose(fp);
+			return -1;
+		}
+
+		if (fopen_s(&fp, configs->TestFileName, "r") < 0 || fp == NULL)
+		{
+			printf("Something wrong with your test csv file...\n");
+			fclose(fp);
+			free(configs);
+			continue;
+		}
+		CharsTable* testCharsTable;
+		if ((testCharsTable = TReadFile(fp, 1024)) < 0 ||
+			(table = LrnReadData(charsTable, testCharsTable)) < 0)
+		{
+			printf("Something wrong with your test file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
+			printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
+			fclose(fp);
+			free(configs);
+			free(charsTable);
+			continue;
+		}
+		TFreeMemory(testCharsTable, true);
+		free(testCharsTable);
+		fclose(fp);
+
 		break;
 	}
 	while (1)
@@ -70,7 +103,7 @@ int main()
 		}
 		if (buffer[0] != 'n')
 		{
-			CsvNormalize(table);
+			LrnNormalize(table);
 		}
 		printf("%s, ", table->ClassName);
 		for (uint j = 0; j < table->ParametersCount; j++)

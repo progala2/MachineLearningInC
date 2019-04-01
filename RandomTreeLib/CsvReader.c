@@ -7,20 +7,34 @@
 static double* ParseNextRow(const CharRow* row, const uint colLen, char** retTuple);
 char** ParseFirstRow(const CharRow* row, uint* colLen);
 
-CsvTable* CsvReadTable(const CharsTable* input)
+char** LrnTryGetHeader(const CharsTable* trainingTable, const CharsTable* testTable, uint* colLen)
 {
-	if (input->VecBase.Size < 2)
+	if (trainingTable->VecBase.Size < 2 || testTable->VecBase.Size < 2)
 		return NULL;
 
-	uint colLen = 0;
-	char** headers = ParseFirstRow(input->Table[0], &colLen);
-	if (colLen < 2)
+	uint colLen2 = 0;
+	char** headers = ParseFirstRow(trainingTable->Table[0], colLen);
+	char** testHeaders = ParseFirstRow(testTable->Table[0], &colLen2);
+	if (*colLen < 2 || *colLen != colLen2)
 	{
-		FreeTab(headers, colLen);
+		FreeTab(headers, *colLen);
+		FreeTab(testHeaders, *colLen);
 		return NULL;
 	}
-	CsvTable* table = malloc(sizeof(CsvTable));
-	CsvInit(table);
+	FreeTab(testHeaders, *colLen);
+
+	return headers;
+}
+
+LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTable)
+{
+	uint colLen = 0;
+	char** headers;
+	if ((headers = LrnTryGetHeader(trainingTable, testTable, &colLen)) == NULL)
+		return NULL;
+
+	LearnData* table = malloc(sizeof(LearnData));
+	LrnInit(table);
 
 	const uint parLen = colLen - 1;
 	table->ClassName = MemCopyChars(headers[0]);
@@ -28,15 +42,17 @@ CsvTable* CsvReadTable(const CharsTable* input)
 	free(headers);
 
 	table->ParametersCount = parLen;
-	table->RowsCount = input->VecBase.Size - 1;
-	table->ClassesColumn = malloc(sizeof(CsvClassTuple)*table->RowsCount);
-	CsvInitParameters(table, parLen);
+	table->RowsCount = trainingTable->VecBase.Size - 1;
+	table->TestData.RowsCount = testTable->VecBase.Size - 1;
+	table->ClassesColumn = malloc(sizeof(LrnClassTuple)*table->RowsCount);
+	table->TestData.ClassesColumn = malloc(sizeof(LrnClassTuple)*table->TestData.RowsCount);
+	LrnInitParameters(table, parLen);
 	StringVector* stringVector = SvInit();
-	for (uint i = 1; i < input->VecBase.Size; ++i)
+	for (uint i = 1; i < trainingTable->VecBase.Size; ++i)
 	{
 		char* name = NULL;
 		uint foundId = 0;
-		double* parsedDoubles = ParseNextRow(input->Table[i], colLen, &name);
+		double* parsedDoubles = ParseNextRow(trainingTable->Table[i], colLen, &name);
 		if (SvContains(stringVector, name, &foundId))
 		{
 			table->ClassesColumn[i - 1].Name = stringVector->Table[foundId];
@@ -52,7 +68,7 @@ CsvTable* CsvReadTable(const CharsTable* input)
 		
 		for (uint j = 0; j < parLen; ++j)
 		{
-			CsvSetParameterColumn(table, i - 1, j, parsedDoubles[j]);
+			LrnSetParameterColumn(table, i - 1, j, parsedDoubles[j]);
 		}
 		free(parsedDoubles);
 	}

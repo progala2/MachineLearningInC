@@ -3,6 +3,6 @@
 #include "CharsTable.h"
 #include "CsvTable.h"
 
-CsvTable* CsvReadTable(const CharsTable* input);
+LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTable);
 
 #endif

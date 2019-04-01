@@ -10,19 +10,25 @@ RtConfigs* RtReadConfig(FILE* fp)
 
 	#define BUFFER_LEN 255
 	char buffer[BUFFER_LEN] = { 0 };
-	if (sscanf_s(table->Table[0]->Data,"FileName=%254s", buffer, (uint)BUFFER_LEN) < 1)
+	if (sscanf_s(table->Table[0]->Data,"TrainingFileName=%254s", buffer, (uint)BUFFER_LEN) < 1)
 		return NULL;
 
 	RtConfigs* configs = malloc(sizeof(RtConfigs));
-	configs->CrossValidationCount = 0;
-	configs->MaxFeaturesPerNode = 3;
-	configs->OutputFolder = MemCopyChars("");
-	configs->TreeCount = 30;
-	configs->CvType = Cv_None;
-	configs->FileName = MemCopyChars(buffer);
+	configs->CrossValidationCount = CONFIG_DEFAULT_CROSSVALIDATION_COUNT;
+	configs->MaxFeaturesPerNode = CONFIG_DEFAULT_MAX_FEATURE_PER_NODE;
+	configs->OutputFolder = MemCopyChars(CONFIG_DEFAULT_OUTPUT_FOLDER);
+	configs->TreeCount = CONFIG_DEFAULT_TREE_COUNT;
+	configs->CvType = CONFIG_DEFAULT_CROSSVALIDATION_TYPE;
+	configs->TrainingFileName = MemCopyChars(buffer);
+	configs->TestFileName = CONFIG_DEFAULT_TEST_FILE_NAME;
+
 	for (uint i = 1; i < table->VecBase.Size; ++i)
 	{
-		if (sscanf_s(table->Table[i]->Data, "MaxFeaturesPerNode=%254s", buffer, (uint)BUFFER_LEN) == 1)
+		if (sscanf_s(table->Table[i]->Data, "TestFileName=%254s", buffer, (uint)BUFFER_LEN) == 1)
+		{
+			configs->TestFileName = MemCopyChars(buffer);
+		}
+		else if (sscanf_s(table->Table[i]->Data, "MaxFeaturesPerNode=%254s", buffer, (uint)BUFFER_LEN) == 1)
 		{
 			configs->MaxFeaturesPerNode = strtol(buffer, NULL, 10);
 		}
@@ -63,7 +69,8 @@ RtConfigs* RtReadConfig(FILE* fp)
 
 void RtFreeMemory(RtConfigs**const input)
 {
-	FreeN(&(*input)->FileName);
+	FreeN(&(*input)->TrainingFileName);
+	FreeN(&(*input)->TestFileName);
 	FreeN(&(*input)->OutputFolder);
 	FreeN((void_tab_ptr)input);
 }
