@@ -2,10 +2,11 @@
 //
 
 #include <stdio.h>
-#include "../RandomTreeLib/CsvReader.h"
 #include "../RandomTreeLib/NodeGenerator.h"
+#include "../RandomTreeLib/CharsTable.h"
+#include "../RandomTreeLib/ReadLearnData.h"
 
-#define CONFIG_DEFAULT_CONFIG_FILE "configs.cfg"
+#define CONFIG_DEFAULT_CONFIG_FILE "config.cfg"
 
 int main()
 {
@@ -17,14 +18,14 @@ int main()
 	srand((unsigned)buffer);
 	while (1)
 	{
-		printf("Give me your config file! (Max path size: 255; Hit enter for default name - " CONFIG_DEFAULT_CONFIG_FILE  "): ");
+		printf("Give me your config file! (Max path size: 255; Enter 'd' for default name - " CONFIG_DEFAULT_CONFIG_FILE  "): ");
 		if (scanf_s("%254s", buffer, (size_t)255) < 1)
 		{
 			printf("Something wrong with your filename...\n");
 			continue;
 		}
-		if (buffer[0] == '\n')
-			strcpy_s(buffer, strlen(CONFIG_DEFAULT_CONFIG_FILE), CONFIG_DEFAULT_CONFIG_FILE);
+		if (buffer[0] == 'd')
+			strcpy_s(buffer, strlen(CONFIG_DEFAULT_CONFIG_FILE)+1, CONFIG_DEFAULT_CONFIG_FILE);
 
 		FILE* fp;
 		if (fopen_s(&fp, buffer, "r") < 0 || fp == NULL)
@@ -118,15 +119,17 @@ int main()
 		printf("%d, ", table->ClassesColumn[i].Value);
 		for (uint j = 0; j < table->ParametersCount; j++)
 		{
-			printf("%lf, ", table->Parameters[j].Column[i]);
+			printf("%lf, ", table->Parameters[j].Rows[i]);
 		}
 		printf("\n");
 	}
 	Root** forest = NdGenerateForest(configs, table);
+	ConfMatrix* matrix = NdCalculateOnTestData((const Root**)forest, table, configs->TreeCount);
+	CmPrint(matrix);
 	for (uint i = 0; i < configs->TreeCount; ++i)
 	{
 		TreeFree(&forest[i]);	
 	}
-	
+	CmFree(&matrix);
 
 }

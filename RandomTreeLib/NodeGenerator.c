@@ -108,9 +108,52 @@ Root** NdGenerateForest(const RtConfigs* const configs, const LearnData* const t
 	for (uint i = 0; i < configs->TreeCount; ++i)
 	{
 		const uint paramIndex = rand() % table->ParametersCount;
-		forest[i] = NdGenerateTree(configs, paramIndex, table->Parameters[paramIndex].Column, table->ClassesColumn, table->RowsCount, countByClass, table->Classes->VecBase.Size);
+		forest[i] = NdGenerateTree(configs, paramIndex, table->Parameters[paramIndex].Rows, table->ClassesColumn, table->RowsCount, countByClass, table->Classes->VecBase.Size);
 	}
 	free(countByClass);
 	return forest;
+}
+
+ConfMatrix* NdCalculateOnTestData(const Root* const* const forest, const LearnData* const table, const size_t treeCount)
+{
+	const uint rowsCount = table->TestData.RowsCount;
+	const uint classesCount = table->Classes->VecBase.Size;
+	int* actual = malloc(sizeof(int)*rowsCount);
+	int* predicted = malloc(sizeof(int)*rowsCount);
+	double* predictionSumPerClass = malloc(sizeof(double)*classesCount);
+	for (uint i = 0; i < rowsCount; ++i)
+	{
+		actual[i] = table->TestData.ClassesColumn[i].Value;
+		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
+		for (uint j = 0; j < treeCount; ++j)
+		{
+			if (table->TestData.Parameters[forest[j]->ParameterIndex][i] < forest[j]->ParameterValueSeparator)
+			{
+				for (uint k = 0; k < classesCount; ++k)
+				{
+					predictionSumPerClass[k] += forest[j]->Left->ClassesProbability[k];
+				}
+			}
+			else
+			{
+				for (uint k = 0; k < classesCount; ++k)
+				{
+					predictionSumPerClass[k] += forest[j]->Right->ClassesProbability[k];
+				}
+			}
+		}
+		uint maxK = 0;
+		for (uint k = 0; k < classesCount; ++k)
+		{
+			if (predictionSumPerClass[k] > predictionSumPerClass[maxK])
+				maxK = k;
+		}
+		predicted[i] = maxK;
+	}
+	free(predictionSumPerClass);
+
+	ConfMatrix* matrix = CmCreate(actual, predicted, (const char**)table->Classes->Table, table->Classes->VecBase.Size, rowsCount);
+	free(actual);
+	return matrix;
 }
 

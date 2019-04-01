@@ -1,6 +1,6 @@
 #include "RtConfigs.h"
-#include "CsvReader.h"
 #include <stdlib.h>
+#include "CharsTable.h"
 
 RtConfigs* RtReadConfig(FILE* fp)
 {

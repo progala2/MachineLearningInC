@@ -6,7 +6,7 @@
 
 typedef struct
 {
-	double* Column;
+	double* Rows;
 	double MaxValue;
 	double MinValue;
 } ParameterColumn;
@@ -37,9 +37,10 @@ typedef struct
 	bool Normalized;
 } LearnData;
 
-void LrnInit(LearnData* input);
+LearnData* LrnInit();
 void LrnInitParameters(LearnData* table, const uint parLen);
 void LrnSetParameterColumn(LearnData* table, const uint i, const uint j, const double value);
+void LrnSetTestParameterColumn(LearnData* table, const uint i, const uint j, const double value);
 void LrnNormalize(LearnData* table);
 void LrnFreeMemory(LearnData** const tbl);
 

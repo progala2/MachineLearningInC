@@ -20,7 +20,7 @@ namespace UnitTests
 			const auto fileNameConfig = "RtReadConfig_ReturnsConfigs.config";
 			std::stringstream ss;		
 
-			ss << "FileName=" << fileName << "\n";
+			ss << "TrainingFileName=" << fileName << "\n";
 			ss << "TreeCount=" << 14 << "\n";
 			FILE* fp;
 			fopen_s(&fp,fileNameConfig, "w+");

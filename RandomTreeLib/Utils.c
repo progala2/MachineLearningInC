@@ -9,16 +9,7 @@ void* MemCopyAlloc(const void* source, const size_t size)
 	return dest;
 }
 
-void FreeTabVoid(void_tab_ptr tab, const size_t count, const size_t movingSize)
-{
-	for (size_t i = 0; i < count; ++i)
-	{
-		free(tab[0] + (movingSize * i));
-	}
-	free(tab);
-}
-
-void FreeN(void_tab_ptr ptr)  // NOLINT
+void FreeN(void_ptr_ref ptr)  // NOLINT
 {
 	if (*ptr == NULL)
 		return;
@@ -36,7 +27,16 @@ char* MemCopyCharsNoEnter(const char* source)
 	return ptr;
 }
 
-void FreeTab(char** tab, const size_t count)
+void FreeTab(void_tab_ptr tab, const size_t count)
 {
-	FreeTabVoid(tab, count, sizeof(char));
+	FreeTab_Func(tab, count, free);
+}
+
+void FreeTab_Func(void_tab_ptr tab, const size_t count, deleter_func deleter)
+{
+	for (size_t i = 0; i < count; ++i)
+	{
+		deleter(tab[i]);
+	}
+	free(tab);
 }

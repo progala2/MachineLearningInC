@@ -3,7 +3,7 @@
 #include "Helpers.h"
 
 extern "C" {
-#include "../RandomTreeLib/CsvReader.h"
+#include "../RandomTreeLib/ReadLearnData.h"
 }
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -29,16 +29,21 @@ namespace UnitTests
 
 	public:
 
-		TEST_METHOD(ReadCsvTable_ReturnsCsvTable)
+		TEST_METHOD(ReadLearnData_ReturnsLearnData)
 		{
 			const auto lines = Helpers::GenerateCsvFile("ReadCsvFile_ReturnsTable.txt");
+			const auto lines2 = Helpers::GenerateCsvFile("ReadCsvFile_ReturnsTable2.txt");
 
 			FILE* fp;
 			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "r");
 			const auto table = TReadFile(fp, 5);
 			fclose(fp);
 
-			auto csvTable = LrnReadData(table, table);
+			fopen_s(&fp, "ReadCsvFile_ReturnsTable2.txt", "r");
+			const auto table2 = TReadFile(fp, 5);
+			fclose(fp);
+
+			auto csvTable = LrnReadData(table, table2);
 
 			TFreeMemory(table, true);
 			Assert::AreEqual("class", csvTable->ClassName);
@@ -52,10 +57,10 @@ namespace UnitTests
 					if (csvTable->Classes->Table[j] == csvTable->ClassesColumn[i].Name)
 						Assert::IsTrue(csvTable->ClassesColumn[i].Value == j, L"Wrong class value");
 				}
-				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Rows[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Rows[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Rows[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Rows[i]) < 0.00000001);
 				
 			}
 			LrnFreeMemory(&csvTable);

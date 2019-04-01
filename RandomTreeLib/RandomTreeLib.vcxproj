@@ -26,7 +26,7 @@
     <ClInclude Include="Node.h" />
     <ClInclude Include="CharRow.h" />
     <ClInclude Include="CharsTable.h" />
-    <ClInclude Include="CsvReader.h" />
+    <ClInclude Include="ReadLearnData.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VecBase.h" />
     <ClCompile Include="NodeGenerator.h" />
@@ -38,7 +38,7 @@
     <ClCompile Include="Node.c" />
     <ClCompile Include="CharRow.c" />
     <ClCompile Include="CharsTable.c" />
-    <ClCompile Include="CsvReader.c" />
+    <ClCompile Include="ReadLearnData.c" />
     <ClCompile Include="NodeGenerator.c" />
     <ClCompile Include="RtConfigs.c" />
     <ClCompile Include="Utils.c" />

@@ -18,9 +18,6 @@
     <ClInclude Include="Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CsvReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CharRow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,12 +42,12 @@
     <ClInclude Include="StringVector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReadLearnData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Node.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CsvReader.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CharRow.c">
@@ -81,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StringVector.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadLearnData.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
