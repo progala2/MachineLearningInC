@@ -15,6 +15,6 @@ void TInit(CharsTable *vector);
 void TAppend(CharsTable *vector, CharRow* value);
 void TResize(CharsTable *vector);
 CharsTable* TReadFile(FILE* input, const unsigned int bufferLen);
-void TFreeMemory(CharsTable *vector, const bool removeRows);
+void TFreeMemory(CharsTable** vector, const bool removeRows);
 
 #endif

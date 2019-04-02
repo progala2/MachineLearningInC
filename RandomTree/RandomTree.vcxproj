@@ -151,12 +151,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Program.c" />
     <ClCompile Include="RandomTree.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RandomTreeLib\RandomTreeLib.vcxproj">
       <Project>{662d7810-cedb-4e32-8b3c-0784d5257f4e}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Program.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

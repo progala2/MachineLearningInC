@@ -5,9 +5,9 @@
 #include "utils.h"
 
 static double* ParseNextRow(const CharRow* row, const uint colLen, void_ptr_ref retClassName);  // NOLINT(misc-misplaced-const)
-char** ParseFirstRow(const CharRow* row, uint* colLen);
+static char** ParseFirstRow(const CharRow* row, uint* colLen);
 
-LearnData* LrnTryInitWithHeaders(const CharsTable* trainingTable, const CharsTable* testTable, uint* colLen)
+static LearnData* LrnTryInitWithHeaders(const CharsTable* trainingTable, const CharsTable* testTable, uint* colLen)
 {
 	if (trainingTable->VecBase.Size < 2 || testTable->VecBase.Size < 2)
 		return NULL;
@@ -39,7 +39,7 @@ LearnData* LrnTryInitWithHeaders(const CharsTable* trainingTable, const CharsTab
 	return lrnData;
 }
 
-double* ParseNextRowAndSetUpName(LrnClassTuple* classNameValue, StringVector* classVector, const CharRow* row, const uint colLen)
+static double* ParseNextRowAndSetUpName(LrnClassTuple* classNameValue, StringVector* classVector, const CharRow* row, const uint colLen)
 {
 	char* className = NULL;
 	uint foundId = 0;
@@ -93,7 +93,42 @@ LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTa
 	return lrnData;
 }
 
-char** ParseFirstRow(const CharRow* row, uint* colLen)
+void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const table)
+{
+	fprintf(stream, "%s, ", table->ClassName);
+	for (uint j = 0; j < table->ParametersCount; j++)
+	{
+		fprintf(stream, "%s, ", table->Headers[j]);
+	}
+	fprintf(stream, "\n");
+	const uint parametersCountMinOne = table->ParametersCount - 1;
+	for (uint i = 0; i < table->RowsCount; i++)
+	{
+		fprintf(stream, "%d, ", table->ClassesColumn[i].Value);
+		for (uint j = 0; j < parametersCountMinOne; j++)
+		{
+			fprintf(stream, "%lf, ", table->Parameters[j].Rows[i]);
+		}
+		fprintf(stream, "%lf\n", table->Parameters[parametersCountMinOne].Rows[i]);
+	}
+	fprintf(stream, "TestData: \n");
+	for (uint i = 0; i < table->TestData.RowsCount; i++)
+	{
+		fprintf(stream, "%d, ", table->TestData.ClassesColumn[i].Value);
+		for (uint j = 0; j < parametersCountMinOne; j++)
+		{
+			fprintf(stream, "%lf, ", table->TestData.Parameters[j][i]);
+		}
+		fprintf(stream, "%lf\n", table->TestData.Parameters[parametersCountMinOne][i]);
+	}
+}
+
+void LrnPrintTestAndTrainingData(const LearnData* const table)
+{
+	LrnPrintTestAndTrainingData_F(stdout, table);
+}
+
+static char** ParseFirstRow(const CharRow* row, uint* colLen)
 {
 	const char s[2] = ",";
 	char*context;
@@ -113,7 +148,7 @@ char** ParseFirstRow(const CharRow* row, uint* colLen)
 	return ret;
 }
 
-double* ParseNextRow(const CharRow* row, const uint colLen, void_ptr_ref retClassName)  // NOLINT(misc-misplaced-const)
+static double* ParseNextRow(const CharRow* row, const uint colLen, void_ptr_ref retClassName)  // NOLINT(misc-misplaced-const)
 {
 	const char s[2] = ",";
 	char *endPrt, *context;

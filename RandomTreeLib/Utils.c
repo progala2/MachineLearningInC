@@ -14,7 +14,7 @@ void FreeN(void_ptr_ref ptr)  // NOLINT
 	if (*ptr == NULL)
 		return;
 	free(*ptr);
-	(*ptr) = NULL;
+	*ptr = NULL;
 }
 
 char* MemCopyCharsNoEnter(const char* source)

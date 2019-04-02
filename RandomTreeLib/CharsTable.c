@@ -52,16 +52,20 @@ CharsTable* TReadFile(FILE* input, const unsigned int bufferLen)
 	return table;
 }
 
-void TFreeMemory(CharsTable *vector, const bool removeRows)
+void TFreeMemory(CharsTable** vector, const bool removeRows)
 {
+	if (*vector == NULL)
+		return;
+
 	if (removeRows)
 	{
-		for (uint i = 0; i < vector->VecBase.Size; ++i)
+		for (uint i = 0; i < (*vector)->VecBase.Size; ++i)
 		{
-			CrFreeMemory(vector->Table[i]);
-			free(vector->Table[i]);
+			CrFreeMemory((*vector)->Table[i]);
+			free((*vector)->Table[i]);
 		}
 	}
-	free(vector->Table);
-	vector->Table = NULL;
+	free((*vector)->Table);
+	free(*vector);
+	*vector = NULL;
 }

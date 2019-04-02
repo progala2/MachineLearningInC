@@ -36,16 +36,17 @@ namespace UnitTests
 
 			FILE* fp;
 			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "r");
-			const auto table = TReadFile(fp, 5);
+			auto table = TReadFile(fp, 5);
 			fclose(fp);
 
 			fopen_s(&fp, "ReadCsvFile_ReturnsTable2.txt", "r");
-			const auto table2 = TReadFile(fp, 5);
+			auto table2 = TReadFile(fp, 5);
 			fclose(fp);
 
 			auto csvTable = LrnReadData(table, table2);
 
-			TFreeMemory(table, true);
+			TFreeMemory(&table, true);
+			TFreeMemory(&table2, true);
 			Assert::AreEqual("class", csvTable->ClassName);
 			Assert::IsNotNull(csvTable->Classes);
 			Assert::AreEqual(3u, csvTable->Classes->VecBase.Size, L"Classes count is wrong.");
@@ -84,7 +85,7 @@ namespace UnitTests
 			fclose(fp);
 
 			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "r");
-			const auto table = TReadFile(fp, 5);
+			auto table = TReadFile(fp, 5);
 			fclose(fp);
 
 			for (auto i = 0; i < linesNr; ++i)
@@ -94,7 +95,7 @@ namespace UnitTests
 			}
 			free(lines);
 
-			TFreeMemory(table, true);
+			TFreeMemory(&table, true);
 		}
 
 	};

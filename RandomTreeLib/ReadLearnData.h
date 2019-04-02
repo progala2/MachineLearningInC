@@ -5,4 +5,7 @@
 
 LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTable);
 
+void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const table);
+
+void LrnPrintTestAndTrainingData(const LearnData* const table);
 #endif

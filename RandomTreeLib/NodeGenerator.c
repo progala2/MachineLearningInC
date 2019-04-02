@@ -11,7 +11,7 @@ double CalculateEntropy(const unsigned countByClass[], const size_t classCount, 
 	{
 		const double p = (double)countByClass[i] / elemCount;
 
-		DbgPrint(("p: %f\n", p));
+		DBG_PRINT(("p: %f\n", p))
 		entropy -= p == 0 ? 0 : p * log2(p);
 	}
 	return entropy;
@@ -36,10 +36,10 @@ Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, c
 	for (uint i = 0; i < configs->MaxFeaturesPerNode; ++i)
 	{
 		v[i] = values[rand() % size];
-		DbgPrint(("0: %f \n", v[i]));
+		DBG_PRINT(("0: %f \n", v[i]));
 	}
 
-	DbgPrint(("entropy: %f\n", entropy));
+	DBG_PRINT(("entropy: %f\n", entropy));
 	double newEntropy = entropy + 1;
 	size_t bestI = 0;
 
@@ -75,7 +75,7 @@ Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, c
 		const double entropy1 = CalculateEntropy(countByClass1, classCount, size1);
 		const double entropy2 = CalculateEntropy(countByClass2, classCount, size2);
 		const double tmpEntropy = (size1*entropy1 + size2 * entropy2) / size;
-		DbgPrint(("new entropy: %f, e1: %f e2:%f\n", tmpEntropy, entropy1, entropy2));
+		DBG_PRINT(("new entropy: %f, e1: %f e2:%f\n", tmpEntropy, entropy1, entropy2));
 		if (tmpEntropy < newEntropy)
 		{
 			entropyB1 = entropy1;
@@ -87,7 +87,7 @@ Root* NdGenerateTree(const RtConfigs* const configs, const int parameterIndex, c
 				probabilityB1[j] = (double)countByClass1[j] / countByClass[j];
 				probabilityB2[j] = (double)countByClass2[j] / countByClass[j];
 
-				DbgPrint(("Probability %d: B1: %f B2:%f\n", j, probabilityB1[j], probabilityB2[j]));
+				DBG_PRINT(("Probability %d: B1: %f B2:%f\n", j, probabilityB1[j], probabilityB2[j]));
 			}
 		}
 	}
