@@ -56,6 +56,8 @@ void LrnNormalize(LearnData * table)
 		for (uint i = 0; i < table->RowsCount; ++i)
 		{
 			table->Parameters[j].Rows[i] = (table->Parameters[j].Rows[i] - table->Parameters[j].MinValue)/range;
+			if (i < table->TestData.RowsCount)
+				table->TestData.Parameters[j][i] = (table->TestData.Parameters[j][i] - table->Parameters[j].MinValue)/range;
 		}
 	}
 	table->Normalized = true;

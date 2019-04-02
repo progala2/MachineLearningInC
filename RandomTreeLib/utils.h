@@ -32,7 +32,7 @@ inline char* MemCopyChars(const char* source)
 char* MemCopyCharsNoEnter(const char* source);
 
 #ifdef _DEBUG
-#define DbgPrint(x) printf x
+#define DbgPrint(x) printf(strrchr("\\#"__FILE__ ":" XSTRIFY(__LINE__)" DBG: ", '\\') + 1);printf x
 #else
 #define DbgPrint(x) /*nothing*/
 #endif

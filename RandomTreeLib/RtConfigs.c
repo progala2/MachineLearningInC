@@ -30,7 +30,7 @@ RtConfigs* RtReadConfig(FILE* fp)
 		return NULL;
 
 	char buffer[BUFFER_LEN] = { 0 };
-	if (sscanf_s(table->Table[0]->Data, STRIFY(CFG_FLD_TRAINING_FILE_NAME)"=%254s", buffer, (uint)BUFFER_LEN) < 1)
+	if (sscanf_s(table->Table[0]->Data, XSTRIFY(CFG_FLD_TRAINING_FILE_NAME)"=%254s", buffer, (uint)BUFFER_LEN) < 1)
 		return NULL;
 
 	RtConfigs* configs = malloc(sizeof(RtConfigs));
