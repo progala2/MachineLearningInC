@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "../RandomTreeLib/Node.h"
 #include "../RandomTreeLib/NodeGenerator.h"
+#include "../RandomTreeLib/Forest.h"
 
 #define BUFFER_LEN 255u
 #define COMMANDS_LEN 5u
@@ -160,13 +161,10 @@ PRG_FLD_RDR_F(PRG_HELP_CMD)
 
 PRG_FLD_RDR_F(PRG_RUN_CMD)
 {
-	Root** forest = NdGenerateForest(program->Configs, program->LearnData);
-	ConfMatrix* matrix = NdCalculateOnTestData((const Root**)forest, program->LearnData, program->Configs->TreeCount);
+	Forest* forest = FrstGenerateForest(program->Configs, program->LearnData);
+	ConfMatrix* matrix = FrstCalculateOnTestData(forest, program->LearnData);
 	CmPrint(matrix);
-	for (uint i = 0; i < program->Configs->TreeCount; ++i)
-	{
-		TreeFree(&forest[i]);
-	}
+	FrstFree(&forest);
 	CmFree(&matrix);
 	return true;
 }

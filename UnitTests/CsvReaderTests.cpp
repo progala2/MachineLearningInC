@@ -58,10 +58,10 @@ namespace UnitTests
 					if (csvTable->Classes->Table[j] == csvTable->ClassesColumn[i].Name)
 						Assert::IsTrue(csvTable->ClassesColumn[i].Value == j, L"Wrong class value");
 				}
-				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Rows[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Rows[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Rows[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Rows[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Column[i]) < 0.00000001);
+				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Column[i]) < 0.00000001);
 				
 			}
 			LrnFreeMemory(&csvTable);

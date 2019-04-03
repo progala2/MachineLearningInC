@@ -37,3 +37,5 @@ char* MemCopyCharsNoEnter(const char* source);
 #define DBG_PRINT(x) /*nothing*/
 #endif
 #endif
+
+#define _FreeN(ptr_ref) FreeN((void_ptr_ref)ptr_ref)

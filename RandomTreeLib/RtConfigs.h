@@ -10,12 +10,14 @@
 #define CFG_FLD_OUTPUT_FOLDER OutputFolder 
 #define CFG_FLD_TREE_COUNT TreeCount 
 #define CFG_FLD_MAX_FEATURES_PER_NODE MaxFeaturesPerNode 
+#define CFG_FLD_MAX_DEEPNESS MaxDeepness 
 #define CFG_FLD_CROSS_VALIDATION_COUNT CrossValidationCount 
 #define CFG_FLD_CV_TYPE CvType 
 
 #define CFG_OUTPUT_FOLDER ""
 #define CFG_TREE_COUNT 30
 #define CFG_MAX_FEATURE_PER_NODE 3
+#define CFG_MAX_DEEPNESS 1
 #define CFG_CROSS_VALIDATION_COUNT 0
 #define CFG_CV_TYPE Cv_None
 #define CFG_TEST_FILE_NAME NULL
@@ -39,6 +41,7 @@ struct RtConfigs
 	uint CFG_FLD_TREE_COUNT;
 	uint CFG_FLD_MAX_FEATURES_PER_NODE;
 	uint CFG_FLD_CROSS_VALIDATION_COUNT;
+	uint CFG_FLD_MAX_DEEPNESS;
 	CrossValType CFG_FLD_CV_TYPE;
 };
 
@@ -59,11 +62,7 @@ void RtFreeMemory(RtConfigs**const input);
 
 #define RT_FLD_RDR_P(param) RT_FLD_RDR_F(param)
 #define RT_FLD_RDR_F(param) bool RT_FLD_RDR_NAME(param)(RtConfigs * config, const char* confStr)
-#define RT_FLD_RDR_F_INT(param) inline bool RT_FLD_RDR_NAME(param)(RtConfigs * config, const char* confStr)\
-	{\
-		config->param = strtol(confStr, NULL, 10);\
-		return true;\
-	}
+
 #define RT_FLD_RDR_F_CHAR(param) inline bool RT_FLD_RDR_NAME(param)(RtConfigs * config, const char* confStr)\
 	{\
 		config->param = MemCopyChars(confStr);\
@@ -97,17 +96,15 @@ void RtFreeMemory(RtConfigs**const input);
 #define RT_FLD_READER_GETTER_P_CHAR_CHAR(param) \
 	RT_FLD_RDR_F_CHAR(param)\
 	RT_FLD_GET_F_CHAR(param)
-#define RT_FLD_READER_GETTER_P_INT_INT(param) \
-	RT_FLD_RDR_F_INT(param)\
-	RT_FLD_GET_F_INT(param)
 #define RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(param, mx, mn, type) \
 	RT_FLD_RDR_F_INT_MAX_MIN(param, mx, mn, type)\
 	RT_FLD_GET_F_INT(param)
 
 RT_FLD_READER_GETTER_P_CHAR_CHAR(CFG_FLD_TRAINING_FILE_NAME)
 RT_FLD_READER_GETTER_P_CHAR_CHAR(CFG_FLD_TEST_FILE_NAME)
-RT_FLD_READER_GETTER_P_INT_INT(CFG_FLD_TREE_COUNT)
-RT_FLD_READER_GETTER_P_INT_INT(CFG_FLD_MAX_FEATURES_PER_NODE)
+RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_TREE_COUNT, 1, INT_MAX, uint)
+RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_MAX_FEATURES_PER_NODE, 1, INT_MAX, uint)
+RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_MAX_DEEPNESS, CFG_MAX_DEEPNESS, INT_MAX, uint)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_CV_TYPE, CV_Max, Cv_Min, CrossValType)
 RT_FLD_READER_GETTER_P_CHAR_CHAR(CFG_FLD_OUTPUT_FOLDER)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_CROSS_VALIDATION_COUNT, 10, 2, uint)

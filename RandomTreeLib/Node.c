@@ -16,12 +16,12 @@ Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const 
 	return nd;
 }
 
-Root* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator,
+Tree* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator,
                    Node* left, Node* right)
 {
 	if (left == right || left == NULL || right == NULL)
 		return NULL;
-	Root* nd = malloc(sizeof(Root));	
+	Tree* nd = malloc(sizeof(Tree));	
 	nd->Left = left;
 	nd->Right = right;
 	nd->ParameterIndex = parameterIndex;
@@ -29,12 +29,17 @@ Root* TreeCreateRoot(const int parameterIndex, const double parameterValueSepara
 	return  nd;
 }
 
-bool TreeIsWeakLeaf(const Node*const nd)
+/**
+ * \brief Check whether it has no children nodes.
+ * \param nd Tree's Node.
+ * \return True if has not children.
+ */
+bool TreeIsLeaf(const Node*const nd)
 {
 	return nd->Left == nd->Right && nd->Right == NULL;
 }
 
-bool TreeIsLeaf(const Node*const nd)
+bool TreeIsFullLeaf(const Node*const nd)
 {
 	return nd->Entropy == 1;
 }
@@ -46,16 +51,14 @@ void TreeFreeNd(Node**const nd)
 	TreeFreeNd(&(*nd)->Left);
 	TreeFreeNd(&(*nd)->Right);
 	free((*nd)->ClassesProbability);
-	free(*nd);
-	*nd = NULL;
+	_FreeN(nd);
 }
 
-void TreeFree(Root** const nd)
+void TrFree(Tree** const nd)
 {
 	if (*nd == NULL)
 		return;
 	TreeFreeNd(&(*nd)->Left);
 	TreeFreeNd(&(*nd)->Right);
-	free(*nd);
-	*nd = NULL;
+	_FreeN(nd);
 }

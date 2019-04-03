@@ -13,15 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Vectors">
+      <UniqueIdentifier>{430a67c2-27a7-40fd-88ac-54a318a21d3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Vectors">
+      <UniqueIdentifier>{4ad875b1-7a40-4d6e-9f7b-06badbbbe13b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CharRow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CharsTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils.h">
@@ -33,27 +33,30 @@
     <ClInclude Include="ConfMatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VecBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StringVector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ReadLearnData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LearnData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Forest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CharRow.h">
+      <Filter>Header Files\Vectors</Filter>
+    </ClInclude>
+    <ClInclude Include="VecBase.h">
+      <Filter>Header Files\Vectors</Filter>
+    </ClInclude>
+    <ClInclude Include="StringVector.h">
+      <Filter>Header Files\Vectors</Filter>
+    </ClInclude>
+    <ClInclude Include="CharsTable.h">
+      <Filter>Header Files\Vectors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Node.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CharRow.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CharsTable.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RtConfigs.c">
@@ -71,17 +74,26 @@
     <ClCompile Include="ConfMatric.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VecBase.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StringVector.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ReadLearnData.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LearnData.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Forest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VecBase.c">
+      <Filter>Source Files\Vectors</Filter>
+    </ClCompile>
+    <ClCompile Include="StringVector.c">
+      <Filter>Source Files\Vectors</Filter>
+    </ClCompile>
+    <ClCompile Include="CharRow.c">
+      <Filter>Source Files\Vectors</Filter>
+    </ClCompile>
+    <ClCompile Include="CharsTable.c">
+      <Filter>Source Files\Vectors</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Forest.h" />
     <ClInclude Include="StringVector.h" />
     <ClInclude Include="ConfMatrix.h" />
     <ClInclude Include="LearnData.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="ReadLearnData.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VecBase.h" />
+    <ClCompile Include="Forest.c" />
     <ClCompile Include="NodeGenerator.h" />
   </ItemGroup>
   <ItemGroup>

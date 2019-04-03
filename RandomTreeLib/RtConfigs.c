@@ -3,7 +3,7 @@
 #include "CharsTable.h"
 
 #define BUFFER_LEN 255u
-#define CONFIGS_READER_LEN 7u
+#define CONFIGS_READER_LEN 8u
 #define S_SCAN_F_EQ_1(format, fieldName) if (strcat_s(format, BUFFER_LEN, fieldName) == 0 && strcat_s(format, BUFFER_LEN, "=%254s") == 0 && sscanf_s(table->Table[i]->Data, format, buffer, (uint)BUFFER_LEN) == 1)
 #define RT_RDR_TUPLE(param, editable)  {XSTRIFY(param), RT_FLD_RDR_NAME(param), RT_FLD_GET_NAME(param), editable}
 
@@ -15,6 +15,7 @@ static const RtReadFunctions configs_readers[CONFIGS_READER_LEN] = {
 	RT_RDR_TUPLE(CFG_FLD_OUTPUT_FOLDER, true),
 	RT_RDR_TUPLE(CFG_FLD_CROSS_VALIDATION_COUNT, true),
 	RT_RDR_TUPLE(CFG_FLD_TREE_COUNT, true),
+	RT_RDR_TUPLE(CFG_FLD_MAX_DEEPNESS, true)
 };
 
 static void RtSetUpPropertyFromString_ReadOnly(RtConfigs*const configs, const char* str, const bool editReadOnly);
@@ -91,5 +92,5 @@ void RtFreeMemory(RtConfigs**const input)
 	FreeN(&(*input)->TrainingFileName);
 	FreeN(&(*input)->TestFileName);
 	FreeN(&(*input)->OutputFolder);
-	FreeN((void_tab_ptr)input);
+	_FreeN(input);
 }

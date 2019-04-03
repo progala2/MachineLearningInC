@@ -20,18 +20,18 @@ typedef struct
 	Node* Right;
 	int ParameterIndex;
 	double ParameterValueSeparator;
-} Root;
+} Tree;
 
 Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy);
 
-Root* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator, Node* left, Node* right);
-
-bool TreeIsWeakLeaf(const Node*const nd);
+Tree* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator, Node* left, Node* right);
 
 bool TreeIsLeaf(const Node*const nd);
 
+bool TreeIsFullLeaf(const Node*const nd);
+
 void TreeFreeNd(Node**const nd);
 
-void TreeFree(Root**const nd);
+void TrFree(Tree**const nd);
 
 #endif

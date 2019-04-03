@@ -5,7 +5,7 @@
 
 typedef struct
 {
-	double* Rows;
+	double* Column;
 	double MaxValue;
 	double MinValue;
 } ParameterColumn;
