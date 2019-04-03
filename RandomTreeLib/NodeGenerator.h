@@ -4,5 +4,5 @@
 #include "RtConfigs.h"
 #include "LearnData.h"
 
-Tree* NdGenerateTree(const RtConfigs* const configs, const uint parametersCount, const ParameterColumn* values, const LrnClassTuple* classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount);
+Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, const LrnClassTuple* classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount);
 #endif

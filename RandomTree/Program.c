@@ -114,6 +114,7 @@ Program* PrgLoadData()
 	}
 	Program* program = malloc(sizeof(Program));
 	program->Configs = configs;
+	_glConfigs = configs;
 	program->LearnData = lrnData;
 	return program;
 }
@@ -161,7 +162,7 @@ PRG_FLD_RDR_F(PRG_HELP_CMD)
 
 PRG_FLD_RDR_F(PRG_RUN_CMD)
 {
-	Forest* forest = FrstGenerateForest(program->Configs, program->LearnData);
+	Forest* forest = FrstGenerateForest(program->LearnData);
 	ConfMatrix* matrix = FrstCalculateOnTestData(forest, program->LearnData);
 	CmPrint(matrix);
 	FrstFree(&forest);

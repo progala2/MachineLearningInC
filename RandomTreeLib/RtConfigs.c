@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "CharsTable.h"
 
+const RtConfigs* _glConfigs = NULL;
+
 #define BUFFER_LEN 255u
 #define CONFIGS_READER_LEN 8u
 #define S_SCAN_F_EQ_1(format, fieldName) if (strcat_s(format, BUFFER_LEN, fieldName) == 0 && strcat_s(format, BUFFER_LEN, "=%254s") == 0 && sscanf_s(table->Table[i]->Data, format, buffer, (uint)BUFFER_LEN) == 1)

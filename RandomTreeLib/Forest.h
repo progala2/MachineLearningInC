@@ -3,7 +3,6 @@
 #include "Node.h"
 #include "utils.h"
 #include "ReadLearnData.h"
-#include "RtConfigs.h"
 #include "ConfMatrix.h"
 
 typedef struct
@@ -13,7 +12,7 @@ typedef struct
 } Forest;
 
 ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData* const table);
-Forest* FrstGenerateForest(const RtConfigs* const configs, const LearnData* const table);
-void FrstFree(Forest** forest);
+Forest* FrstGenerateForest(const LearnData* const table);
+void FrstFree(Forest**const forest);
 
 #endif

@@ -60,17 +60,17 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 	return matrix;
 }
 
-Forest* FrstGenerateForest(const RtConfigs* const configs, const LearnData* const table)
+Forest* FrstGenerateForest(const LearnData* const table)
 {
-	Tree** trees = malloc(sizeof(Tree*) * configs->TreeCount);
+	Tree** trees = malloc(sizeof(Tree*) * _glConfigs->TreeCount);
 	uint* countByClass = CountByClass(table->ClassesColumn, table->RowsCount, table->Classes->VecBase.Size);
-	for (uint i = 0; i < configs->TreeCount; ++i)
+	for (uint i = 0; i < _glConfigs->TreeCount; ++i)
 	{
-		trees[i] = NdGenerateTree(configs, table->ParametersCount, table->Parameters, table->ClassesColumn, table->RowsCount, countByClass, table->Classes->VecBase.Size);
+		trees[i] = NdGenerateTree(table->ParametersCount, table->Parameters, table->ClassesColumn, table->RowsCount, countByClass, table->Classes->VecBase.Size);
 	}
 	free(countByClass);
 	Forest* forest = malloc(sizeof(Forest));
-	forest->TreesCount = configs->TreeCount;
+	forest->TreesCount = _glConfigs->TreeCount;
 	forest->Trees = trees;
 	return forest;
 }
