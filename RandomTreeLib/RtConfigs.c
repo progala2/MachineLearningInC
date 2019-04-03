@@ -3,8 +3,8 @@
 #include "CharsTable.h"
 
 #define BUFFER_LEN 255u
-#define S_SCAN_F_EQ_1(fieldName) if (sscanf_s(table->Table[i]->Data, XSTRIFY(fieldName)"=%254s", buffer, (uint)BUFFER_LEN) == 1)
-#define RT_RDR_TUPLE(param)  {XSTRIFY(CFG_FLD_TRAINING_FILE_NAME), RT_FLD_RDR_NAME(param)}
+#define S_SCAN_F_EQ_1(format, fieldName) if (strcat_s(format, BUFFER_LEN, fieldName) == 0 && strcat_s(format, BUFFER_LEN, "=%254s") == 0 && sscanf_s(table->Table[i]->Data, format, buffer, (uint)BUFFER_LEN) == 1)
+#define RT_RDR_TUPLE(param)  {XSTRIFY(param), RT_FLD_RDR_NAME(param)}
 
 static const RtReadFunctions configs_readers[] = {
 	RT_RDR_TUPLE(CFG_FLD_TRAINING_FILE_NAME),
@@ -75,6 +75,7 @@ RtConfigs* RtReadConfig(FILE* fp)
 		return NULL;
 
 	char buffer[BUFFER_LEN] = { 0 };
+	char formatBuffer[BUFFER_LEN] = { 0 };
 	if (sscanf_s(table->Table[0]->Data, XSTRIFY(CFG_FLD_TRAINING_FILE_NAME)"=%254s", buffer, BUFFER_LEN) < 1)
 		return NULL;
 
@@ -92,7 +93,8 @@ RtConfigs* RtReadConfig(FILE* fp)
 	{
 		for(uint j = 0; j < configTableSize; ++j)
 		{
-			S_SCAN_F_EQ_1(configs_readers[j].ConfigName)
+			formatBuffer[0] = 0;
+			S_SCAN_F_EQ_1(formatBuffer, configs_readers[j].ConfigName)
 			{
 				if (configs_readers[j].ConfigReader(configs, buffer) == false)
 					DBG_PRINT(("Something Wrong with %s. Not Loaded.", configs_readers[j].ConfigName));

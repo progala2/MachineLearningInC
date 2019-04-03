@@ -51,5 +51,5 @@ void CmFree(ConfMatrix**const matrix)
 	FreeTab((void_tab_ptr)(*matrix)->TableData, (*matrix)->N);
 	free((*matrix)->ClassNames);
 	free(*matrix);
-	(*matrix) = NULL;
+	*matrix = NULL;
 }
