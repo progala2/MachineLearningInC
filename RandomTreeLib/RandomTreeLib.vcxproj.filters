@@ -27,9 +27,6 @@
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CsvTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RtConfigs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,6 +42,9 @@
     <ClInclude Include="ReadLearnData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LearnData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Node.c">
@@ -54,9 +54,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CharsTable.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CsvTable.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RtConfigs.c">
@@ -81,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ReadLearnData.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LearnData.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

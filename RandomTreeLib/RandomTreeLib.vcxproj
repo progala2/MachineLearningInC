@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="StringVector.h" />
     <ClInclude Include="ConfMatrix.h" />
-    <ClInclude Include="CsvTable.h" />
+    <ClInclude Include="LearnData.h" />
     <ClInclude Include="RtConfigs.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="CharRow.h" />
@@ -34,7 +34,7 @@
   <ItemGroup>
     <ClCompile Include="StringVector.c" />
     <ClCompile Include="ConfMatric.c" />
-    <ClCompile Include="CsvTable.c" />
+    <ClCompile Include="LearnData.c" />
     <ClCompile Include="Node.c" />
     <ClCompile Include="CharRow.c" />
     <ClCompile Include="CharsTable.c" />

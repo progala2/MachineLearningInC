@@ -1,7 +1,6 @@
 #ifndef CsvTable_H_INCLUDE_GUARD
 #define CsvTable_H_INCLUDE_GUARD
 #include "utils.h"
-#include <stdbool.h>
 #include "StringVector.h"
 
 typedef struct

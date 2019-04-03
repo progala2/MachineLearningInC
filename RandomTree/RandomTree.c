@@ -13,5 +13,7 @@ int main()
 	srand((unsigned)__TIME__);
 	if ((program = PrgLoadData()) == NULL)
 		return -1;
-	return PrgMenuLoop(program) ? 0: -1;
+	PrgMenuLoop(program);
+	PrgFree(&program);
+	return 0;
 }

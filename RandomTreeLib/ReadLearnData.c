@@ -104,7 +104,7 @@ void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const ta
 	const uint parametersCountMinOne = table->ParametersCount - 1;
 	for (uint i = 0; i < table->RowsCount; i++)
 	{
-		fprintf(stream, "%d, ", table->ClassesColumn[i].Value);
+		fprintf(stream, "%s, ", table->ClassesColumn[i].Name);
 		for (uint j = 0; j < parametersCountMinOne; j++)
 		{
 			fprintf(stream, "%lf, ", table->Parameters[j].Rows[i]);
@@ -114,7 +114,7 @@ void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const ta
 	fprintf(stream, "TestData: \n");
 	for (uint i = 0; i < table->TestData.RowsCount; i++)
 	{
-		fprintf(stream, "%d, ", table->TestData.ClassesColumn[i].Value);
+		fprintf(stream, "%s, ", table->TestData.ClassesColumn[i].Name);
 		for (uint j = 0; j < parametersCountMinOne; j++)
 		{
 			fprintf(stream, "%lf, ", table->TestData.Parameters[j][i]);

@@ -29,7 +29,7 @@ namespace UnitTests
 
 			fopen_s(&fp,fileNameConfig, "r");
 			
-			auto config = RtReadConfig(fp);
+			auto config = RtReadConfigFromFile(fp);
 			fclose(fp);
 			
 			Assert::AreEqual("RtReadConfig_ReturnsConfigs.txt", config->TrainingFileName);
