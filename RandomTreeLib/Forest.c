@@ -2,17 +2,6 @@
 #include "NodeGenerator.h"
 
 
-unsigned* CountByClass(const LrnClassTuple* classesColumn, const size_t size, const size_t classesCount)
-{
-	uint* countByClass = calloc(classesCount, sizeof(uint));
-
-	for (size_t i = 0; i < size; ++i)
-	{
-		countByClass[classesColumn[i].Value]++;
-	}
-	return countByClass;
-}
-
 void CalculateTreeDecision(double**const predictionSumPerClass, const double itemValue, const double valueSeparator, const Node* const left, const Node* const right, const uint classesCount)
 {
 	const Node* nd = itemValue <= valueSeparator ? left : right;
@@ -34,9 +23,12 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 {
 	const uint rowsCount = table->TestData.RowsCount;
 	const uint classesCount = table->Classes->VecBase.Size;
-	int* actual = malloc(sizeof(int)*rowsCount);
-	int* predicted = malloc(sizeof(int)*rowsCount);
-	double* predictionSumPerClass = malloc(sizeof(double)*classesCount);
+	if (rowsCount == 0 || classesCount < 2)
+		return NULL;
+
+	int* _malloc(sizeof(int)*rowsCount, actual);
+	int* _malloc(sizeof(int)*rowsCount, predicted);
+	double* _malloc(sizeof(double)*classesCount, predictionSumPerClass);
 	for (uint i = 0; i < rowsCount; ++i)
 	{
 		actual[i] = table->TestData.ClassesColumn[i].Value;
@@ -62,8 +54,8 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 
 Forest* FrstGenerateForest(const LearnData* const table)
 {
-	Tree** trees = malloc(sizeof(Tree*) * _glConfigs->TreeCount);
-	uint* countByClass = CountByClass(table->ClassesColumn, table->RowsCount, table->Classes->VecBase.Size);
+	Tree** _malloc(sizeof(Tree*) * _glConfigs->TreeCount, trees);
+	uint* countByClass = LrnCountByClass(table->ClassesColumn, table->RowsCount, table->Classes->VecBase.Size);
 	for (uint i = 0; i < _glConfigs->TreeCount; ++i)
 	{
 		trees[i] = NdGenerateTree(table->ParametersCount, table->Parameters, table->ClassesColumn, table->RowsCount, countByClass, table->Classes->VecBase.Size);

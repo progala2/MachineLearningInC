@@ -2,7 +2,7 @@
 #define Node_H_INCLUDE_GUARD
 
 #include <stdbool.h>
-#include <stdlib.h>
+#include "utils.h"
 
 typedef struct Node
 {
@@ -12,6 +12,7 @@ typedef struct Node
 	double ParameterValueSeparator;
 	double Entropy;
 	double* ClassesProbability;
+	uint ElementsCount;
 } Node;
 
 typedef struct

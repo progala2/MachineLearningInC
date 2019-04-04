@@ -33,7 +33,10 @@ void VecResizeRange(VecBase* vector, const size_t len)
 			vector->Capacity *= 2;
 		} while (vector->Size + len >= vector->Capacity);
 
-		*vector->Array = realloc(*vector->Array, vector->TypeSize * vector->Capacity);
+		void* ptrTemp = NULL;
+		while ((ptrTemp = realloc(*vector->Array, vector->TypeSize * vector->Capacity)) == NULL);
+
+		*vector->Array = ptrTemp;
 	}
 	
 }

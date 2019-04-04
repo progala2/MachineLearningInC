@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "RtConfigs.h"
+#include "DoubleVector.h"
 
 double CalculateEntropy(const unsigned countByClass[], const size_t classCount, const size_t total)
 {
@@ -10,16 +11,14 @@ double CalculateEntropy(const unsigned countByClass[], const size_t classCount, 
 	for (size_t i = 0; i < classCount; ++i)
 	{
 		const double p = (double)countByClass[i] / total;
-
-		DBG_PRINT("p: %f\n", p)
-			entropy -= p == 0 ? 0 : p * log2(p);
+		entropy -= p == 0 ? 0 : p * log2(p);
 	}
 	return entropy;
 }
 
 double CalculateSeparationValue(const double* const column, const size_t rowsCount)
 {
-	const uint halfCount = rowsCount/2;
+	const uint halfCount = rowsCount / 2;
 	return (column[rand() % halfCount] + column[halfCount + rand() % halfCount])*0.5;
 }
 
@@ -37,122 +36,107 @@ Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, 
 
 	DBG_PRINT("entropy: %f\n", entropy);
 
-	double* probabilityBLeft = calloc(classCount, sizeof(double));
-	double* probabilityBRight = calloc(classCount, sizeof(double));
+	DoubleVector* _malloc(sizeof(DoubleVector) * parametersCount, columnsLeft);
+	DoubleVector* _malloc(sizeof(DoubleVector) * parametersCount, columnsRight);
+	//TODO INT VECTOR
+	int* _malloc(sizeof(int) * rowsCount, classesLeft);
+	int* _malloc(sizeof(int) * rowsCount, classesRight);
+	double* _calloc(classCount, sizeof(double), probabilityLeft);
+	double* _calloc(classCount, sizeof(double), probabilityRight);
+	uint* _calloc(classCount, sizeof(uint), countByClassLeft);
+	uint* _calloc(classCount, sizeof(uint), countByClassRight);
 
-	uint* countByClassLeft = calloc(classCount, sizeof(uint));
-	uint* countByClassRight = calloc(classCount, sizeof(uint));
-	int deepness = 0;
-	size_t size1 = 0;
-	size_t size2 = 0;
 	memset(countByClassLeft, 0, sizeof(uint)*classCount);
 	memset(countByClassRight, 0, sizeof(uint)*classCount);
 	for (size_t j = 0; j < rowsCount; ++j)
 	{
 		if (values[parameterIndex].Column[j] <= v)
 		{
-			size1++;
+			for (size_t i = 0; i < parametersCount; i++)
+			{
+				DblVecAppend(&columnsLeft[i], values[i].Column[j]);
+			}
 			countByClassLeft[classesColumn[j].Value]++;
 		}
 		else
 		{
-			size2++;
+			for (size_t i = 0; i < parametersCount; i++)
+			{
+				DblVecAppend(&columnsRight[i], values[i].Column[j]);
+			}
 			countByClassRight[classesColumn[j].Value]++;
 		}
 	}
 
-	const double entropy1 = CalculateEntropy(countByClassLeft, classCount, size1);
-	const double entropy2 = CalculateEntropy(countByClassRight, classCount, size2);
+	const double entropy1 = CalculateEntropy(countByClassLeft, classCount, columnsLeft[0].VecBase.Size);
+	const double entropy2 = CalculateEntropy(countByClassRight, classCount, columnsRight[0].VecBase.Size);
 	DBG_PRINT("e1: %f e2:%f\n", entropy1, entropy2);
 
 	for (uint j = 0; j < classCount; ++j)
 	{
-		probabilityBLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
-		probabilityBRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
+		probabilityLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
+		probabilityRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
 
-		DBG_PRINT("Probability %d: B1: %f B2:%f\n", j, probabilityBLeft[j], probabilityBRight[j]);
+		DBG_PRINT("Probability %d: B1: %f B2:%f\n", j, probabilityLeft[j], probabilityRight[j]);
 	}
-	
-	Tree* node = TreeCreateRoot(parameterIndex, v, TreeCreateLeaf(probabilityBLeft, classCount, entropy1), TreeCreateLeaf(probabilityBRight, classCount, entropy2));
+
+	Tree* node = TreeCreateRoot(parameterIndex, v, TreeCreateLeaf(probabilityLeft, classCount, entropy1), TreeCreateLeaf(probabilityRight, classCount, entropy2));
+	NdSplitNode(node->Left, parametersCount, columnsLeft, NULL, columnsLeft[0].VecBase.Size, LrnCountByClass(classesColumn, rowsCount, classCount), classCount, 1);
 	//if (++deepness < configs->MaxDeepness &&)
-	
+
 	free(countByClassLeft);
 	free(countByClassRight);
-	free(probabilityBLeft);
-	free(probabilityBRight);
+	free(probabilityLeft);
+	free(probabilityRight);
 	return node;
 }
 
-void NdSplitNode(Node* node, const uint parametersCount, const double*const* values, const LrnClassTuple* classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount, const uint deepness)
+void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*const values, const int*const classesColumn, const size_t currentRowsCount, const unsigned countByClass[], const size_t classCount, const uint deepness)
 {
+	if (node-> ElementsCount < 2 || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0)
+		return;
+
 	const uint parameterIndex = rand() % parametersCount;
-	const double entropy = node->Entropy;
+	const double separatorValue = CalculateSeparationValue(values[parameterIndex].Data, currentRowsCount);
 
-	double* v = malloc(sizeof(double)*_glConfigs->MaxFeaturesPerNode);
-	for (uint i = 0; i < _glConfigs->MaxFeaturesPerNode; ++i)
+	double* _calloc(classCount, sizeof(double), probabilityLeft);
+	double* _calloc(classCount, sizeof(double), probabilityRight);
+	uint* _calloc(classCount, sizeof(uint), countByClassLeft);
+	uint* _calloc(classCount, sizeof(uint), countByClassRight);
+
+	size_t sizeLeft = 0;
+	size_t sizeRight = 0;
+	memset(countByClassLeft, 0, sizeof(uint)*classCount);
+	memset(countByClassRight, 0, sizeof(uint)*classCount);
+	for (size_t j = 0; j < currentRowsCount; ++j)
 	{
-		v[i] = values[parameterIndex][rand() % rowsCount];
-
+		if (values[parameterIndex].Data[j] <= separatorValue)
+		{
+			sizeLeft++;
+			countByClassLeft[classesColumn[j]]++;
+		}
+		else
+		{
+			sizeRight++;
+			countByClassRight[classesColumn[j]]++;
+		}
 	}
-
-	double newEntropy = entropy + 1;
-	size_t bestI = 0;
-
-	double* probabilityB1 = calloc(classCount, sizeof(double));
-	double* probabilityB2 = calloc(classCount, sizeof(double));
-
-	uint* countByClass1 = calloc(classCount, sizeof(uint));
-	uint* countByClassRight = calloc(classCount, sizeof(uint));
-	double entropyB1 = 0;
-	double entropyB2 = 0;
-	for (uint i = 0; i < _glConfigs->MaxFeaturesPerNode; ++i)
+	const double entropyLeft = CalculateEntropy(countByClassLeft, classCount, sizeLeft);
+	const double entropyRight = CalculateEntropy(countByClassRight, classCount, sizeRight);
+	for (uint j = 0; j < classCount; ++j)
 	{
-		size_t size1 = 0;
-		size_t size2 = 0;
-		memset(countByClass1, 0, sizeof(uint)*classCount);
-		memset(countByClassRight, 0, sizeof(uint)*classCount);
-		for (size_t j = 0; j < rowsCount; ++j)
-		{
-			if (values[parameterIndex][j] <= v[i])
-			{
-				size1++;
-				countByClass1[classesColumn[j].Value]++;
-			}
-			else
-			{
-				size2++;
-				countByClassRight[classesColumn[j].Value]++;
-			}
-		}
-		if (size1 == 0 || size2 == 0)
-			continue;
-
-		const double entropy1 = CalculateEntropy(countByClass1, classCount, size1);
-		const double entropy2 = CalculateEntropy(countByClassRight, classCount, size2);
-		const double tmpEntropy = (size1*entropy1 + size2 * entropy2) / rowsCount;
-		if (tmpEntropy < newEntropy)
-		{
-			entropyB1 = entropy1;
-			entropyB2 = entropy2;
-			newEntropy = tmpEntropy;
-			bestI = i;
-			for (uint j = 0; j < classCount; ++j)
-			{
-				probabilityB1[j] = (double)countByClass1[j] / countByClass[j];
-				probabilityB2[j] = (double)countByClassRight[j] / countByClass[j];
-			}
-		}
+		probabilityLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
+		probabilityRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
 	}
 
 	node->ParameterIndex = parameterIndex;
 	_FreeN(&node->ClassesProbability);
-	node->ParameterValueSeparator = v[bestI];
-	node->Left = TreeCreateLeaf(probabilityB1, classCount, entropyB1);
-	node->Right = TreeCreateLeaf(probabilityB2, classCount, entropyB2);
-	free(countByClass1);
+	node->ParameterValueSeparator = separatorValue;
+	node->Left = TreeCreateLeaf(probabilityLeft, classCount, entropyLeft);
+	node->Right = TreeCreateLeaf(probabilityRight, classCount, entropyRight);
+	free(countByClassLeft);
 	free(countByClassRight);
-	free(probabilityB1);
-	free(probabilityB2);
-	free(v);
+	free(probabilityLeft);
+	free(probabilityRight);
 }
 

@@ -15,6 +15,8 @@ void* MemCopyAlloc(const void* source, const size_t size);
 
 void FreeTab(void_tab_ptr tab, const size_t count);
 
+void* CreateTab(const size_t first, const size_t second, const size_t typeSize);
+
 void FreeTab_Func(void_tab_ptr tab, const size_t count, deleter_func deleter);
 
 void FreeN(void_ptr_ref ptr);  // NOLINT
@@ -43,3 +45,9 @@ char* MemCopyCharsNoEnter(const char* source);
 #endif
 
 #define _FreeN(ptr_ref) FreeN((void_ptr_ref)ptr_ref)
+
+#define NULLCHECK(func, vName) vName = func; if (vName == NULL) return NULL;
+
+#define _calloc(count, size, vName) NULLCHECK(calloc(count, size), vName)
+
+#define _malloc(size, vName) NULLCHECK(malloc(size), vName)

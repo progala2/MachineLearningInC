@@ -63,6 +63,17 @@ void LrnNormalize(LearnData * table)
 	table->Normalized = true;
 }
 
+unsigned* LrnCountByClass(const LrnClassTuple* classesColumn, const size_t size, const size_t classesCount)
+{
+	uint* _calloc(classesCount, sizeof(uint), countByClass);
+
+	for (size_t i = 0; i < size; ++i)
+	{
+		countByClass[classesColumn[i].Value]++;
+	}
+	return countByClass;
+}
+
 void LrnFreeMemory(LearnData** const tbl)
 {
 	LearnData* table = *tbl;

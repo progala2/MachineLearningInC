@@ -60,6 +60,9 @@
     <ClInclude Include="utils.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="DoubleVector.h">
+      <Filter>Header Files\Vectors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Node.c">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="Utils.c">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="DoubleVector.c">
+      <Filter>Source Files\Vectors</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
