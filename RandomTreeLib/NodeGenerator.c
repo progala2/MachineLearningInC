@@ -62,8 +62,9 @@ Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, 
 
 void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*const*const values, const IntVector*const classesColumn, const unsigned countByClass[], const size_t classCount, const uint deepness)
 {
-	if (node-> ElementsCount < 2 || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0 || parametersCount < 1)
+	if (node-> ElementsCount < _glConfigs->MinSplitCount || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0 || parametersCount < 1)
 		return;
+
 	const size_t rowsCount = classesColumn->VecBase.Size;
 	const uint parameterIndex = rand() % parametersCount;
 	const double separatorValue = CalculateSeparationValue(values[parameterIndex]->Data, rowsCount);
@@ -106,29 +107,38 @@ void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*cons
 		}
 	}
 
-	const double entropyLeft = CalculateEntropy(countByClassLeft, classCount, columnsLeft[0]->VecBase.Size);
-	const double entropyRight = CalculateEntropy(countByClassRight, classCount, columnsRight[0]->VecBase.Size);
-	DBG_PRINT("e1: %f e2:%f\n", entropyLeft, entropyRight);
-
-	for (uint j = 0; j < classCount; ++j)
+	if (columnsLeft[0]->VecBase.Size >= _glConfigs->MinElemsInLeaf && columnsRight[0]->VecBase.Size >= _glConfigs->MinElemsInLeaf)
 	{
-		probabilityLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
-		probabilityRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
+		const double entropyLeft = CalculateEntropy(countByClassLeft, classCount, columnsLeft[0]->VecBase.Size);
+		DBG_PRINT("e1: %f\n", entropyLeft);
 
-		DBG_PRINT("Probability %d: B1: %f B2:%f\n", j, probabilityLeft[j], probabilityRight[j]);
+		for (uint j = 0; j < classCount; ++j)
+		{
+			probabilityLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
+			probabilityRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
+
+			DBG_PRINT("Probability %d: B1: %f B2:%f\n", j, probabilityLeft[j], probabilityRight[j]);
+		}
+
+		node->ParameterIndex = parameterIndex;
+		_FreeN(&node->ClassesProbability);
+		node->ParameterValueSeparator = separatorValue;
+
+		node->Left = TreeCreateLeaf(probabilityLeft, classCount, entropyLeft, classesLeft->VecBase.Size);
+		NdSplitNode(node->Left, parametersCount, columnsLeft, classesLeft, countByClassLeft, classCount, deepness + 1);
 	}
-
-	node->ParameterIndex = parameterIndex;
-	_FreeN(&node->ClassesProbability);
-	node->ParameterValueSeparator = separatorValue;
 	
-	node->Left = TreeCreateLeaf(probabilityLeft, classCount, entropyLeft, classesLeft->VecBase.Size);
-	NdSplitNode(node->Left, parametersCount, columnsLeft, classesLeft, countByClassLeft, classCount, deepness + 1);
 	FreeDblVecTab(columnsLeft, parametersCount);
 	IntVecFreeMemory(&classesLeft);
-
-	node->Right = TreeCreateLeaf(probabilityRight, classCount, entropyRight, classesRight->VecBase.Size);
-	NdSplitNode(node->Right, parametersCount, columnsRight, classesRight, countByClassRight, classCount, deepness + 1);
+	
+	if (columnsLeft[0]->VecBase.Size >= _glConfigs->MinElemsInLeaf && columnsRight[0]->VecBase.Size >= _glConfigs->MinElemsInLeaf)
+	{
+		const double entropyRight = CalculateEntropy(countByClassRight, classCount, columnsRight[0]->VecBase.Size);
+		DBG_PRINT("e2: %f\n", entropyRight);
+		node->Right = TreeCreateLeaf(probabilityRight, classCount, entropyRight, classesRight->VecBase.Size);
+		NdSplitNode(node->Right, parametersCount, columnsRight, classesRight, countByClassRight, classCount, deepness + 1);
+	}
+	
 	FreeDblVecTab(columnsRight, parametersCount);
 	IntVecFreeMemory(&classesRight);
 	
