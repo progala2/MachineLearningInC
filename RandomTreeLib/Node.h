@@ -23,7 +23,7 @@ typedef struct
 	double ParameterValueSeparator;
 } Tree;
 
-Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy);
+Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount);
 
 Tree* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator, Node* left, Node* right);
 

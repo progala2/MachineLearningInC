@@ -52,7 +52,6 @@ Program* PrgLoadData()
 		if (fopen_s(&fp, configs->TrainingFileName, "r") < 0 || fp == NULL)
 		{
 			printf("Something wrong with your training csv file...\n");
-			fclose(fp);
 			RtFreeMemory(&configs);
 			continue;
 		}
@@ -77,7 +76,6 @@ Program* PrgLoadData()
 		if (fopen_s(&fp, configs->TestFileName, "r") < 0 || fp == NULL)
 		{
 			printf("Something wrong with your test csv file...\n");
-			fclose(fp);
 			RtFreeMemory(&configs);
 			continue;
 		}
@@ -94,6 +92,7 @@ Program* PrgLoadData()
 			continue;
 		}
 		TFreeMemory(&testCharsTable, true);
+		TFreeMemory(&charsTable, true);
 		fclose(fp);
 
 		break;
@@ -112,7 +111,7 @@ Program* PrgLoadData()
 		}
 		break;
 	}
-	Program* program = malloc(sizeof(Program));
+	Program* _malloc(sizeof(Program), program);
 	program->Configs = configs;
 	_glConfigs = configs;
 	program->LearnData = lrnData;
@@ -129,6 +128,8 @@ bool PrgMenuLoop(Program* program)
 
 		if (scanf_s("%254s", buffer, (size_t)BUFFER_LEN) == 0)
 			continue;
+
+		buffer[254] = 0;
 		for (uint i = 0; i < COMMANDS_LEN; ++i)
 		{
 			if (strcmp(buffer, _commands[i].Name) == 0)

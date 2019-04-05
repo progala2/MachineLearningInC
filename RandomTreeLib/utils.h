@@ -47,7 +47,10 @@ char* MemCopyCharsNoEnter(const char* source);
 #define _FreeN(ptr_ref) FreeN((void_ptr_ref)ptr_ref)
 
 #define NULLCHECK(func, vName) vName = func; if (vName == NULL) return NULL;
+#define NULLCHECK_V(func, vName) vName = func; if (vName == NULL) return;
 
 #define _calloc(count, size, vName) NULLCHECK(calloc(count, size), vName)
+#define _calloc_v(count, size, vName) NULLCHECK_V(calloc(count, size), vName)
 
 #define _malloc(size, vName) NULLCHECK(malloc(size), vName)
+#define _malloc_v(size, vName) NULLCHECK_V(malloc(size), vName)

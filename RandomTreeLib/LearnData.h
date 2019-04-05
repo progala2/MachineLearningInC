@@ -2,6 +2,7 @@
 #define CsvTable_H_INCLUDE_GUARD
 #include "utils.h"
 #include "StringVector.h"
+#include "DoubleVector.h"
 
 typedef struct
 {
@@ -12,15 +13,9 @@ typedef struct
 
 typedef struct
 {
-	int Value;
-	const char* Name;
-} LrnClassTuple;
-
-typedef struct
-{
 	uint RowsCount;
 	double** Parameters;
-	LrnClassTuple *ClassesColumn;
+	IntVector *ClassesColumn;
 } TestData;
 
 typedef struct
@@ -31,7 +26,7 @@ typedef struct
 	StringVector* Classes;
 	ParameterColumn* Parameters;
 	TestData TestData;
-	LrnClassTuple *ClassesColumn;
+	IntVector*ClassesColumn;
 	char* ClassName;
 	bool Normalized;
 } LearnData;
@@ -42,7 +37,7 @@ void LrnSetParameterColumn(LearnData* table, const uint i, const uint j, const d
 void LrnSetTestParameterColumn(LearnData* table, const uint i, const uint j, const double value);
 void LrnNormalize(LearnData* table);
 
-unsigned* LrnCountByClass(const LrnClassTuple* classesColumn, const size_t size, const size_t classesCount);
+unsigned* LrnCountByClass(const IntVector* classesColumn, const size_t size, const size_t classesCount);
 void LrnFreeMemory(LearnData** const tbl);
 
 #endif

@@ -7,7 +7,7 @@
 
 LearnData* LrnInit()
 {
-	LearnData* input = malloc(sizeof(LearnData));
+	LearnData* _malloc(sizeof(LearnData), input);
 	input->ClassName = NULL;
 	input->ClassesColumn = NULL;
 	input->TestData.ClassesColumn = NULL;
@@ -22,12 +22,15 @@ LearnData* LrnInit()
 
 void LrnInitParameters(LearnData* table, const uint parLen)
 {
-	table->Parameters = malloc(sizeof(ParameterColumn)*parLen);
-	table->TestData.Parameters = malloc(sizeof(double*)*parLen);
+	if (parLen < 1)
+		return;
+
+	_malloc_v(sizeof(ParameterColumn)*parLen, table->Parameters);
+	_malloc_v(sizeof(double*)*parLen, table->TestData.Parameters);
 	for (uint j = 0; j < parLen; ++j)
 	{
-		table->TestData.Parameters[j] = malloc(sizeof(double) * table->TestData.RowsCount);
-		table->Parameters[j].Column = malloc(sizeof(double) * table->RowsCount);
+		_malloc_v(sizeof(double) * table->TestData.RowsCount, table->TestData.Parameters[j]);
+		_malloc_v(sizeof(double) * table->RowsCount, table->Parameters[j].Column);
 		table->Parameters[j].MaxValue = DBL_MIN;
 		table->Parameters[j].MinValue = DBL_MAX;
 	}
@@ -63,13 +66,13 @@ void LrnNormalize(LearnData * table)
 	table->Normalized = true;
 }
 
-unsigned* LrnCountByClass(const LrnClassTuple* classesColumn, const size_t size, const size_t classesCount)
+unsigned* LrnCountByClass(const IntVector* classesColumn, const size_t size, const size_t classesCount)
 {
 	uint* _calloc(classesCount, sizeof(uint), countByClass);
 
 	for (size_t i = 0; i < size; ++i)
 	{
-		countByClass[classesColumn[i].Value]++;
+		countByClass[classesColumn->Data[i]]++;
 	}
 	return countByClass;
 }
@@ -84,9 +87,10 @@ void LrnFreeMemory(LearnData** const tbl)
 	FreeTab((void_tab_ptr)table->TestData.Parameters, table->ParametersCount);
 	FreeTab((void_tab_ptr)table->Headers, table->ParametersCount);
 	free(table->Parameters);
-	free(table->ClassesColumn);
-	free(table->TestData.ClassesColumn);
+	IntVecFreeMemory(&table->ClassesColumn);
+	IntVecFreeMemory(&table->TestData.ClassesColumn);
 	free(table->ClassName);
+	SvFree(&table->Classes);
 	free(table);
 	*tbl = NULL;
 }

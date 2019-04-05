@@ -16,5 +16,6 @@ inline void SvAppend(StringVector* vector, char* value)
 }
 
 bool SvContains(const StringVector* const vector, const char* const value, uint* foundId);
+void SvFree(StringVector** vector);
 
 #endif

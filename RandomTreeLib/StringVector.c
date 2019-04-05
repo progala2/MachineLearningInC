@@ -17,3 +17,14 @@ bool SvContains(const StringVector* const vector, const char* const value, uint*
 {
 	return VecContains(&vector->VecBase, value, (compare_func)strcmp, SvGet, vector, foundId);
 }
+
+void SvFree(StringVector** vector)
+{
+	for (size_t i = 0; i < (*vector)->VecBase.Size; i++)
+	{
+		free((*vector)->Table[i]);
+	}
+	free((*vector)->Table);
+	free(*vector);
+	*vector = NULL;
+}

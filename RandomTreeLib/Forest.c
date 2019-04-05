@@ -31,7 +31,7 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 	double* _malloc(sizeof(double)*classesCount, predictionSumPerClass);
 	for (uint i = 0; i < rowsCount; ++i)
 	{
-		actual[i] = table->TestData.ClassesColumn[i].Value;
+		actual[i] = table->TestData.ClassesColumn->Data[i];
 		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
 		for (uint j = 0; j < forest->TreesCount; ++j)
 		{
@@ -49,19 +49,24 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 
 	ConfMatrix* matrix = CmCreate(actual, predicted, (const char**)table->Classes->Table, table->Classes->VecBase.Size, rowsCount);
 	free(actual);
+	free(predicted);
 	return matrix;
 }
 
 Forest* FrstGenerateForest(const LearnData* const table)
 {
+	if (_glConfigs->TreeCount < 1)
+		return NULL;
+
 	Tree** _malloc(sizeof(Tree*) * _glConfigs->TreeCount, trees);
 	uint* countByClass = LrnCountByClass(table->ClassesColumn, table->RowsCount, table->Classes->VecBase.Size);
+	
 	for (uint i = 0; i < _glConfigs->TreeCount; ++i)
 	{
 		trees[i] = NdGenerateTree(table->ParametersCount, table->Parameters, table->ClassesColumn, table->RowsCount, countByClass, table->Classes->VecBase.Size);
 	}
 	free(countByClass);
-	Forest* forest = malloc(sizeof(Forest));
+	Forest* _malloc(sizeof(Forest), forest);
 	forest->TreesCount = _glConfigs->TreeCount;
 	forest->Trees = trees;
 	return forest;
@@ -75,5 +80,6 @@ void FrstFree(Forest**const forest)
 	{
 		TrFree(&(*forest)->Trees[i]);
 	}
+	free((*forest)->Trees);
 	_FreeN(forest);
 }

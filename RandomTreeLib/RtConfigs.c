@@ -32,9 +32,10 @@ RtConfigs* RtReadConfigFromFile(FILE* fp)
 	if (sscanf_s(table->Table[0]->Data, XSTRIFY(CFG_FLD_TRAINING_FILE_NAME)"=%254s", buffer, BUFFER_LEN) < 1)
 		return NULL;
 
-	RtConfigs* configs = malloc(sizeof(RtConfigs));
+	RtConfigs* _malloc(sizeof(RtConfigs), configs);
 	configs->CFG_FLD_CROSS_VALIDATION_COUNT = CFG_CROSS_VALIDATION_COUNT;
 	configs->CFG_FLD_MAX_FEATURES_PER_NODE = CFG_MAX_FEATURE_PER_NODE;
+	configs->CFG_FLD_MAX_DEEPNESS = CFG_MAX_DEEPNESS;
 	configs->CFG_FLD_OUTPUT_FOLDER = MemCopyChars(CFG_OUTPUT_FOLDER);
 	configs->CFG_FLD_TREE_COUNT = CFG_TREE_COUNT;
 	configs->CFG_FLD_CV_TYPE = CFG_CV_TYPE;
@@ -48,10 +49,11 @@ RtConfigs* RtReadConfigFromFile(FILE* fp)
 
 	if (configs->CvType == Cv_Normal && configs->CrossValidationCount < 2)
 	{
+		TFreeMemory(&table, true);
 		RtFreeMemory(&configs);
 		return NULL;
 	}
-
+	TFreeMemory(&table, true);
 	return configs;
 }
 

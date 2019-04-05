@@ -3,16 +3,17 @@
 #include "Node.h"
 #include "RtConfigs.h"
 
-Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy)
+Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount)
 {
 	if (classesProbability == NULL || size < 2 || entropy < 0)
 		return NULL;
 
-	Node* nd = malloc(sizeof(Node));
+	Node* _malloc(sizeof(Node), nd);
 	nd->ClassesProbability = MemCopyAlloc(classesProbability, sizeof(double) * size);
 	nd->Left = NULL;
 	nd->Right = NULL;
 	nd->Entropy = entropy;
+	nd->ElementsCount = elemCount;
 	return nd;
 }
 
@@ -21,7 +22,7 @@ Tree* TreeCreateRoot(const int parameterIndex, const double parameterValueSepara
 {
 	if (left == right || left == NULL || right == NULL)
 		return NULL;
-	Tree* nd = malloc(sizeof(Tree));	
+	Tree* _malloc(sizeof(Tree), nd);	
 	nd->Left = left;
 	nd->Right = right;
 	nd->ParameterIndex = parameterIndex;

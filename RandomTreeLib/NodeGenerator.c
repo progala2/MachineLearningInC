@@ -5,6 +5,15 @@
 #include "RtConfigs.h"
 #include "DoubleVector.h"
 
+void FreeDblVecTab(DoubleVector** tab, const size_t parametersCount)
+{
+	for (size_t i = 0; i < parametersCount; i++)
+	{
+		DblVecFreeMemory(&tab[i]);
+	}
+	free(tab);
+}
+
 double CalculateEntropy(const unsigned countByClass[], const size_t classCount, const size_t total)
 {
 	double entropy = 0;
@@ -24,53 +33,82 @@ double CalculateSeparationValue(const double* const column, const size_t rowsCou
 
 double CalculateProbability(const uint selected, const uint total)
 {
-	return (double)selected / total;
+
+	return total == 0 ? 0 : (double)selected / total;
 }
 
-Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, const LrnClassTuple* classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
+Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, const IntVector* classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
 {
+	if (parametersCount < 1)
+		return NULL;
+	Node tempNode = { 0 };
+	tempNode.Entropy = CalculateEntropy(countByClass, classCount, rowsCount);
+	tempNode.ElementsCount = rowsCount;
+	DoubleVector** _malloc(sizeof(DoubleVector*) * parametersCount, valuesVector);
+	for (size_t i = 0; i < parametersCount; i++)
+	{
+		valuesVector[i] = DblVecInit();
+		DblVecAppendRange(valuesVector[i], values[i].Column, rowsCount);
+	}
+
+	NdSplitNode(&tempNode, parametersCount, valuesVector, classesColumn, countByClass, classCount, 0);
+	
+	FreeDblVecTab(valuesVector, parametersCount);
+	
+	Tree* node = TreeCreateRoot(tempNode.ParameterIndex, tempNode.ParameterValueSeparator, tempNode.Left, tempNode.Right);
+
+	return node;
+}
+
+void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*const*const values, const IntVector*const classesColumn, const unsigned countByClass[], const size_t classCount, const uint deepness)
+{
+	if (node-> ElementsCount < 2 || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0 || parametersCount < 1)
+		return;
+	const size_t rowsCount = classesColumn->VecBase.Size;
 	const uint parameterIndex = rand() % parametersCount;
-	const double entropy = CalculateEntropy(countByClass, classCount, rowsCount);
+	const double separatorValue = CalculateSeparationValue(values[parameterIndex]->Data, rowsCount);
 
-	const double v = CalculateSeparationValue(values[parameterIndex].Column, rowsCount);
+	DoubleVector** _malloc_v(sizeof(DoubleVector*) * parametersCount, columnsLeft);
+	DoubleVector** _malloc_v(sizeof(DoubleVector*) * parametersCount, columnsRight);
+	for (size_t i = 0; i < parametersCount; i++)
+	{
+		columnsLeft[i] = DblVecInit();
+		columnsRight[i] = DblVecInit();
+	}
+	IntVector* NULLCHECK_V(IntVecInit(), classesLeft);
+	IntVector* NULLCHECK_V(IntVecInit(), classesRight);
+	double* _calloc_v(classCount, sizeof(double), probabilityLeft);
+	double* _calloc_v(classCount, sizeof(double), probabilityRight);
+	uint* _calloc_v(classCount, sizeof(uint), countByClassLeft);
+	uint* _calloc_v(classCount, sizeof(uint), countByClassRight);
 
-	DBG_PRINT("entropy: %f\n", entropy);
-
-	DoubleVector* _malloc(sizeof(DoubleVector) * parametersCount, columnsLeft);
-	DoubleVector* _malloc(sizeof(DoubleVector) * parametersCount, columnsRight);
-	//TODO INT VECTOR
-	int* _malloc(sizeof(int) * rowsCount, classesLeft);
-	int* _malloc(sizeof(int) * rowsCount, classesRight);
-	double* _calloc(classCount, sizeof(double), probabilityLeft);
-	double* _calloc(classCount, sizeof(double), probabilityRight);
-	uint* _calloc(classCount, sizeof(uint), countByClassLeft);
-	uint* _calloc(classCount, sizeof(uint), countByClassRight);
-
-	memset(countByClassLeft, 0, sizeof(uint)*classCount);
-	memset(countByClassRight, 0, sizeof(uint)*classCount);
+	memset(countByClassLeft, 0, sizeof(uint) * classCount);
+	memset(countByClassRight, 0, sizeof(uint) * classCount);
 	for (size_t j = 0; j < rowsCount; ++j)
 	{
-		if (values[parameterIndex].Column[j] <= v)
+		if (values[parameterIndex]->Data[j] <= separatorValue)
 		{
 			for (size_t i = 0; i < parametersCount; i++)
 			{
-				DblVecAppend(&columnsLeft[i], values[i].Column[j]);
+				DblVecAppend(columnsLeft[i], values[i]->Data[j]);
 			}
-			countByClassLeft[classesColumn[j].Value]++;
+			IntVecAppend(classesLeft, classesColumn->Data[j]);
+			countByClassLeft[classesColumn->Data[j]]++;
 		}
 		else
 		{
 			for (size_t i = 0; i < parametersCount; i++)
 			{
-				DblVecAppend(&columnsRight[i], values[i].Column[j]);
+				DblVecAppend(columnsRight[i], values[i]->Data[j]);
 			}
-			countByClassRight[classesColumn[j].Value]++;
+			IntVecAppend(classesRight, classesColumn->Data[j]);
+			countByClassRight[classesColumn->Data[j]]++;
 		}
 	}
 
-	const double entropy1 = CalculateEntropy(countByClassLeft, classCount, columnsLeft[0].VecBase.Size);
-	const double entropy2 = CalculateEntropy(countByClassRight, classCount, columnsRight[0].VecBase.Size);
-	DBG_PRINT("e1: %f e2:%f\n", entropy1, entropy2);
+	const double entropyLeft = CalculateEntropy(countByClassLeft, classCount, columnsLeft[0]->VecBase.Size);
+	const double entropyRight = CalculateEntropy(countByClassRight, classCount, columnsRight[0]->VecBase.Size);
+	DBG_PRINT("e1: %f e2:%f\n", entropyLeft, entropyRight);
 
 	for (uint j = 0; j < classCount; ++j)
 	{
@@ -80,60 +118,20 @@ Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, 
 		DBG_PRINT("Probability %d: B1: %f B2:%f\n", j, probabilityLeft[j], probabilityRight[j]);
 	}
 
-	Tree* node = TreeCreateRoot(parameterIndex, v, TreeCreateLeaf(probabilityLeft, classCount, entropy1), TreeCreateLeaf(probabilityRight, classCount, entropy2));
-	NdSplitNode(node->Left, parametersCount, columnsLeft, NULL, columnsLeft[0].VecBase.Size, LrnCountByClass(classesColumn, rowsCount, classCount), classCount, 1);
-	//if (++deepness < configs->MaxDeepness &&)
-
-	free(countByClassLeft);
-	free(countByClassRight);
-	free(probabilityLeft);
-	free(probabilityRight);
-	return node;
-}
-
-void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*const values, const int*const classesColumn, const size_t currentRowsCount, const unsigned countByClass[], const size_t classCount, const uint deepness)
-{
-	if (node-> ElementsCount < 2 || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0)
-		return;
-
-	const uint parameterIndex = rand() % parametersCount;
-	const double separatorValue = CalculateSeparationValue(values[parameterIndex].Data, currentRowsCount);
-
-	double* _calloc(classCount, sizeof(double), probabilityLeft);
-	double* _calloc(classCount, sizeof(double), probabilityRight);
-	uint* _calloc(classCount, sizeof(uint), countByClassLeft);
-	uint* _calloc(classCount, sizeof(uint), countByClassRight);
-
-	size_t sizeLeft = 0;
-	size_t sizeRight = 0;
-	memset(countByClassLeft, 0, sizeof(uint)*classCount);
-	memset(countByClassRight, 0, sizeof(uint)*classCount);
-	for (size_t j = 0; j < currentRowsCount; ++j)
-	{
-		if (values[parameterIndex].Data[j] <= separatorValue)
-		{
-			sizeLeft++;
-			countByClassLeft[classesColumn[j]]++;
-		}
-		else
-		{
-			sizeRight++;
-			countByClassRight[classesColumn[j]]++;
-		}
-	}
-	const double entropyLeft = CalculateEntropy(countByClassLeft, classCount, sizeLeft);
-	const double entropyRight = CalculateEntropy(countByClassRight, classCount, sizeRight);
-	for (uint j = 0; j < classCount; ++j)
-	{
-		probabilityLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
-		probabilityRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
-	}
-
 	node->ParameterIndex = parameterIndex;
 	_FreeN(&node->ClassesProbability);
 	node->ParameterValueSeparator = separatorValue;
-	node->Left = TreeCreateLeaf(probabilityLeft, classCount, entropyLeft);
-	node->Right = TreeCreateLeaf(probabilityRight, classCount, entropyRight);
+	
+	node->Left = TreeCreateLeaf(probabilityLeft, classCount, entropyLeft, classesLeft->VecBase.Size);
+	NdSplitNode(node->Left, parametersCount, columnsLeft, classesLeft, countByClassLeft, classCount, deepness + 1);
+	FreeDblVecTab(columnsLeft, parametersCount);
+	IntVecFreeMemory(&classesLeft);
+
+	node->Right = TreeCreateLeaf(probabilityRight, classCount, entropyRight, classesRight->VecBase.Size);
+	NdSplitNode(node->Right, parametersCount, columnsRight, classesRight, countByClassRight, classCount, deepness + 1);
+	FreeDblVecTab(columnsRight, parametersCount);
+	IntVecFreeMemory(&classesRight);
+	
 	free(countByClassLeft);
 	free(countByClassRight);
 	free(probabilityLeft);

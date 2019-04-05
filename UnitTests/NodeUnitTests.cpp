@@ -15,7 +15,7 @@ namespace UnitTests
 		{
 			double classNumber[2] {10, 20};
 			const auto valueSeparator = 2.;
-			const auto node = TreeCreateRoot(1, valueSeparator, TreeCreateLeaf(classNumber, 2, 1), TreeCreateLeaf(classNumber, 2, 1));
+			const auto node = TreeCreateRoot(1, valueSeparator, TreeCreateLeaf(classNumber, 2, 1, 15), TreeCreateLeaf(classNumber, 2, 1, 15));
 			Assert::AreEqual(valueSeparator, node->ParameterValueSeparator);
 		}
 

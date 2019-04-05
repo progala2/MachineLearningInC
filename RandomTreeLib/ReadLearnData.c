@@ -26,35 +26,33 @@ static LearnData* LrnTryInitWithHeaders(const CharsTable* trainingTable, const C
 	LearnData* lrnData = LrnInit();
 
 	const uint parLen = *colLen - 1;
-	lrnData->ClassName = MemCopyChars(headers[0]);
+	lrnData->ClassName = headers[0];
 	lrnData->Headers = MemCopyAlloc(headers + 1, sizeof(char*)*parLen);
 	free(headers);
 
 	lrnData->ParametersCount = parLen;
 	lrnData->RowsCount = trainingTable->VecBase.Size - 1;
 	lrnData->TestData.RowsCount = testTable->VecBase.Size - 1;
-	lrnData->ClassesColumn = malloc(sizeof(LrnClassTuple)*lrnData->RowsCount);
-	lrnData->TestData.ClassesColumn = malloc(sizeof(LrnClassTuple)*lrnData->TestData.RowsCount);
+	lrnData->ClassesColumn = IntVecInit_C(lrnData->RowsCount);
+	lrnData->TestData.ClassesColumn = IntVecInit_C(lrnData->TestData.RowsCount);
 	LrnInitParameters(lrnData, parLen);
 	return lrnData;
 }
 
-static double* ParseNextRowAndSetUpName(LrnClassTuple* classNameValue, StringVector* classVector, const CharRow* row, const uint colLen)
+static double* ParseNextRowAndSetUpName(int* classNameValue, StringVector* classVector, const CharRow* row, const uint colLen)
 {
 	char* className = NULL;
 	uint foundId = 0;
-	double* parsedDoublesTest = ParseNextRow(row, colLen, &className);
+	double* parsedDoublesTest = ParseNextRow(row, colLen - 1, &className);
 	if (SvContains(classVector, className, &foundId))
 	{
-		classNameValue->Name = classVector->Table[foundId];
-		classNameValue->Value = foundId;
+		*classNameValue = foundId;
 		free(className);
 	}
 	else
 	{
 		SvAppend(classVector, className);
-		classNameValue->Name = className;
-		classNameValue->Value = classVector->VecBase.Size - 1;
+		*classNameValue = classVector->VecBase.Size - 1;
 	}
 	return parsedDoublesTest;
 }
@@ -69,11 +67,13 @@ LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTa
 	const uint parLen = colLen - 1;
 
 	lrnData->Classes = SvInit();
+	int classValueTemp = 0;
 	for (uint i = 1; i < trainingTable->VecBase.Size; ++i)
 	{
 		if (i < testTable->VecBase.Size)
 		{
-			double* parsedDoublesTest = ParseNextRowAndSetUpName(&lrnData->TestData.ClassesColumn[i - 1], lrnData->Classes, testTable->Table[i], colLen);
+			double* parsedDoublesTest = ParseNextRowAndSetUpName(&classValueTemp, lrnData->Classes, testTable->Table[i], colLen);
+			IntVecAppend(lrnData->TestData.ClassesColumn, classValueTemp);
 
 			for (uint j = 0; j < parLen; ++j)
 			{
@@ -81,7 +81,8 @@ LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTa
 			}
 			free(parsedDoublesTest);
 		}
-		double* parsedDoubles = ParseNextRowAndSetUpName(&lrnData->ClassesColumn[i - 1], lrnData->Classes, trainingTable->Table[i], colLen);
+		double* parsedDoubles = ParseNextRowAndSetUpName(&classValueTemp, lrnData->Classes, trainingTable->Table[i], colLen);
+		IntVecAppend(lrnData->ClassesColumn, classValueTemp);
 
 		for (uint j = 0; j < parLen; ++j)
 		{
@@ -104,7 +105,7 @@ void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const ta
 	const uint parametersCountMinOne = table->ParametersCount - 1;
 	for (uint i = 0; i < table->RowsCount; i++)
 	{
-		fprintf(stream, "%s, ", table->ClassesColumn[i].Name);
+		fprintf(stream, "%s, ", table->Classes->Table[table->ClassesColumn->Data[i]]);
 		for (uint j = 0; j < parametersCountMinOne; j++)
 		{
 			fprintf(stream, "%lf, ", table->Parameters[j].Column[i]);
@@ -114,7 +115,7 @@ void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const ta
 	fprintf(stream, "TestData: \n");
 	for (uint i = 0; i < table->TestData.RowsCount; i++)
 	{
-		fprintf(stream, "%s, ", table->TestData.ClassesColumn[i].Name);
+		fprintf(stream, "%s, ", table->Classes->Table[table->TestData.ClassesColumn->Data[i]]);
 		for (uint j = 0; j < parametersCountMinOne; j++)
 		{
 			fprintf(stream, "%lf, ", table->TestData.Parameters[j][i]);
@@ -130,15 +131,18 @@ void LrnPrintTestAndTrainingData(const LearnData* const table)
 
 static char** ParseFirstRow(const CharRow* row, uint* colLen)
 {
+	if (row->VecBase.Size < 1)
+		return NULL;
+
 	const char s[2] = ",";
-	char*context;
+	char*context = NULL;
 	*colLen = 0;
-	char** ret = malloc(sizeof(char*)*row->VecBase.Size);
+	char** _malloc(sizeof(char*)*row->VecBase.Size, ret);
 	char* tempStr = CrCopyData(row);
 
 	char* token = strtok_s(tempStr, s, &context);
 
-	while (token != 0)
+	while (token != 0 && *colLen < row->VecBase.Size)
 	{
 		ret[*colLen] = MemCopyChars(token);
 		++(*colLen);
@@ -148,18 +152,21 @@ static char** ParseFirstRow(const CharRow* row, uint* colLen)
 	return ret;
 }
 
-static double* ParseNextRow(const CharRow* row, const uint colLen, void_ptr_ref retClassName)  // NOLINT(misc-misplaced-const)
+static double* ParseNextRow(const CharRow* row, const uint parLen, void_ptr_ref retClassName)  // NOLINT(misc-misplaced-const)
 {
+	if (parLen < 1)
+		return NULL;
+
 	const char s[2] = ",";
-	char *endPrt, *context;
-	double* ret = malloc(sizeof(double)*colLen);
+	char *endPrt, *context = NULL;
+	double* _malloc(sizeof(double)* parLen, ret);
 	char* tempStr = CrCopyData(row);
 	char* token = strtok_s(tempStr, s, &context);
 	*retClassName = MemCopyChars(token);
 
 	token = strtok_s(NULL, s, &context);
 	uint i = 0;
-	while (token != 0 && i < (colLen - 1))
+	while (i < parLen && token != 0)
 	{
 		ret[i++] = strtold(token, &endPrt);
 		token = strtok_s(NULL, s, &context);
