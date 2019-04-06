@@ -2,20 +2,20 @@
 #include "NodeGenerator.h"
 
 
-void CalculateTreeDecision(double**const predictionSumPerClass, const double itemValue, const double valueSeparator, const Node* const left, const Node* const right, const uint classesCount)
+void CalculateTreeDecision(double*const predictionSumPerClass, const double** itemValues, const uint rowIndex, const IntVector* parameterIndexes, const DoubleVector* valueSeparator, const Node* const left, const Node* const right, const uint classesCount)
 {
-	const Node* nd = itemValue <= valueSeparator ? left : right;
+	const Node* nd = CheckIfItIsLeftElem_T(itemValues, rowIndex, parameterIndexes, valueSeparator) ? left : right;
 
 	if (TreeIsLeaf(nd))
 	{
 		for (uint k = 0; k < classesCount; ++k)
 		{
-			predictionSumPerClass[0][k] += nd->ClassesProbability[k];
+			predictionSumPerClass[k] += nd->ClassesProbability[k];
 		}
 	}
 	else
 	{
-		CalculateTreeDecision(predictionSumPerClass, itemValue, nd->ParameterValueSeparator, nd->Left, nd->Right, classesCount);
+		CalculateTreeDecision(predictionSumPerClass, itemValues, rowIndex, nd->ParameterIndexes, nd->ParameterValueSeparators, nd->Left, nd->Right, classesCount);
 	}
 }
 
@@ -35,7 +35,7 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
 		for (uint j = 0; j < forest->TreesCount; ++j)
 		{
-			CalculateTreeDecision(&predictionSumPerClass, table->TestData.Parameters[forest->Trees[j]->ParameterIndex][i], forest->Trees[j]->ParameterValueSeparator, forest->Trees[j]->Left, forest->Trees[j]->Right, classesCount);
+			CalculateTreeDecision(predictionSumPerClass, table->TestData.Parameters, i, forest->Trees[j]->ParameterIndexes, forest->Trees[j]->ParameterValueSeparators, forest->Trees[j]->Left, forest->Trees[j]->Right, classesCount);
 		}
 		uint maxK = 0;
 		for (uint k = 0; k < classesCount; ++k)
@@ -76,10 +76,11 @@ void FrstFree(Forest**const forest)
 {
 	if (*forest == NULL)
 		return;
-	for (uint i = 0; i < (*forest)->TreesCount; ++i)
+	Forest* help = *forest;
+	for (uint i = 0; i < help->TreesCount; ++i)
 	{
-		TrFree(&(*forest)->Trees[i]);
+		TrFree(&help->Trees[i]);
 	}
-	free((*forest)->Trees);
+	free(help->Trees);
 	_FreeN(forest);
 }

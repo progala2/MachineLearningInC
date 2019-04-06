@@ -3,7 +3,7 @@
 
 StringVector* SvInit()
 {
-	StringVector* vec = malloc(sizeof(StringVector));
+	StringVector* _malloc(sizeof(StringVector), vec);
 	vec->VecBase = VecInit((pointer_ptr)&vec->Table, sizeof(char*));
 	return vec;
 }

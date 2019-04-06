@@ -3,13 +3,14 @@
 
 #include <stdbool.h>
 #include "utils.h"
+#include "DoubleVector.h"
 
 typedef struct Node
 {
 	struct Node* Left;
 	struct Node* Right;
-	int ParameterIndex;
-	double ParameterValueSeparator;
+	IntVector* ParameterIndexes;
+	DoubleVector* ParameterValueSeparators;
 	double Entropy;
 	double* ClassesProbability;
 	uint ElementsCount;
@@ -19,13 +20,13 @@ typedef struct
 {
 	Node* Left;
 	Node* Right;
-	int ParameterIndex;
-	double ParameterValueSeparator;
+	IntVector* ParameterIndexes;
+	DoubleVector* ParameterValueSeparators;
 } Tree;
 
 Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount);
 
-Tree* TreeCreateRoot(const int parameterIndex, const double parameterValueSeparator, Node* left, Node* right);
+Tree* TreeCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSeparator, Node* left, Node* right);
 
 bool TreeIsLeaf(const Node*const nd);
 

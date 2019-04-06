@@ -5,6 +5,8 @@
 #include "LearnData.h"
 #include "DoubleVector.h"
 
+bool CheckIfItIsLeftElem(const DoubleVector* const* const table, const uint rowindex, const IntVector* const parameterIndexes, const DoubleVector* const separationValue);
+bool CheckIfItIsLeftElem_T(const double* const* const table, const uint rowindex, const IntVector* const parameterIndexes, const DoubleVector* const separationValue);
 void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector* const* const values, const IntVector* const classesColumn, const unsigned countByClass[], const size_t classCount, const uint deepness);
 Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, const IntVector* classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount);
 #endif

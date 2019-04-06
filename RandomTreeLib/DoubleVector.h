@@ -8,6 +8,7 @@ typedef struct {
 } DoubleVector;
 
 DoubleVector* DblVecInit();
+DoubleVector* DblVecInit_C(const size_t capacity);
 void DblVecAppend(DoubleVector* vector, const double value);
 void DblVecAppendRange(DoubleVector* vector, const double* value, const size_t len);
 void DblVecFreeMemory(DoubleVector** vector);
@@ -21,5 +22,6 @@ IntVector* IntVecInit();
 IntVector* IntVecInit_C(const size_t capacity);
 void IntVecAppend(IntVector* vector, const int value);
 void IntVecAppendRange(IntVector* vector, const int* value, const size_t len);
+bool IntVecContains(const IntVector* const vector, const int value, uint* index);
 void IntVecFreeMemory(IntVector** vector);
 #endif

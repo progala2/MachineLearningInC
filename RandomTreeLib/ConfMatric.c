@@ -8,14 +8,14 @@ ConfMatrix* CmCreate(const int actual[], const int predicted[], const char*const
 	if (headSize < 2)
 		return NULL;
 
-	ConfMatrix* matrix = malloc(sizeof(ConfMatrix));
+	ConfMatrix* _malloc(sizeof(ConfMatrix), matrix);
 
-	matrix->ClassNames = malloc(sizeof(char*)*headSize);
-	matrix->TableData = malloc(sizeof(int*)*headSize);
+	_malloc(sizeof(char*)*headSize, matrix->ClassNames);
+	_malloc(sizeof(int*)*headSize, matrix->TableData);
 	for (size_t i = 0; i < headSize; ++i)
 	{
 		matrix->ClassNames[i] = classNames[i];
-		matrix->TableData[i] = calloc(headSize, sizeof(int));
+		_calloc(headSize, sizeof(int), matrix->TableData[i]);
 	}
 	for (size_t i = 0; i < predSize; ++i)
 	{

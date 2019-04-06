@@ -52,11 +52,11 @@ bool VecContains(VectorConstPtr vecBase, gen_value_cptr value, compare_func eqFu
 	{
 		if (0 == eqFuncPtr(getter(vector, i), value))
 		{
-			*foundId = i;
+			if (foundId != NULL) *foundId = i;
 			return true;
 		}
 	}
-	*foundId = vecBase->Size;
+	if (foundId != NULL) *foundId = vecBase->Size;
 	return false;
 }
 
