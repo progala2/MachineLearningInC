@@ -41,13 +41,16 @@ double CalculateProbability(const uint selected, const uint total)
 	return total == 0 ? 0 : (double)selected / total;
 }
 
-Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn * values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
+Node* NdGenerateTree(const uint parametersCount, const ParameterColumn * values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
 {
 	if (parametersCount < 1)
 		return NULL;
-	Node tempNode = { 0 };
-	tempNode.Entropy = CalculateEntropy(countByClass, classCount, rowsCount);
-	tempNode.ElementsCount = rowsCount;
+	Node* _malloc(sizeof(Node), tempNode);
+	tempNode->ClassesProbability = NULL;
+	tempNode->Entropy = CalculateEntropy(countByClass, classCount, rowsCount);
+	tempNode->ElementsCount = rowsCount;
+	tempNode->Left = NULL;
+	tempNode->Right = NULL;
 	DoubleVector** _malloc(sizeof(DoubleVector*) * parametersCount, valuesVector);
 	for (size_t i = 0; i < parametersCount; i++)
 	{
@@ -55,13 +58,15 @@ Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn * values,
 		DblVecAppendRange(valuesVector[i], values[i].Column, rowsCount);
 	}
 
-	NdSplitNode(&tempNode, parametersCount, valuesVector, classesColumn, countByClass, classCount, 0);
+	do
+	{
+		NdSplitNode(tempNode, parametersCount, (const DoubleVector* const*)valuesVector, classesColumn, countByClass, classCount, 0); 	
+	} while (TrIsLeaf(tempNode) == true);
+
 
 	FreeDblVecTab(valuesVector, parametersCount);
 
-	Tree* node = TrCreateRoot(tempNode.ParameterIndexes, tempNode.ParameterValueSeparators, tempNode.Left, tempNode.Right);
-
-	return node;
+	return tempNode;
 }
 
 static bool CheckIfItIsLeftForOneElem(const double elem, const double sep, const int type)
@@ -69,11 +74,11 @@ static bool CheckIfItIsLeftForOneElem(const double elem, const double sep, const
 	switch (type)
 	{
 	default:
-	case 0:
+	case PARAMETER_SEPARATION_LESS_OR_EQ_TYPE:
 		if (elem > sep)
 			return false;
 		break;
-	case 1:
+	case PARAMETER_SEPARATION_MORE_TYPE:
 		if (elem <= sep)
 			return false;
 		break;
@@ -92,7 +97,7 @@ bool CheckIfItIsLeftElem(const DoubleVector * const* const table, const uint row
 	return true;
 }
 
-bool CheckIfItIsLeftElem_T(const double* const* const table, const uint rowIndex, const IntVector * const parameterIndexes, const DoubleVector * const separationValue, const
+extern bool CheckIfItIsLeftElem_T(const double* const* const table, const uint rowIndex, const IntVector * const parameterIndexes, const DoubleVector * const separationValue, const
 	IntVector * const separationType)
 {
 	for (size_t i = 0; i < parameterIndexes->VecBase.Size; i++)

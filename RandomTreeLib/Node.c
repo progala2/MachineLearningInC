@@ -16,19 +16,21 @@ Node* TrCreateLeaf(const double* classesProbability, const size_t size, const do
 	nd->ElementsCount = elemCount;
 	nd->ParameterIndexes = NULL;
 	nd->ParameterValueSeparators = NULL;
+	nd->ParameterSeparatorTypes = NULL;
 	return nd;
 }
 
-Tree* TrCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSeparator,
-                   Node* left, Node* right)
+Node* TrCreateRoot(IntVector* parameterIndex, IntVector* separatorTypes,
+                   DoubleVector* parameterValueSeparator, Node* left, Node* right)
 {
 	if (left == right || left == NULL || right == NULL)
 		return NULL;
-	Tree* _malloc(sizeof(Tree), nd);	
+	Node* _malloc(sizeof(Node), nd);	
 	nd->Left = left;
 	nd->Right = right;
 	nd->ParameterIndexes = parameterIndex;
 	nd->ParameterValueSeparators = parameterValueSeparator;
+	nd->ParameterSeparatorTypes = separatorTypes;
 	return  nd;
 }
 
@@ -56,18 +58,7 @@ void TrFreeNode(Node**const nd)
 	TrFreeNode(&hp->Right);
 	free(hp->ClassesProbability);
 	IntVecFreeMemory(&hp->ParameterIndexes);
-	DblVecFreeMemory(&hp->ParameterValueSeparators);
-	_FreeN(nd);
-}
-
-void TrFree(Tree** const nd)
-{
-	if (*nd == NULL)
-		return;
-	Tree* hp = *nd;
-	TrFreeNode(&hp->Left);
-	TrFreeNode(&hp->Right);
-	IntVecFreeMemory(&hp->ParameterIndexes);
+	IntVecFreeMemory(&hp->ParameterSeparatorTypes);
 	DblVecFreeMemory(&hp->ParameterValueSeparators);
 	_FreeN(nd);
 }

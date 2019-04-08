@@ -6,6 +6,8 @@
 #include "DoubleVector.h"
 
 #define PARAMETER_SEPARATION_TYPES_NUMBER 2
+#define PARAMETER_SEPARATION_LESS_OR_EQ_TYPE 0
+#define PARAMETER_SEPARATION_MORE_TYPE 1
 
 typedef struct Node
 {
@@ -19,25 +21,14 @@ typedef struct Node
 	uint ElementsCount;
 } Node;
 
-typedef struct
-{
-	Node* Left;
-	Node* Right;
-	IntVector* ParameterIndexes;
-	DoubleVector* ParameterValueSeparators;
-	IntVector* ParameterSeparatorTypes;
-} Tree;
-
 Node* TrCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount);
 
-Tree* TrCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSeparator, Node* left, Node* right);
+Node* TrCreateRoot(IntVector* parameterIndex, IntVector* separatorTypes, DoubleVector* parameterValueSeparator, Node* left, Node* right);
 
 bool TrIsLeaf(const Node*const nd);
 
 bool TrIsFullLeaf(const Node*const nd);
 
 void TrFreeNode(Node**const nd);
-
-void TrFree(Tree**const nd);
 
 #endif

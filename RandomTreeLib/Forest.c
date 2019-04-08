@@ -2,9 +2,9 @@
 #include "NodeGenerator.h"
 
 
-void CalculateTreeDecision(double*const predictionSumPerClass, const double** itemValues, const uint rowIndex, const IntVector* parameterIndexes, const DoubleVector* valueSeparator, const Node* const left, const Node* const right, const uint classesCount)
+void CalculateTreeDecision(double*const predictionSumPerClass, const double*const*const itemValues, const uint rowIndex, const Node* const node, const uint classesCount)
 {
-	const Node* nd = CheckIfItIsLeftElem_T(itemValues, rowIndex, parameterIndexes, valueSeparator,) ? left : right;
+	const Node* nd = CheckIfItIsLeftElem_T(itemValues, rowIndex, node->ParameterIndexes, node->ParameterValueSeparators, node->ParameterSeparatorTypes) ? node->Left: node->Right;
 
 	if (TrIsLeaf(nd))
 	{
@@ -15,7 +15,7 @@ void CalculateTreeDecision(double*const predictionSumPerClass, const double** it
 	}
 	else
 	{
-		CalculateTreeDecision(predictionSumPerClass, itemValues, rowIndex, nd->ParameterIndexes, nd->ParameterValueSeparators, nd->Left, nd->Right, classesCount);
+		CalculateTreeDecision(predictionSumPerClass, itemValues, rowIndex, nd, classesCount);
 	}
 }
 
@@ -35,7 +35,7 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
 		for (uint j = 0; j < forest->TreesCount; ++j)
 		{
-			CalculateTreeDecision(predictionSumPerClass,(const double**) table->TestData.Parameters, i, forest->Trees[j]->ParameterIndexes, forest->Trees[j]->ParameterValueSeparators, forest->Trees[j]->Left, forest->Trees[j]->Right, classesCount);
+			CalculateTreeDecision(predictionSumPerClass,(const double**) table->TestData.Parameters, i, forest->Trees[j], classesCount);
 		}
 		uint maxK = 0;
 		for (uint k = 0; k < classesCount; ++k)
@@ -58,7 +58,7 @@ Forest* FrstGenerateForest(const LearnData* const table)
 	if (_glConfigs->TreeCount < 1)
 		return NULL;
 
-	Tree** _malloc(sizeof(Tree*) * _glConfigs->TreeCount, trees);
+	Node** _malloc(sizeof(Node*) * _glConfigs->TreeCount, trees);
 	uint* countByClass = LrnCountByClass(table->ClassesColumn, table->RowsCount, table->Classes->VecBase.Size);
 	
 	for (uint i = 0; i < _glConfigs->TreeCount; ++i)
@@ -79,7 +79,7 @@ void FrstFree(Forest**const forest)
 	Forest* help = *forest;
 	for (uint i = 0; i < help->TreesCount; ++i)
 	{
-		TrFree(&help->Trees[i]);
+		TrFreeNode(&help->Trees[i]);
 	}
 	free(help->Trees);
 	_FreeN(forest);

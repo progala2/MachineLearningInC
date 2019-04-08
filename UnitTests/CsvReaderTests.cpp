@@ -52,16 +52,17 @@ namespace UnitTests
 			Assert::AreEqual(3u, csvTable->Classes->VecBase.Size, L"Classes count is wrong.");
 			for (unsigned i = 0; i < lines.size(); ++i)
 			{
-				Assert::IsTrue(static_cast<int>(lines[i][0]) - strtol(csvTable->ClassesColumn[i].Name, nullptr, 10) == 0, L"Wrong class name");
+				Assert::IsTrue(static_cast<int>(lines[i][0]) - csvTable->ClassesColumn->Data[i] == 0, L"Wrong class name");
 				for (uint j = 0; j < 3; ++j)
 				{
-					if (csvTable->Classes->Table[j] == csvTable->ClassesColumn[i].Name)
-						Assert::IsTrue(csvTable->ClassesColumn[i].Value == j, L"Wrong class value");
+					if (csvTable->Classes->Table[j] == csvTable->Classes->Table[csvTable->ClassesColumn->Data[i]])
+						Assert::IsTrue(csvTable->ClassesColumn->Data[i] == j, L"Wrong class value");
 				}
-				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Column[i]) < 0.00000001);
-				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Column[i]) < 0.00000001);
+				const double d = 0.00000001;
+				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < d);
+				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < d);
+				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Column[i]) < d);
+				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Column[i]) < d);
 				
 			}
 			LrnFreeMemory(&csvTable);
@@ -81,10 +82,14 @@ namespace UnitTests
 
 			FILE* fp;
 			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "w+");
+			if (fp == nullptr)
+				return;
 			fprintf(fp, "%s", ss.str().c_str());
 			fclose(fp);
 
 			fopen_s(&fp, "ReadCsvFile_ReturnsTable.txt", "r");
+			if (fp == nullptr)
+				return;
 			auto table = TReadFile(fp, 5);
 			fclose(fp);
 

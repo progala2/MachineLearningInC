@@ -1,13 +1,12 @@
 #ifndef FOREST_H_GUARD
 #define FOREST_H_GUARD
 #include "Node.h"
-#include "utils.h"
 #include "ReadLearnData.h"
 #include "ConfMatrix.h"
 
 typedef struct
 {
-	Tree** Trees;
+	Node** Trees;
 	uint TreesCount;
 } Forest;
 
