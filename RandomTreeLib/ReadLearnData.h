@@ -3,7 +3,9 @@
 #include "CharsTable.h"
 #include "LearnData.h"
 
+
 LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTable);
+LearnData* LrnReadData_NoTest(const CharsTable* trainingTable);
 
 void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const table);
 

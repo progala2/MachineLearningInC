@@ -50,6 +50,8 @@ void* CreateTab(const size_t first, const size_t second, const size_t typeSize)
 
 void FreeTab_Func(void_tab_ptr tab, const size_t count, deleter_func deleter)
 {
+	if (tab == NULL)
+		return;
 	for (size_t i = 0; i < count; ++i)
 	{
 		deleter(tab[i]);

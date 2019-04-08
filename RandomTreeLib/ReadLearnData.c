@@ -38,6 +38,32 @@ static LearnData* LrnTryInitWithHeaders(const CharsTable* trainingTable, const C
 	LrnInitParameters(lrnData, parLen);
 	return lrnData;
 }
+static LearnData* LrnTryInitWithHeaders_NoTest(const CharsTable* trainingTable, uint* colLen)
+{
+	if (trainingTable->VecBase.Size < 2)
+		return NULL;
+
+	char** headers = ParseFirstRow(trainingTable->Table[0], colLen);
+	if (*colLen < 2)
+	{
+		FreeTab(headers, *colLen);
+		return NULL;
+	}
+	LearnData* lrnData = LrnInit();
+
+	const uint parLen = *colLen - 1;
+	lrnData->ClassName = headers[0];
+	lrnData->Headers = MemCopyAlloc(headers + 1, sizeof(char*)*parLen);
+	free(headers);
+
+	lrnData->ParametersCount = parLen;
+	lrnData->RowsCount = trainingTable->VecBase.Size - 1;
+	lrnData->ClassesColumn = IntVecInit_C(lrnData->RowsCount);
+	lrnData->TestData.ClassesColumn = NULL;
+	lrnData->TestData.RowsCount = 0;
+	LrnInitParameters(lrnData, parLen);
+	return lrnData;
+}
 
 static double* ParseNextRowAndSetUpName(int* classNameValue, StringVector* classVector, const CharRow* row, const uint colLen)
 {
@@ -81,6 +107,32 @@ LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTa
 			}
 			free(parsedDoublesTest);
 		}
+		double* parsedDoubles = ParseNextRowAndSetUpName(&classValueTemp, lrnData->Classes, trainingTable->Table[i], colLen);
+		IntVecAppend(lrnData->ClassesColumn, classValueTemp);
+
+		for (uint j = 0; j < parLen; ++j)
+		{
+			LrnSetParameterColumn(lrnData, i - 1, j, parsedDoubles[j]);
+		}
+		free(parsedDoubles);
+	}
+
+	return lrnData;
+}
+
+LearnData* LrnReadData_NoTest(const CharsTable* trainingTable)
+{
+	uint colLen = 0;
+	LearnData* lrnData;
+	if ((lrnData = LrnTryInitWithHeaders_NoTest(trainingTable, &colLen)) == NULL)
+		return NULL;
+
+	const uint parLen = colLen - 1;
+
+	lrnData->Classes = SvInit();
+	int classValueTemp = 0;
+	for (uint i = 1; i < trainingTable->VecBase.Size; ++i)
+	{
 		double* parsedDoubles = ParseNextRowAndSetUpName(&classValueTemp, lrnData->Classes, trainingTable->Table[i], colLen);
 		IntVecAppend(lrnData->ClassesColumn, classValueTemp);
 

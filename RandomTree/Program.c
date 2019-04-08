@@ -33,7 +33,7 @@ Program* PrgLoadData()
 		if (buffer[0] == 'd')
 			strcpy_s(buffer, strlen(CONFIG_DEFAULT_CONFIG_FILE) + 1, CONFIG_DEFAULT_CONFIG_FILE);
 
-		FILE* fp = NULL;
+		FILE * fp = NULL;
 		if (fopen_s(&fp, buffer, "r") < 0 || fp == NULL)
 		{
 			printf("Something wrong with your config file...\n");
@@ -68,32 +68,39 @@ Program* PrgLoadData()
 
 		if (configs->TestFileName == CFG_TEST_FILE_NAME)
 		{
-			TFreeMemory(&charsTable, true);
+			if ((lrnData = LrnReadData_NoTest(charsTable)) == NULL)
+			{
+				printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
+				RtFreeMemory(&configs);
+				TFreeMemory(&charsTable, true);
+				continue;
+			}
+		}
+		else
+		{
+			if (fopen_s(&fp, configs->TestFileName, "r") < 0 || fp == NULL)
+			{
+				printf("Something wrong with your test csv file...\n");
+				RtFreeMemory(&configs);
+				continue;
+			}
+			CharsTable* testCharsTable = NULL;
+			if ((testCharsTable = TReadFile(fp, 1024)) == NULL ||
+				(lrnData = LrnReadData(charsTable, testCharsTable)) == NULL)
+			{
+				printf("Something wrong with your test file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
+				printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
+				fclose(fp);
+				RtFreeMemory(&configs);
+				TFreeMemory(&charsTable, true);
+				TFreeMemory(&testCharsTable, true);
+				continue;
+			}
+			TFreeMemory(&testCharsTable, true);
 			fclose(fp);
-			return NULL;
 		}
 
-		if (fopen_s(&fp, configs->TestFileName, "r") < 0 || fp == NULL)
-		{
-			printf("Something wrong with your test csv file...\n");
-			RtFreeMemory(&configs);
-			continue;
-		}
-		CharsTable* testCharsTable = NULL;
-		if ((testCharsTable = TReadFile(fp, 1024)) == NULL ||
-			(lrnData = LrnReadData(charsTable, testCharsTable)) == NULL)
-		{
-			printf("Something wrong with your test file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
-			printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
-			fclose(fp);
-			RtFreeMemory(&configs);
-			TFreeMemory(&charsTable, true);
-			TFreeMemory(&testCharsTable, true);
-			continue;
-		}
-		TFreeMemory(&testCharsTable, true);
 		TFreeMemory(&charsTable, true);
-		fclose(fp);
 
 		break;
 	}
@@ -142,7 +149,7 @@ bool PrgMenuLoop(Program* program)
 	}
 }
 
-void PrgFree(Program**const program)
+void PrgFree(Program** const program)
 {
 	if (*program == NULL)
 		return;
@@ -164,7 +171,9 @@ PRG_FLD_RDR_F(PRG_HELP_CMD)
 PRG_FLD_RDR_F(PRG_RUN_CMD)
 {
 	Forest* forest = FrstGenerateForest(program->LearnData);
-	ConfMatrix* matrix = FrstCalculateOnTestData(forest, program->LearnData);
+	if (program->LearnData->TestData.RowsCount == 0)
+		LrnExtractTestData(program->LearnData);
+	ConfMatrix * matrix = FrstCalculateOnTestData(forest, program->LearnData);
 	CmPrint(matrix);
 	FrstFree(&forest);
 	CmFree(&matrix);

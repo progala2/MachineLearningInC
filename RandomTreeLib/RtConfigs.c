@@ -45,6 +45,7 @@ RtConfigs* RtReadConfigFromFile(FILE* fp)
 	configs->CFG_FLD_CV_TYPE = CFG_CV_TYPE;
 	configs->CFG_FLD_TRAINING_FILE_NAME = MemCopyChars(buffer);
 	configs->CFG_FLD_TEST_FILE_NAME = CFG_TEST_FILE_NAME;
+	configs->CFG_FLD_TEST_EXTRACT_PERCENTAGE = CFG_TEST_EXTRACT_PERCENTAGE;
 
 	for (uint i = 1; i < table->VecBase.Size; ++i)
 	{

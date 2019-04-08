@@ -54,3 +54,5 @@ char* MemCopyCharsNoEnter(const char* source);
 
 #define _malloc(size, vName) NULLCHECK(malloc(size), vName)
 #define _malloc_v(size, vName) NULLCHECK_V(malloc(size), vName)
+
+#define HUNDRED_PERCENT 100

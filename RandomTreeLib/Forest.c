@@ -59,7 +59,7 @@ Forest* FrstGenerateForest(const LearnData* const table)
 		return NULL;
 
 	Node** _malloc(sizeof(Node*) * _glConfigs->TreeCount, trees);
-	uint* countByClass = LrnCountByClass(table->ClassesColumn, table->RowsCount, table->Classes->VecBase.Size);
+	uint* countByClass = LrnCountByClass(table->ClassesColumn, table->Classes->VecBase.Size);
 	
 	for (uint i = 0; i < _glConfigs->TreeCount; ++i)
 	{
