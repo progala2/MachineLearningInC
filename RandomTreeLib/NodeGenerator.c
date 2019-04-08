@@ -25,9 +25,9 @@ double CalculateEntropy(const unsigned countByClass[], const size_t classCount, 
 	return entropy;
 }
 
-DoubleVector* CalculateSeparationValue(const DoubleVector*const*const table, const IntVector* const parameterIndexes, size_t rowsCount)
+DoubleVector* CalculateSeparationValue(const DoubleVector* const* const table, const IntVector* const parameterIndexes, const size_t rowsCount)
 {
-	DoubleVector* retVector = DblVecInit(parameterIndexes->VecBase.Size + 1);
+	DoubleVector* retVector = DblVecInit_C(parameterIndexes->VecBase.Size + 1);
 	const uint halfCount = rowsCount / 2;
 	for (size_t i = 0; i < parameterIndexes->VecBase.Size; i++)
 	{
@@ -41,7 +41,7 @@ double CalculateProbability(const uint selected, const uint total)
 	return total == 0 ? 0 : (double)selected / total;
 }
 
-Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, const IntVector* classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
+Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn * values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
 {
 	if (parametersCount < 1)
 		return NULL;
@@ -56,50 +56,87 @@ Tree* NdGenerateTree(const uint parametersCount, const ParameterColumn* values, 
 	}
 
 	NdSplitNode(&tempNode, parametersCount, valuesVector, classesColumn, countByClass, classCount, 0);
-	
+
 	FreeDblVecTab(valuesVector, parametersCount);
-	
-	Tree* node = TreeCreateRoot(tempNode.ParameterIndexes, tempNode.ParameterValueSeparators, tempNode.Left, tempNode.Right);
+
+	Tree* node = TrCreateRoot(tempNode.ParameterIndexes, tempNode.ParameterValueSeparators, tempNode.Left, tempNode.Right);
 
 	return node;
 }
 
-bool CheckIfItIsLeftElem(const DoubleVector* const* const table, const uint rowindex, const IntVector* const parameterIndexes, const DoubleVector* const separationValue)
+static bool CheckIfItIsLeftForOneElem(const double elem, const double sep, const int type)
 {
-	for (size_t i = 0; i < parameterIndexes->VecBase.Size; i++)
+	switch (type)
 	{
-		if (table[parameterIndexes->Data[i]]->Data[rowindex] > separationValue->Data[i])
+	default:
+	case 0:
+		if (elem > sep)
 			return false;
+		break;
+	case 1:
+		if (elem <= sep)
+			return false;
+		break;
 	}
 	return true;
 }
-bool CheckIfItIsLeftElem_T(const double* const* const table, const uint rowindex, const IntVector* const parameterIndexes, const DoubleVector* const separationValue)
+
+bool CheckIfItIsLeftElem(const DoubleVector * const* const table, const uint rowIndex, const IntVector * const parameterIndexes, const DoubleVector * const separationValue, const
+	IntVector * const separationType)
 {
 	for (size_t i = 0; i < parameterIndexes->VecBase.Size; i++)
 	{
-		if (table[parameterIndexes->Data[i]][rowindex] > separationValue->Data[i])
+		if (CheckIfItIsLeftForOneElem(table[parameterIndexes->Data[i]]->Data[rowIndex], separationValue->Data[i], separationType->Data[i]) == false)
 			return false;
 	}
 	return true;
 }
 
-void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*const*const values, const IntVector*const classesColumn, const unsigned countByClass[], const size_t classCount, const uint deepness)
+bool CheckIfItIsLeftElem_T(const double* const* const table, const uint rowIndex, const IntVector * const parameterIndexes, const DoubleVector * const separationValue, const
+	IntVector * const separationType)
 {
-	if (node-> ElementsCount < _glConfigs->MinSplitCount || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0 || parametersCount < 1)
+	for (size_t i = 0; i < parameterIndexes->VecBase.Size; i++)
+	{
+		if (CheckIfItIsLeftForOneElem(table[parameterIndexes->Data[i]][rowIndex], separationValue->Data[i], separationType->Data[i]) == false)
+			return false;
+	}
+	return true;
+}
+
+IntVector* CalculateParameterIndexes(const uint parametersCount)
+{
+	IntVector* parameterIndexes = IntVecInit_C(_glConfigs->MaxFeaturesPerNode + 1);
+	for (size_t i = 0; i < _glConfigs->MaxFeaturesPerNode; i++)
+	{
+		const uint val = rand() % parametersCount;
+		if (!IntVecContains(parameterIndexes, val, NULL))
+			IntVecAppend(parameterIndexes, val);
+	}
+	return parameterIndexes;
+}
+
+IntVector* CalculateParameterSeparatorTypes()
+{
+	IntVector* parameterSeparatorTypes = IntVecInit_C(_glConfigs->MaxFeaturesPerNode + 1);
+	for (size_t i = 0; i < _glConfigs->MaxFeaturesPerNode; i++)
+	{
+		IntVecAppend(parameterSeparatorTypes, rand() % PARAMETER_SEPARATION_TYPES_NUMBER);
+	}
+	return parameterSeparatorTypes;
+}
+
+void NdSplitNode(Node * node, const uint parametersCount, const DoubleVector * const* const values, const IntVector * const classesColumn, const unsigned countByClass[], const size_t classCount, const uint deepness)
+{
+	if (node->ElementsCount < _glConfigs->MinSplitCount || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0 || parametersCount < 1)
 		return;
 
 	const size_t rowsCount = classesColumn->VecBase.Size;
-	IntVector* parameterIndexes = IntVecInit();
-	for (size_t i = 0; i < _glConfigs->MaxFeaturesPerNode; i++)
-	{
-		const val = rand() % parametersCount;
-		if (!IntVecContains(parameterIndexes, val, NULL))
-		IntVecAppend(parameterIndexes, val);
-	}
-	DoubleVector* separatorValues = CalculateSeparationValue(values, parameterIndexes, rowsCount);
+	IntVector * parameterIndexes = CalculateParameterIndexes(parametersCount);
+	IntVector * parameterSeparatorTypes = CalculateParameterIndexes(parametersCount);
+	DoubleVector * separatorValues = CalculateSeparationValue(values, parameterIndexes, rowsCount);
 
-	DoubleVector** _malloc_v(sizeof(DoubleVector*) * parametersCount, columnsLeft);
-	DoubleVector** _malloc_v(sizeof(DoubleVector*) * parametersCount, columnsRight);
+	DoubleVector * *_malloc_v(sizeof(DoubleVector*) * parametersCount, columnsLeft);
+	DoubleVector * *_malloc_v(sizeof(DoubleVector*) * parametersCount, columnsRight);
 	for (size_t i = 0; i < parametersCount; i++)
 	{
 		columnsLeft[i] = DblVecInit();
@@ -116,7 +153,7 @@ void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*cons
 	memset(countByClassRight, 0, sizeof(uint) * classCount);
 	for (size_t j = 0; j < rowsCount; ++j)
 	{
-		if (CheckIfItIsLeftElem(values, j, parameterIndexes, separatorValues))
+		if (CheckIfItIsLeftElem(values, j, parameterIndexes, separatorValues, parameterSeparatorTypes))
 		{
 			for (size_t i = 0; i < parametersCount; i++)
 			{
@@ -152,19 +189,20 @@ void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*cons
 		node->ParameterIndexes = parameterIndexes;
 		_FreeN(&node->ClassesProbability);
 		node->ParameterValueSeparators = separatorValues;
+		node->ParameterSeparatorTypes = parameterSeparatorTypes;
 
-		node->Left = TreeCreateLeaf(probabilityLeft, classCount, entropyLeft, leftCount);
+		node->Left = TrCreateLeaf(probabilityLeft, classCount, entropyLeft, leftCount);
 		NdSplitNode(node->Left, parametersCount, columnsLeft, classesLeft, countByClassLeft, classCount, deepness + 1);
 	}
-	
+
 	FreeDblVecTab(columnsLeft, parametersCount);
 	IntVecFreeMemory(&classesLeft);
-	
+
 	if (leftCount >= _glConfigs->MinElemsInLeaf && rightCount >= _glConfigs->MinElemsInLeaf)
 	{
 		const double entropyRight = CalculateEntropy(countByClassRight, classCount, rightCount);
 		DBG_PRINT("e2: %f\n", entropyRight);
-		node->Right = TreeCreateLeaf(probabilityRight, classCount, entropyRight, rightCount);
+		node->Right = TrCreateLeaf(probabilityRight, classCount, entropyRight, rightCount);
 		NdSplitNode(node->Right, parametersCount, columnsRight, classesRight, countByClassRight, classCount, deepness + 1);
 	}
 	else
@@ -172,10 +210,10 @@ void NdSplitNode(Node* node, const uint parametersCount, const DoubleVector*cons
 		IntVecFreeMemory(&parameterIndexes);
 		DblVecFreeMemory(&separatorValues);
 	}
-	
+
 	FreeDblVecTab(columnsRight, parametersCount);
 	IntVecFreeMemory(&classesRight);
-	
+
 	free(countByClassLeft);
 	free(countByClassRight);
 	free(probabilityLeft);

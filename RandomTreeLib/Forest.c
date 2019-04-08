@@ -4,9 +4,9 @@
 
 void CalculateTreeDecision(double*const predictionSumPerClass, const double** itemValues, const uint rowIndex, const IntVector* parameterIndexes, const DoubleVector* valueSeparator, const Node* const left, const Node* const right, const uint classesCount)
 {
-	const Node* nd = CheckIfItIsLeftElem_T(itemValues, rowIndex, parameterIndexes, valueSeparator) ? left : right;
+	const Node* nd = CheckIfItIsLeftElem_T(itemValues, rowIndex, parameterIndexes, valueSeparator,) ? left : right;
 
-	if (TreeIsLeaf(nd))
+	if (TrIsLeaf(nd))
 	{
 		for (uint k = 0; k < classesCount; ++k)
 		{
@@ -35,7 +35,7 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
 		for (uint j = 0; j < forest->TreesCount; ++j)
 		{
-			CalculateTreeDecision(predictionSumPerClass, table->TestData.Parameters, i, forest->Trees[j]->ParameterIndexes, forest->Trees[j]->ParameterValueSeparators, forest->Trees[j]->Left, forest->Trees[j]->Right, classesCount);
+			CalculateTreeDecision(predictionSumPerClass,(const double**) table->TestData.Parameters, i, forest->Trees[j]->ParameterIndexes, forest->Trees[j]->ParameterValueSeparators, forest->Trees[j]->Left, forest->Trees[j]->Right, classesCount);
 		}
 		uint maxK = 0;
 		for (uint k = 0; k < classesCount; ++k)

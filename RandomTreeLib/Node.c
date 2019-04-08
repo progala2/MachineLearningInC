@@ -3,7 +3,7 @@
 #include "Node.h"
 #include "RtConfigs.h"
 
-Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount)
+Node* TrCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount)
 {
 	if (classesProbability == NULL || size < 2 || entropy < 0)
 		return NULL;
@@ -19,7 +19,7 @@ Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const 
 	return nd;
 }
 
-Tree* TreeCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSeparator,
+Tree* TrCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSeparator,
                    Node* left, Node* right)
 {
 	if (left == right || left == NULL || right == NULL)
@@ -37,23 +37,23 @@ Tree* TreeCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSepa
  * \param nd Tree's Node.
  * \return True if has not children.
  */
-bool TreeIsLeaf(const Node*const nd)
+bool TrIsLeaf(const Node*const nd)
 {
 	return nd->Left == nd->Right && nd->Right == NULL;
 }
 
-bool TreeIsFullLeaf(const Node*const nd)
+bool TrIsFullLeaf(const Node*const nd)
 {
 	return nd->Entropy == 1;
 }
 
-void TreeFreeNd(Node**const nd)
+void TrFreeNode(Node**const nd)
 {
 	if (*nd == NULL)
 		return;
 	Node* hp = *nd;
-	TreeFreeNd(&hp->Left);
-	TreeFreeNd(&hp->Right);
+	TrFreeNode(&hp->Left);
+	TrFreeNode(&hp->Right);
 	free(hp->ClassesProbability);
 	IntVecFreeMemory(&hp->ParameterIndexes);
 	DblVecFreeMemory(&hp->ParameterValueSeparators);
@@ -65,8 +65,8 @@ void TrFree(Tree** const nd)
 	if (*nd == NULL)
 		return;
 	Tree* hp = *nd;
-	TreeFreeNd(&hp->Left);
-	TreeFreeNd(&hp->Right);
+	TrFreeNode(&hp->Left);
+	TrFreeNode(&hp->Right);
 	IntVecFreeMemory(&hp->ParameterIndexes);
 	DblVecFreeMemory(&hp->ParameterValueSeparators);
 	_FreeN(nd);

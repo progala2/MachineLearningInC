@@ -1,9 +1,11 @@
-#ifndef Node_H_INCLUDE_GUARD
-#define Node_H_INCLUDE_GUARD
+#ifndef NODE_H_INCLUDE_GUARD
+#define NODE_H_INCLUDE_GUARD
 
 #include <stdbool.h>
 #include "utils.h"
 #include "DoubleVector.h"
+
+#define PARAMETER_SEPARATION_TYPES_NUMBER 2
 
 typedef struct Node
 {
@@ -11,6 +13,7 @@ typedef struct Node
 	struct Node* Right;
 	IntVector* ParameterIndexes;
 	DoubleVector* ParameterValueSeparators;
+	IntVector* ParameterSeparatorTypes;
 	double Entropy;
 	double* ClassesProbability;
 	uint ElementsCount;
@@ -22,17 +25,18 @@ typedef struct
 	Node* Right;
 	IntVector* ParameterIndexes;
 	DoubleVector* ParameterValueSeparators;
+	IntVector* ParameterSeparatorTypes;
 } Tree;
 
-Node* TreeCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount);
+Node* TrCreateLeaf(const double* classesProbability, const size_t size, const double entropy, const uint elemCount);
 
-Tree* TreeCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSeparator, Node* left, Node* right);
+Tree* TrCreateRoot(IntVector* parameterIndex, DoubleVector* parameterValueSeparator, Node* left, Node* right);
 
-bool TreeIsLeaf(const Node*const nd);
+bool TrIsLeaf(const Node*const nd);
 
-bool TreeIsFullLeaf(const Node*const nd);
+bool TrIsFullLeaf(const Node*const nd);
 
-void TreeFreeNd(Node**const nd);
+void TrFreeNode(Node**const nd);
 
 void TrFree(Tree**const nd);
 
