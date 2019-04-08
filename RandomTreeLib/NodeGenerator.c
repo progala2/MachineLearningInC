@@ -41,7 +41,7 @@ double CalculateProbability(const uint selected, const uint total)
 	return total == 0 ? 0 : (double)selected / total;
 }
 
-Node* NdGenerateTree(const uint parametersCount, const ParameterColumn * values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
+extern Node* NdGenerateTree(const uint parametersCount, const double** values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
 {
 	if (parametersCount < 1)
 		return NULL;
@@ -55,7 +55,7 @@ Node* NdGenerateTree(const uint parametersCount, const ParameterColumn * values,
 	for (size_t i = 0; i < parametersCount; i++)
 	{
 		valuesVector[i] = DblVecInit();
-		DblVecAppendRange(valuesVector[i], values[i].Column, rowsCount);
+		DblVecAppendRange(valuesVector[i], values[i], rowsCount);
 	}
 
 	do
@@ -197,7 +197,7 @@ void NdSplitNode(Node * node, const uint parametersCount, const DoubleVector * c
 		node->ParameterSeparatorTypes = parameterSeparatorTypes;
 
 		node->Left = TrCreateLeaf(probabilityLeft, classCount, entropyLeft, leftCount);
-		NdSplitNode(node->Left, parametersCount, columnsLeft, classesLeft, countByClassLeft, classCount, deepness + 1);
+		NdSplitNode(node->Left, parametersCount, (const DoubleVector*const*)columnsLeft, classesLeft, countByClassLeft, classCount, deepness + 1);
 	}
 
 	FreeDblVecTab(columnsLeft, parametersCount);
@@ -208,7 +208,7 @@ void NdSplitNode(Node * node, const uint parametersCount, const DoubleVector * c
 		const double entropyRight = CalculateEntropy(countByClassRight, classCount, rightCount);
 		DBG_PRINT("e2: %f\n", entropyRight);
 		node->Right = TrCreateLeaf(probabilityRight, classCount, entropyRight, rightCount);
-		NdSplitNode(node->Right, parametersCount, columnsRight, classesRight, countByClassRight, classCount, deepness + 1);
+		NdSplitNode(node->Right, parametersCount, (const DoubleVector*const*)columnsRight, classesRight, countByClassRight, classCount, deepness + 1);
 	}
 	else
 	{

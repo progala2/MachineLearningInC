@@ -6,10 +6,9 @@
 
 typedef struct
 {
-	double* Column;
 	double MaxValue;
 	double MinValue;
-} ParameterColumn;
+} MinMaxParameters;
 
 typedef struct
 {
@@ -24,7 +23,8 @@ typedef struct
 	uint RowsCount;
 	char** Headers;
 	StringVector* Classes;
-	ParameterColumn* Parameters;
+	double** Parameters;
+	MinMaxParameters* ColumnsMinMaxes;
 	TestData TestData;
 	IntVector*ClassesColumn;
 	char* ClassName;

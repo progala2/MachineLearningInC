@@ -11,6 +11,7 @@ typedef struct
 } Forest;
 
 ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData* const table);
+ConfMatrix* FrstCalculateOnTrainingData(const Forest* const forest, const LearnData* const table);
 Forest* FrstGenerateForest(const LearnData* const table);
 void FrstFree(Forest**const forest);
 

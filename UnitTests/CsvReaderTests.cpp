@@ -59,10 +59,10 @@ namespace UnitTests
 						Assert::IsTrue(csvTable->ClassesColumn->Data[i] == j, L"Wrong class value");
 				}
 				const double d = 0.00000001;
-				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0].Column[i]) < d);
-				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1].Column[i]) < d);
-				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2].Column[i]) < d);
-				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3].Column[i]) < d);
+				Assert::IsTrue(fabs(lines[i][1] - csvTable->Parameters[0][i]) < d);
+				Assert::IsTrue(fabs(lines[i][2] - csvTable->Parameters[1][i]) < d);
+				Assert::IsTrue(fabs(lines[i][3] - csvTable->Parameters[2][i]) < d);
+				Assert::IsTrue(fabs(lines[i][4] - csvTable->Parameters[3][i]) < d);
 				
 			}
 			LrnFreeMemory(&csvTable);

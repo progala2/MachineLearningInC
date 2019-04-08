@@ -46,6 +46,22 @@ void CmPrint(const ConfMatrix* matrix)
 	}
 }
 
+double CmCalculateError(const ConfMatrix* const matrix)
+{
+	double divider = 0;
+	double numerator = 0;
+	for (uint i = 0; i < matrix->N; ++i)
+	{
+		for (uint j = 0; j < matrix->N; ++j)
+		{
+			divider += matrix->TableData[i][j];
+			if (i!=j)
+				numerator += matrix->TableData[i][j];
+		}
+	}
+	return numerator/divider;
+}
+
 void CmFree(ConfMatrix**const matrix)
 {
 	FreeTab((void_tab_ptr)(*matrix)->TableData, (*matrix)->N);

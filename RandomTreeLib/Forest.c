@@ -53,6 +53,40 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 	return matrix;
 }
 
+ConfMatrix* FrstCalculateOnTrainingData(const Forest* const forest, const LearnData* const table)
+{
+	const uint rowsCount = table->RowsCount;
+	const uint classesCount = table->Classes->VecBase.Size;
+	if (rowsCount == 0 || classesCount < 2)
+		return NULL;
+
+	int* _malloc(sizeof(int)*rowsCount, actual);
+	int* _malloc(sizeof(int)*rowsCount, predicted);
+	double* _malloc(sizeof(double)*classesCount, predictionSumPerClass);
+	for (uint i = 0; i < rowsCount; ++i)
+	{
+		actual[i] = table->ClassesColumn->Data[i];
+		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
+		for (uint j = 0; j < forest->TreesCount; ++j)
+		{
+			CalculateTreeDecision(predictionSumPerClass,(const double**) table->Parameters, i, forest->Trees[j], classesCount);
+		}
+		uint maxK = 0;
+		for (uint k = 0; k < classesCount; ++k)
+		{
+			if (predictionSumPerClass[k] > predictionSumPerClass[maxK])
+				maxK = k;
+		}
+		predicted[i] = maxK;
+	}
+	free(predictionSumPerClass);
+
+	ConfMatrix* matrix = CmCreate(actual, predicted, (const char**)table->Classes->Table, table->Classes->VecBase.Size, rowsCount);
+	free(actual);
+	free(predicted);
+	return matrix;
+}
+
 Forest* FrstGenerateForest(const LearnData* const table)
 {
 	if (_glConfigs->TreeCount < 1)

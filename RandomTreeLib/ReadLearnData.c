@@ -4,7 +4,7 @@
 #include <string.h>
 #include "utils.h"
 
-static double* ParseNextRow(const CharRow* row, const uint colLen, void_ptr_ref retClassName);  // NOLINT(misc-misplaced-const)
+static double* ParseNextRow(const CharRow* row, const uint parLen, void_ptr_ref retClassName);  // NOLINT(misc-misplaced-const)
 static char** ParseFirstRow(const CharRow* row, uint* colLen);
 
 static LearnData* LrnTryInitWithHeaders(const CharsTable* trainingTable, const CharsTable* testTable, uint* colLen)
@@ -78,7 +78,7 @@ static double* ParseNextRowAndSetUpName(int* classNameValue, StringVector* class
 	else
 	{
 		SvAppend(classVector, className);
-		*classNameValue = classVector->VecBase.Size - 1;
+		*classNameValue = (int)classVector->VecBase.Size - 1;
 	}
 	return parsedDoublesTest;
 }
@@ -160,9 +160,9 @@ void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const ta
 		fprintf(stream, "%s, ", table->Classes->Table[table->ClassesColumn->Data[i]]);
 		for (uint j = 0; j < parametersCountMinOne; j++)
 		{
-			fprintf(stream, "%lf, ", table->Parameters[j].Column[i]);
+			fprintf(stream, "%lf, ", table->Parameters[j][i]);
 		}
-		fprintf(stream, "%lf\n", table->Parameters[parametersCountMinOne].Column[i]);
+		fprintf(stream, "%lf\n", table->Parameters[parametersCountMinOne][i]);
 	}
 	fprintf(stream, "TestData: \n");
 	for (uint i = 0; i < table->TestData.RowsCount; i++)
@@ -220,7 +220,7 @@ static double* ParseNextRow(const CharRow* row, const uint parLen, void_ptr_ref 
 	uint i = 0;
 	while (i < parLen && token != 0)
 	{
-		ret[i++] = strtold(token, &endPrt);
+		ret[i++] = strtod(token, &endPrt);
 		token = strtok_s(NULL, s, &context);
 	}
 

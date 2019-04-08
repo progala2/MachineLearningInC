@@ -13,9 +13,8 @@
 #define CFG_FLD_MIN_ELEMS_IN_LEAF MinElemsInLeaf 
 #define CFG_FLD_MAX_FEATURES_PER_NODE MaxFeaturesPerNode 
 #define CFG_FLD_MAX_DEEPNESS MaxDeepness 
-#define CFG_FLD_CROSS_VALIDATION_COUNT CrossValidationCount 
-#define CFG_FLD_CV_TYPE CvType 
 #define CFG_FLD_TEST_EXTRACT_PERCENTAGE TestExtractPercentage 
+#define CFG_FLD_FORCE_TEST_EXTRACT ForceTestExtract 
 
 #define CFG_OUTPUT_FOLDER ""
 #define CFG_TREE_COUNT 30
@@ -23,21 +22,11 @@
 #define CFG_MAX_DEEPNESS 1
 #define CFG_MIN_SPLIT_COUNT 2
 #define CFG_MIN_ELEMS_IN_LEAF 1
-#define CFG_CROSS_VALIDATION_COUNT 0
-#define CFG_CV_TYPE Cv_None
 #define CFG_TEST_FILE_NAME NULL
 #define CFG_TEST_EXTRACT_PERCENTAGE 10
+#define CFG_FORCE_TEST_EXTRACT 0
 
 typedef struct RtConfigs RtConfigs;
-
-typedef enum 
-{
-	Cv_Min = 0,
-	Cv_None = 0,
-	Cv_Normal = 1,
-	Cv_Loo = 2,
-	CV_Max = 2
-} CrossValType;
 
 struct RtConfigs
 {
@@ -46,12 +35,11 @@ struct RtConfigs
 	char* CFG_FLD_OUTPUT_FOLDER;
 	uint CFG_FLD_TREE_COUNT;
 	uint CFG_FLD_MAX_FEATURES_PER_NODE;
-	uint CFG_FLD_CROSS_VALIDATION_COUNT;
 	uint CFG_FLD_MAX_DEEPNESS;
 	uint CFG_FLD_MIN_SPLIT_COUNT;
 	uint CFG_FLD_MIN_ELEMS_IN_LEAF;
-	CrossValType CFG_FLD_CV_TYPE;
 	uint CFG_FLD_TEST_EXTRACT_PERCENTAGE;
+	uint CFG_FLD_FORCE_TEST_EXTRACT;
 };
 
 typedef struct
@@ -60,6 +48,7 @@ typedef struct
 	bool (*ConfigReader)(RtConfigs * config, const char* confStr);
 	const char* (*ConfigGetter)(const RtConfigs * config, char* buffer, uint bufferLen);
 	bool Editable;
+	const char* Description;
 } RtConfigsSetUp;
 
 
@@ -81,7 +70,7 @@ void RtFreeMemory(RtConfigs**const input);
 #define RT_FLD_RDR_F_INT_MAX_MIN(param, mx, mn, type) inline bool RT_FLD_RDR_NAME(param)(RtConfigs * config, const char* confStr)\
 	{\
 		const long value = strtol(confStr, NULL, 10);\
-		if (value >= mn && value <= mx)\
+		if (value >= (mn) && value <= (mx))\
 		{\
 			config->param = (type)value;\
 			return true;\
@@ -114,12 +103,11 @@ RT_FLD_READER_GETTER_P_CHAR_CHAR(CFG_FLD_TEST_FILE_NAME)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_TREE_COUNT, INT_MAX, 1, uint)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_MAX_FEATURES_PER_NODE, INT_MAX, 1, uint)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_MAX_DEEPNESS, INT_MAX, 1, uint)
-RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_CV_TYPE, CV_Max, Cv_Min, CrossValType)
 RT_FLD_READER_GETTER_P_CHAR_CHAR(CFG_FLD_OUTPUT_FOLDER)
-RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_CROSS_VALIDATION_COUNT, 10, 2, uint)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_MIN_SPLIT_COUNT, INT_MAX, 2, uint)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_MIN_ELEMS_IN_LEAF, INT_MAX, 1, uint)
 RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_TEST_EXTRACT_PERCENTAGE, 50, 1, uint)
+RT_FLD_READER_GETTER_P_INT_INT_MAX_MIN(CFG_FLD_FORCE_TEST_EXTRACT, 1, 0, uint)
 
 extern const RtConfigs* _glConfigs;
 #endif

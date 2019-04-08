@@ -170,11 +170,19 @@ PRG_FLD_RDR_F(PRG_HELP_CMD)
 
 PRG_FLD_RDR_F(PRG_RUN_CMD)
 {
-	Forest* forest = FrstGenerateForest(program->LearnData);
-	if (program->LearnData->TestData.RowsCount == 0)
+	if (program->LearnData->TestData.RowsCount == 0 || _glConfigs->CFG_FLD_FORCE_TEST_EXTRACT)
 		LrnExtractTestData(program->LearnData);
+
+	Forest* forest = FrstGenerateForest(program->LearnData);
 	ConfMatrix * matrix = FrstCalculateOnTestData(forest, program->LearnData);
+	printf("Test data: \n");
 	CmPrint(matrix);
+	printf("Error rate: %lf\n", CmCalculateError(matrix));
+	CmFree(&matrix);
+	matrix = FrstCalculateOnTrainingData(forest, program->LearnData);
+	printf("Training data: \n");	
+	CmPrint(matrix);
+	printf("Error rate: %lf\n", CmCalculateError(matrix));
 	FrstFree(&forest);
 	CmFree(&matrix);
 	return true;
