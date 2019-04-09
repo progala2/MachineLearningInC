@@ -22,10 +22,10 @@ LearnData* LrnInit()
 
 void InitAndGetParameters(double*** parameterColumn, double*** testDataParameters, const size_t parLen, const size_t trainingSize, const size_t testSize)
 {
-	_malloc_v(sizeof(double*) * parLen, *parameterColumn);
+	_malloc(sizeof(double*) * parLen, *parameterColumn);
 	if (testSize > 0)
 	{
-		_malloc_v(sizeof(double*) * parLen, *testDataParameters);
+		_malloc(sizeof(double*) * parLen, *testDataParameters);
 	}
 	else
 	{
@@ -35,15 +35,15 @@ void InitAndGetParameters(double*** parameterColumn, double*** testDataParameter
 	{
 		if (testSize > 0)
 		{
-			_malloc_v(sizeof(double) * testSize, testDataParameters[0][j]);
+			_malloc(sizeof(double) * testSize, testDataParameters[0][j]);
 		}
-		_malloc_v(sizeof(double) * trainingSize, parameterColumn[0][j]);
+		_malloc(sizeof(double) * trainingSize, parameterColumn[0][j]);
 	}
 }
 
 void InitMinMaxes(LearnData* table, const size_t parLen)
 {
-	MinMaxParameters* _malloc_v(sizeof(MinMaxParameters) * parLen, parameterColumn);
+	MinMaxParameters* _malloc(sizeof(MinMaxParameters) * parLen, parameterColumn);
 	for (uint j = 0; j < parLen; ++j)
 	{
 		parameterColumn[j].MaxValue = DBL_MIN;

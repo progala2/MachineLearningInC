@@ -8,7 +8,7 @@ Node* TrCreateLeaf(const double* classesProbability, const size_t size, const do
 	if (classesProbability == NULL || size < 2 || entropy < 0)
 		return NULL;
 
-	Node* _malloc(sizeof(Node), nd);
+	Node* _malloc(sizeof(Node), nd)
 	nd->ClassesProbability = MemCopyAlloc(classesProbability, sizeof(double) * size);
 	nd->Left = NULL;
 	nd->Right = NULL;

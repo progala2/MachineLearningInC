@@ -32,22 +32,22 @@ void CmPrint(const ConfMatrix* matrix)
 
 void CmPrint_F(FILE* file, const ConfMatrix* matrix)
 {
-	fprintf(file,"%10s ", " ");
-	for (size_t i = 0; i < matrix->N; ++i)
+	fprintf(file,"%10s, ", " ");
+	const uint n1 = matrix->N - 1;
+	for (size_t i = 0; i < n1; ++i)
 	{
-		fprintf(file, "%10s ", matrix->ClassNames[i]);
+		fprintf(file, "%10s, ", matrix->ClassNames[i]);
 	}
+	fprintf(file, "%10s\n", matrix->ClassNames[n1]);
 
-	fprintf(file, "\n");
 	for (size_t i = 0; i < matrix->N; ++i)
 	{
-		fprintf(file, "%10s ", matrix->ClassNames[i]);
-		for (size_t j = 0; j < matrix->N; ++j)
+		fprintf(file, "%10s, ", matrix->ClassNames[i]);
+		for (size_t j = 0; j < n1; ++j)
 		{
-			fprintf(file, "%10d ", matrix->TableData[i][j]);
+			fprintf(file, "%10d, ", matrix->TableData[i][j]);
 		}
-
-		fprintf(file, "\n");
+		fprintf(file, "%10d\n", matrix->TableData[i][n1]);
 	}
 }
 

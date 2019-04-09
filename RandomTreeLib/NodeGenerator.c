@@ -130,30 +130,54 @@ IntVector* CalculateParameterSeparatorTypes()
 	return parameterSeparatorTypes;
 }
 
+void CalculateTotalProbability(double* probabilityLeft, double* probabilityRight, uint* countByClassLeft, uint* countByClassRight, const unsigned countByClass[], const size_t classCount)
+{
+	double probSumLeft = 0;
+	double probSumRight = 0;
+	for (uint j = 0; j < classCount; ++j)
+	{
+		probSumLeft += probabilityLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
+		probSumRight += probabilityRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
+	}
+	for (uint j = 0; j < classCount; ++j)
+	{
+		probabilityLeft[j] /= probSumLeft;
+		probabilityRight[j] /= probSumRight;
+
+		DBG_PRINT("Probability class %d: Nr1: %d Nr2: %d total: %d B1: %f B2:%f\n", j, countByClassLeft[j], countByClassRight[j], countByClass[j], probabilityLeft[j], probabilityRight[j]);
+	}
+}
+
 void NdSplitNode(Node * node, const uint parametersCount, const DoubleVector * const* const values, const IntVector * const classesColumn,
 	const unsigned countByClass[], const size_t classCount, const uint deepness)
 {
+#define COPY_ROW_DOUBLE_DATA(j, columns) \
+	for (size_t i = 0; i < parametersCount; i++)\
+	{\
+		DblVecAppend((columns)[i], values[i]->Data[j]);\
+	}
+
 	if (node->ElementsCount < _glConfigs->MinSplitCount || deepness >= _glConfigs->MaxDeepness || node->Entropy == 0 || parametersCount < 1)
 		return;
 
 	const size_t rowsCount = classesColumn->VecBase.Size;
-	IntVector * parameterIndexes = CalculateParameterIndexes(parametersCount);
-	IntVector * parameterSeparatorTypes = CalculateParameterSeparatorTypes();
+	IntVector* parameterIndexes = CalculateParameterIndexes(parametersCount);
+	IntVector* parameterSeparatorTypes = CalculateParameterSeparatorTypes();
 	DoubleVector * separatorValues = CalculateSeparationValue(values, parameterIndexes, rowsCount);
 
-	DoubleVector * *_malloc_v(sizeof(DoubleVector*) * parametersCount, columnsLeft);
-	DoubleVector * *_malloc_v(sizeof(DoubleVector*) * parametersCount, columnsRight);
+	DoubleVector** _malloc(sizeof(DoubleVector*) * parametersCount, columnsLeft);
+	DoubleVector** _malloc(sizeof(DoubleVector*) * parametersCount, columnsRight);
 	for (size_t i = 0; i < parametersCount; i++)
 	{
 		columnsLeft[i] = DblVecInit();
 		columnsRight[i] = DblVecInit();
 	}
-	IntVector* NULL_CHECK_V(IntVecInit(), classesLeft);
-	IntVector* NULL_CHECK_V(IntVecInit(), classesRight);
-	double* _calloc_v(classCount, sizeof(double), probabilityLeft);
-	double* _calloc_v(classCount, sizeof(double), probabilityRight);
-	uint* _calloc_v(classCount, sizeof(uint), countByClassLeft);
-	uint* _calloc_v(classCount, sizeof(uint), countByClassRight);
+	IntVector* classesLeft = IntVecInit();
+	IntVector* classesRight = IntVecInit();
+	double* _calloc(classCount, sizeof(double), probabilityLeft);
+	double* _calloc(classCount, sizeof(double), probabilityRight);
+	uint* _calloc(classCount, sizeof(uint), countByClassLeft);
+	uint* _calloc(classCount, sizeof(uint), countByClassRight);
 
 	memset(countByClassLeft, 0, sizeof(uint) * classCount);
 	memset(countByClassRight, 0, sizeof(uint) * classCount);
@@ -161,19 +185,13 @@ void NdSplitNode(Node * node, const uint parametersCount, const DoubleVector * c
 	{
 		if (CheckIfItIsLeftElem(values, j, parameterIndexes, separatorValues, parameterSeparatorTypes))
 		{
-			for (size_t i = 0; i < parametersCount; i++)
-			{
-				DblVecAppend(columnsLeft[i], values[i]->Data[j]);
-			}
+			COPY_ROW_DOUBLE_DATA(j, columnsLeft)
 			IntVecAppend(classesLeft, classesColumn->Data[j]);
 			countByClassLeft[classesColumn->Data[j]]++;
 		}
 		else
 		{
-			for (size_t i = 0; i < parametersCount; i++)
-			{
-				DblVecAppend(columnsRight[i], values[i]->Data[j]);
-			}
+			COPY_ROW_DOUBLE_DATA(j, columnsRight)
 			IntVecAppend(classesRight, classesColumn->Data[j]);
 			countByClassRight[classesColumn->Data[j]]++;
 		}
@@ -181,31 +199,17 @@ void NdSplitNode(Node * node, const uint parametersCount, const DoubleVector * c
 	const uint leftCount = columnsLeft[0]->VecBase.Size, rightCount = columnsRight[0]->VecBase.Size;
 	if (leftCount >= _glConfigs->MinElemsInLeaf && rightCount >= _glConfigs->MinElemsInLeaf)
 	{
-		const double entropyLeft = CalculateEntropy(countByClassLeft, classCount, leftCount);
-
-		double probSumLeft = 0;
-		double probSumRight = 0;
-		for (uint j = 0; j < classCount; ++j)
-		{
-			probSumLeft += probabilityLeft[j] = CalculateProbability(countByClassLeft[j], countByClass[j]);
-			probSumRight += probabilityRight[j] = CalculateProbability(countByClassRight[j], countByClass[j]);
-		}
-		for (uint j = 0; j < classCount; ++j)
-		{
-			probabilityLeft[j] /= probSumLeft;
-			probabilityRight[j] /= probSumRight;
-
-			DBG_PRINT("Probability class %d: Nr1: %d Nr2: %d total: %d B1: %f B2:%f\n", j, countByClassLeft[j], countByClassRight[j], countByClass[j], probabilityLeft[j], probabilityRight[j]);
-		}
+		CalculateTotalProbability(probabilityLeft, probabilityRight, countByClassLeft, countByClassRight, countByClass, classCount);
 
 		node->ParameterIndexes = parameterIndexes;
 		_FreeN(&node->ClassesProbability);
 		node->ParameterValueSeparators = separatorValues;
 		node->ParameterSeparatorTypes = parameterSeparatorTypes;
 
+		const double entropyLeft = CalculateEntropy(countByClassLeft, classCount, leftCount);
 		DBG_PRINT("entrLeft: %f\n", entropyLeft);
 		node->Left = TrCreateLeaf(probabilityLeft, classCount, entropyLeft, leftCount);
-		NdSplitNode(node->Left, parametersCount, (const DoubleVector * const*)columnsLeft, classesLeft, countByClass, classCount, deepness + 1);
+		NdSplitNode(node->Left, parametersCount, (const DoubleVector**)columnsLeft, classesLeft, countByClass, classCount, deepness + 1);
 	}
 
 	FreeDblVecTab(columnsLeft, parametersCount);
@@ -216,7 +220,7 @@ void NdSplitNode(Node * node, const uint parametersCount, const DoubleVector * c
 		const double entropyRight = CalculateEntropy(countByClassRight, classCount, rightCount);
 		DBG_PRINT("entrRight: %f\n", entropyRight);
 		node->Right = TrCreateLeaf(probabilityRight, classCount, entropyRight, rightCount);
-		NdSplitNode(node->Right, parametersCount, (const DoubleVector * const*)columnsRight, classesRight, countByClass, classCount, deepness + 1);
+		NdSplitNode(node->Right, parametersCount, (const DoubleVector**)columnsRight, classesRight, countByClass, classCount, deepness + 1);
 	}
 	else
 	{

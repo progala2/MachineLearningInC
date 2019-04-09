@@ -26,7 +26,7 @@ void SumAllPredictionsDecision(double* const predictionSumPerClass, const double
 	}
 }
 
-void CalculateTreeDecision(double* const predictionSumPerClass, const double* const* const itemValues, const uint rowIndex, const Node* const node, const uint classesCount)
+static void CalculateTreeDecision(double* const predictionSumPerClass, const double* const* const itemValues, const uint rowIndex, const Node* const node, const uint classesCount)
 {
 	const Node* nd = CheckIfItIsLeftElem_T(itemValues, rowIndex, node->ParameterIndexes, node->ParameterValueSeparators, node->ParameterSeparatorTypes) ? node->Left : node->Right;
 

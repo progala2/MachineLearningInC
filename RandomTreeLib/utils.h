@@ -48,13 +48,10 @@ char* MemCopyCharsNoEnter(const char* source);
 
 #define _FreeN(ptr_ref) FreeN((void_ptr_ref)(ptr_ref))
 
-#define NULL_CHECK(func, vName) vName = func; if ((vName) == NULL) return NULL;
-#define NULL_CHECK_V(func, vName) vName = func; if ((vName) == NULL) return;
+#define NULL_CHECK(func, vName) vName = func; if ((vName) == NULL) exit(-1);
 
 #define _calloc(count, size, vName) NULL_CHECK(calloc(count, size), vName)
-#define _calloc_v(count, size, vName) NULL_CHECK_V(calloc(count, size), vName)
 
 #define _malloc(size, vName) NULL_CHECK(malloc(size), vName)
-#define _malloc_v(size, vName) NULL_CHECK_V(malloc(size), vName)
 
 #define HUNDRED_PERCENT 100
