@@ -3,7 +3,8 @@
 #include "../RandomTreeLib/NodeGenerator.h"
 #include "../RandomTreeLib/Forest.h"
 
-#define BUFFER_LEN 255u
+#define BUFFER_LEN 256u
+#define DBL_BUFFER_LEN 512u
 #define COMMANDS_LEN 6u
 #define CONFIG_DEFAULT_CONFIG_FILE "config.cfg"
 #define PGR_CH_TUPLE(param, description)  {XSTRIFY(param), PRG_FLD_RDR_NAME(param), description}
@@ -215,37 +216,33 @@ PRG_FLD_RDR_F(PRG_CONF_CMD)
 	return true;
 }
 
-
 PRG_FLD_RDR_F(PRG_SAVE_CMD)
 {
+	#define PRINT_TO_FILE_MACRO(suffix, printFunc) \
+		strcpy_s(buffer2, DBL_BUFFER_LEN, buffer);\
+		strcat_s(buffer2, DBL_BUFFER_LEN, suffix);\
+		fp = NULL;\
+		fopen_s(&fp, buffer2, "w");\
+		if (fp == NULL)\
+			return false;\
+		printFunc;\
+		fclose(fp);\
+
 	char buffer[BUFFER_LEN];
-	char buffer2[BUFFER_LEN*2];
+	char buffer2[DBL_BUFFER_LEN];
 	printf("Give test name: \n To abandon: Ctrl+z, Enter, Enter.\n");
 	if (scanf_s("%254s", buffer, BUFFER_LEN) == 1)
 	{
-		strcpy_s(buffer2, BUFFER_LEN*2, buffer);
-		strcat_s(buffer2, BUFFER_LEN*2, "_test_data.csv");
-		FILE* fp = NULL;
-		fopen_s(&fp, buffer2, "w");
-		if (fp == NULL)
-			return false;
+		FILE* fp;
+		buffer[BUFFER_LEN - 1] = 0;
 
-		LrnPrintTestData_F(fp, program->LearnData);
-		
-		fclose(fp);
-
-		strcpy_s(buffer2, BUFFER_LEN*2, buffer);
-		strcat_s(buffer2, BUFFER_LEN*2, "_training_data.csv");
-		fp = NULL;
-		fopen_s(&fp, buffer2, "w");
-		if (fp == NULL)
-			return false;
-
-		LrnPrintTrainingData_F(fp, program->LearnData);
-		
-		fclose(fp);
+		PRINT_TO_FILE_MACRO("_test_data.csv", LrnPrintTestData_F(fp, program->LearnData))
+		PRINT_TO_FILE_MACRO("_training_data.csv", LrnPrintTrainingData_F(fp, program->LearnData))
+		PRINT_TO_FILE_MACRO("_test_confusion_matrix.csv", CmPrint_F(fp, program->LastTestMatrix))
+		PRINT_TO_FILE_MACRO("_training_confusion_matrix.csv", CmPrint_F(fp, program->LastTrainMatrix))
 	}
 	return true;
+#undef PRINT_TO_FILE_MACRO
 }
 
 PRG_FLD_RDR_F(PRG_SHOW_DATA_CMD)

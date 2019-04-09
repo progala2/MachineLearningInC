@@ -27,22 +27,27 @@ ConfMatrix* CmCreate(const int actual[], const int predicted[], const char* cons
 
 void CmPrint(const ConfMatrix* matrix)
 {
-	printf("%10s ", " ");
+	CmPrint_F(stdout, matrix);
+}
+
+void CmPrint_F(FILE* file, const ConfMatrix* matrix)
+{
+	fprintf(file,"%10s ", " ");
 	for (size_t i = 0; i < matrix->N; ++i)
 	{
-		printf("%10s ", matrix->ClassNames[i]);
+		fprintf(file, "%10s ", matrix->ClassNames[i]);
 	}
 
-	printf("\n");
+	fprintf(file, "\n");
 	for (size_t i = 0; i < matrix->N; ++i)
 	{
-		printf("%10s ", matrix->ClassNames[i]);
+		fprintf(file, "%10s ", matrix->ClassNames[i]);
 		for (size_t j = 0; j < matrix->N; ++j)
 		{
-			printf("%10d ", matrix->TableData[i][j]);
+			fprintf(file, "%10d ", matrix->TableData[i][j]);
 		}
 
-		printf("\n");
+		fprintf(file, "\n");
 	}
 }
 
