@@ -11,17 +11,17 @@ const RtConfigs* _glConfigs = NULL;
 #define RT_RDR_TUPLE_DESC(param, editable, desc)  {XSTRIFY(param), RT_FLD_RDR_NAME(param), RT_FLD_GET_NAME(param), editable, desc}
 
 static const RtConfigsSetUp configs_readers[CONFIGS_READER_LEN] = {
-	RT_RDR_TUPLE(CFG_FLD_TRAINING_FILE_NAME, false),
-	RT_RDR_TUPLE(CFG_FLD_TEST_FILE_NAME, false),
-	RT_RDR_TUPLE(CFG_FLD_MAX_FEATURES_PER_NODE, true),
-	RT_RDR_TUPLE(CFG_FLD_OUTPUT_FOLDER, true),
-	RT_RDR_TUPLE(CFG_FLD_TREE_COUNT, true),
-	RT_RDR_TUPLE(CFG_FLD_MIN_SPLIT_COUNT, true),
-	RT_RDR_TUPLE(CFG_FLD_MIN_ELEMS_IN_LEAF, true),
+	RT_RDR_TUPLE_DESC(CFG_FLD_TRAINING_FILE_NAME, false, "Path to the file with the training data.(obligatory)"),
+	RT_RDR_TUPLE_DESC(CFG_FLD_TEST_FILE_NAME, false, "Path to the file with the test data.(Not obligatory)"),
+	RT_RDR_TUPLE_DESC(CFG_FLD_MAX_FEATURES_PER_NODE, true, "How many features can be taken for the node spliting."),
+	RT_RDR_TUPLE_DESC(CFG_FLD_OUTPUT_FOLDER, true, "Where to save the files."),
+	RT_RDR_TUPLE_DESC(CFG_FLD_TREE_COUNT, true, "Number of trees in a forest."),
+	RT_RDR_TUPLE_DESC(CFG_FLD_MIN_SPLIT_COUNT, true, "Minimum elements in a node accepted to be splitted"),
+	RT_RDR_TUPLE_DESC(CFG_FLD_MIN_ELEMS_IN_LEAF, true, "Minimum elements that can be stored in a leaf."),
 	RT_RDR_TUPLE_DESC(CFG_FLD_TEST_EXTRACT_PERCENTAGE, true, "When there is no test data provided, what percetage should be taken for testing."),
 	RT_RDR_TUPLE_DESC(CFG_FLD_FORCE_TEST_EXTRACT, true, "Merge training and test data and force extracting data samples from it."),
 	RT_RDR_TUPLE_DESC(CFG_FLD_VOTING_TYPE, true, "0: Sum up probabilities from leaves; 1: category with the highest probability in a tree takes 1 point from it."),
-	RT_RDR_TUPLE(CFG_FLD_MAX_DEEPNESS, true)
+	RT_RDR_TUPLE_DESC(CFG_FLD_MAX_DEEPNESS, true, "Maximum deepness of a tree.")
 };
 
 static void RtSetUpPropertyFromString_ReadOnly(RtConfigs* const configs, const char* str, const bool editReadOnly);

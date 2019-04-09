@@ -219,7 +219,8 @@ PRG_FLD_RDR_F(PRG_CONF_CMD)
 PRG_FLD_RDR_F(PRG_SAVE_CMD)
 {
 	#define PRINT_TO_FILE_MACRO(suffix, printFunc) \
-		strcpy_s(buffer2, DBL_BUFFER_LEN, buffer);\
+		strcpy_s(buffer2, DBL_BUFFER_LEN, _glConfigs->CFG_FLD_OUTPUT_FOLDER);\
+		strcat_s(buffer2, DBL_BUFFER_LEN, buffer);\
 		strcat_s(buffer2, DBL_BUFFER_LEN, suffix);\
 		fp = NULL;\
 		fopen_s(&fp, buffer2, "w");\
