@@ -171,9 +171,11 @@ unsigned* LrnCountByClass(const IntVector * classesColumn, const size_t classesC
 	return countByClass;
 }
 
-void LrnFreeMemory(LearnData * *const tbl)
+void LrnFreeMemory(LearnData** const tbl)
 {
 	LearnData* table = *tbl;
+	if (table == NULL)
+		return;
 
 	FreeTab((void_tab_ptr)table->TestData.Parameters, table->ParametersCount);
 	FreeTab((void_tab_ptr)table->Parameters, table->ParametersCount);

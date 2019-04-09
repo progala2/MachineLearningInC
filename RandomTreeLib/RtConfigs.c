@@ -94,6 +94,8 @@ void RtSetUpPropertyFromString(RtConfigs * const configs, const char* str)
 
 void RtFreeMemory(RtConfigs * *const input)
 {
+	if (*input == NULL)
+		return;
 	FreeN(&(*input)->TrainingFileName);
 	FreeN(&(*input)->TestFileName);
 	FreeN(&(*input)->OutputFolder);

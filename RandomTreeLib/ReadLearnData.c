@@ -146,7 +146,27 @@ LearnData* LrnReadData_NoTest(const CharsTable* trainingTable)
 	return lrnData;
 }
 
-void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const table)
+void LrnPrintTestData_F(FILE* const stream, const LearnData* const table)
+{
+	fprintf(stream, "%s, ", table->ClassName);
+	for (uint j = 0; j < table->ParametersCount; j++)
+	{
+		fprintf(stream, "%s, ", table->Headers[j]);
+	}
+	fprintf(stream, "\n");
+	const uint parametersCountMinOne = table->ParametersCount - 1;
+	for (uint i = 0; i < table->TestData.RowsCount; i++)
+	{
+		fprintf(stream, "%s, ", table->Classes->Table[table->ClassesColumn->Data[i]]);
+		for (uint j = 0; j < parametersCountMinOne; j++)
+		{
+			fprintf(stream, "%.12g, ", table->TestData.Parameters[j][i]);
+		}
+		fprintf(stream, "%.12g\n", table->TestData.Parameters[parametersCountMinOne][i]);
+	}
+}
+
+void LrnPrintTrainingData_F(FILE* const stream, const LearnData* const table)
 {
 	fprintf(stream, "%s, ", table->ClassName);
 	for (uint j = 0; j < table->ParametersCount; j++)
@@ -160,25 +180,17 @@ void LrnPrintTestAndTrainingData_F(FILE* const stream, const LearnData* const ta
 		fprintf(stream, "%s, ", table->Classes->Table[table->ClassesColumn->Data[i]]);
 		for (uint j = 0; j < parametersCountMinOne; j++)
 		{
-			fprintf(stream, "%lf, ", table->Parameters[j][i]);
+			fprintf(stream, "%.12g, ", table->Parameters[j][i]);
 		}
-		fprintf(stream, "%lf\n", table->Parameters[parametersCountMinOne][i]);
-	}
-	fprintf(stream, "TestData: \n");
-	for (uint i = 0; i < table->TestData.RowsCount; i++)
-	{
-		fprintf(stream, "%s, ", table->Classes->Table[table->TestData.ClassesColumn->Data[i]]);
-		for (uint j = 0; j < parametersCountMinOne; j++)
-		{
-			fprintf(stream, "%lf, ", table->TestData.Parameters[j][i]);
-		}
-		fprintf(stream, "%lf\n", table->TestData.Parameters[parametersCountMinOne][i]);
+		fprintf(stream, "%.12g\n", table->Parameters[parametersCountMinOne][i]);
 	}
 }
 
 void LrnPrintTestAndTrainingData(const LearnData* const table)
 {
-	LrnPrintTestAndTrainingData_F(stdout, table);
+	LrnPrintTrainingData_F(stdout, table);
+	fprintf(stdout, "TestData: \n");
+	LrnPrintTestData_F(stdout, table);
 }
 
 static char** ParseFirstRow(const CharRow* row, uint* colLen)

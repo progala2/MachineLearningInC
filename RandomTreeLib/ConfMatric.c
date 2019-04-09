@@ -64,6 +64,8 @@ double CmCalculateAccuracy(const ConfMatrix* const matrix)
 
 void CmFree(ConfMatrix * *const matrix)
 {
+	if (*matrix == NULL)
+		return;
 	FreeTab((void_tab_ptr)(*matrix)->TableData, (*matrix)->N);
 	free((*matrix)->ClassNames);
 	free(*matrix);

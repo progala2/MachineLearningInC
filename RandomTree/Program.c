@@ -1,11 +1,10 @@
 #include "Program.h"
 #include <stdlib.h>
-#include "../RandomTreeLib/Node.h"
 #include "../RandomTreeLib/NodeGenerator.h"
 #include "../RandomTreeLib/Forest.h"
 
 #define BUFFER_LEN 255u
-#define COMMANDS_LEN 5u
+#define COMMANDS_LEN 6u
 #define CONFIG_DEFAULT_CONFIG_FILE "config.cfg"
 #define PGR_CH_TUPLE(param, description)  {XSTRIFY(param), PRG_FLD_RDR_NAME(param), description}
 
@@ -15,6 +14,7 @@ static PrgCommandHandler _commands[COMMANDS_LEN] = {
 	PGR_CH_TUPLE(PRG_CONF_CMD, "Show current settings and provide new one if necessary."),
 	PGR_CH_TUPLE(PRG_EXIT_CMD, "Exit the program."),
 	PGR_CH_TUPLE(PRG_SHOW_DATA_CMD, "Show given test and training data."),
+	PGR_CH_TUPLE(PRG_SAVE_CMD, "Save last training to files."),
 };
 
 Program* PrgLoadData()
@@ -122,6 +122,9 @@ Program* PrgLoadData()
 	program->Configs = configs;
 	_glConfigs = configs;
 	program->LearnData = lrnData;
+	program->LastTestMatrix = NULL;
+	program->LastTrainMatrix = NULL;
+	program->LastForest = NULL;
 	return program;
 }
 
@@ -149,12 +152,19 @@ bool PrgMenuLoop(Program* program)
 	}
 }
 
+static void PrgFreeLastTest(Program* program)
+{
+	CmFree(&program->LastTestMatrix);
+	CmFree(&program->LastTrainMatrix);
+	FrstFree(&program->LastForest);
+}
 void PrgFree(Program** const program)
 {
 	if (*program == NULL)
 		return;
 	RtFreeMemory(&(*program)->Configs);
 	LrnFreeMemory(&(*program)->LearnData);
+	PrgFreeLastTest(*program);
 	free(*program);
 	*program = NULL;
 }
@@ -173,18 +183,22 @@ PRG_FLD_RDR_F(PRG_RUN_CMD)
 	if (program->LearnData->TestData.RowsCount == 0 || _glConfigs->CFG_FLD_FORCE_TEST_EXTRACT)
 		LrnExtractTestData(program->LearnData);
 
+	PrgFreeLastTest(program);
+
 	Forest* forest = FrstGenerateForest(program->LearnData);
-	ConfMatrix * matrix = FrstCalculateOnTestData(forest, program->LearnData);
+	ConfMatrix* matrix1 = FrstCalculateOnTestData(forest, program->LearnData);
 	printf("Test data: \n");
-	CmPrint(matrix);
-	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix));
-	CmFree(&matrix);
-	matrix = FrstCalculateOnTrainingData(forest, program->LearnData);
+	CmPrint(matrix1);
+	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix1));
+
+	ConfMatrix* matrix2 = FrstCalculateOnTrainingData(forest, program->LearnData);
 	printf("Training data: \n");	
-	CmPrint(matrix);
-	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix));
-	FrstFree(&forest);
-	CmFree(&matrix);
+	CmPrint(matrix2);
+	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix2));
+
+	program->LastForest = forest;
+	program->LastTestMatrix = matrix1;
+	program->LastTrainMatrix = matrix2;
 	return true;
 }
 
@@ -197,6 +211,39 @@ PRG_FLD_RDR_F(PRG_CONF_CMD)
 	{
 		RtSetUpPropertyFromString(program->Configs, buffer);
 		RtPrintAllSettings(program->Configs);
+	}
+	return true;
+}
+
+
+PRG_FLD_RDR_F(PRG_SAVE_CMD)
+{
+	char buffer[BUFFER_LEN];
+	char buffer2[BUFFER_LEN*2];
+	printf("Give test name: \n To abandon: Ctrl+z, Enter, Enter.\n");
+	if (scanf_s("%254s", buffer, BUFFER_LEN) == 1)
+	{
+		strcpy_s(buffer2, BUFFER_LEN*2, buffer);
+		strcat_s(buffer2, BUFFER_LEN*2, "_test_data.csv");
+		FILE* fp = NULL;
+		fopen_s(&fp, buffer2, "w");
+		if (fp == NULL)
+			return false;
+
+		LrnPrintTestData_F(fp, program->LearnData);
+		
+		fclose(fp);
+
+		strcpy_s(buffer2, BUFFER_LEN*2, buffer);
+		strcat_s(buffer2, BUFFER_LEN*2, "_training_data.csv");
+		fp = NULL;
+		fopen_s(&fp, buffer2, "w");
+		if (fp == NULL)
+			return false;
+
+		LrnPrintTrainingData_F(fp, program->LearnData);
+		
+		fclose(fp);
 	}
 	return true;
 }
