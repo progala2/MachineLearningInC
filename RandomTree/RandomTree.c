@@ -15,5 +15,5 @@ int main()
 		return -1;
 	PrgMenuLoop(program);
 	PrgFree(&program);
-	return 0;
+ 	return 0;
 }

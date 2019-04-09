@@ -56,7 +56,7 @@ Program* PrgLoadData()
 			continue;
 		}
 		CharsTable* charsTable = NULL;
-		if ((charsTable = TReadFile(fp, 1024)) == NULL)
+		if ((charsTable = TReadFile(fp, BUFFER_LEN*4)) == NULL)
 		{
 			printf("Something wrong with your training file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
 			printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
@@ -85,7 +85,7 @@ Program* PrgLoadData()
 				continue;
 			}
 			CharsTable* testCharsTable = NULL;
-			if ((testCharsTable = TReadFile(fp, 1024)) == NULL ||
+			if ((testCharsTable = TReadFile(fp, BUFFER_LEN*4)) == NULL ||
 				(lrnData = LrnReadData(charsTable, testCharsTable)) == NULL)
 			{
 				printf("Something wrong with your test file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
@@ -107,7 +107,7 @@ Program* PrgLoadData()
 	while (1)
 	{
 		printf("Do you want to normalize the data?(y/n)\n");
-		if (scanf_s("%1s", buffer, (size_t)255) < 1 || buffer[0] != 'y' && buffer[0] != 'n')
+		if (scanf_s("%1s", buffer, (size_t)BUFFER_LEN) < 1 || buffer[0] != 'y' && buffer[0] != 'n')
 		{
 			printf("YES OR NO?!\n");
 			continue;
@@ -136,7 +136,7 @@ bool PrgMenuLoop(Program* program)
 		if (scanf_s("%254s", buffer, (size_t)BUFFER_LEN) == 0)
 			continue;
 
-		buffer[254] = 0;
+		buffer[BUFFER_LEN - 1] = 0;
 		for (uint i = 0; i < COMMANDS_LEN; ++i)
 		{
 			if (strcmp(buffer, _commands[i].Name) == 0)
@@ -177,12 +177,12 @@ PRG_FLD_RDR_F(PRG_RUN_CMD)
 	ConfMatrix * matrix = FrstCalculateOnTestData(forest, program->LearnData);
 	printf("Test data: \n");
 	CmPrint(matrix);
-	printf("Error rate: %lf\n", CmCalculateError(matrix));
+	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix));
 	CmFree(&matrix);
 	matrix = FrstCalculateOnTrainingData(forest, program->LearnData);
 	printf("Training data: \n");	
 	CmPrint(matrix);
-	printf("Error rate: %lf\n", CmCalculateError(matrix));
+	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix));
 	FrstFree(&forest);
 	CmFree(&matrix);
 	return true;

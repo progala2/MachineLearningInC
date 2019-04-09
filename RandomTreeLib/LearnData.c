@@ -97,7 +97,7 @@ void DisparageDataBetweenTestAndTraining(IntVector * originalClassVector, const 
 {
 	const uint capacityTest = testClassesColumn->VecBase.Capacity - 1;
 	const uint capacityTraining = trainingClassesColumn->VecBase.Capacity - 1;
-	if ((rand() % HUNDRED_PERCENT < _glConfigs->CFG_FLD_TEST_EXTRACT_PERCENTAGE || capacityTraining == trainingClassesColumn->VecBase.Size) && capacityTest > testClassesColumn->VecBase.Size)
+	if (((uint)rand() % HUNDRED_PERCENT < _glConfigs->CFG_FLD_TEST_EXTRACT_PERCENTAGE || capacityTraining == trainingClassesColumn->VecBase.Size) && capacityTest > testClassesColumn->VecBase.Size)
 	{
 		for (uint j = 0; j < parLen; ++j)
 		{
@@ -129,16 +129,16 @@ void LrnExtractTestData(LearnData * const learnData)
 	double** trainingParameters;
 	InitAndGetParameters(&trainingParameters, &testParameters, learnData->ParametersCount,
 		trainingClassesColumn->VecBase.Capacity - 1, testClassesColumn->VecBase.Capacity - 1);
-	
+
 	for (uint i = 0; i < learnData->RowsCount; ++i)
 	{
-		DisparageDataBetweenTestAndTraining(learnData->ClassesColumn, learnData->Parameters, learnData->ParametersCount,
+		DisparageDataBetweenTestAndTraining(learnData->ClassesColumn, (const double**)learnData->Parameters, learnData->ParametersCount,
 			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
 	}
-	
+
 	for (uint i = 0; i < learnData->TestData.RowsCount; ++i)
 	{
-		DisparageDataBetweenTestAndTraining(learnData->TestData.ClassesColumn, learnData->TestData.Parameters, learnData->ParametersCount,
+		DisparageDataBetweenTestAndTraining(learnData->TestData.ClassesColumn, (const double**)learnData->TestData.Parameters, learnData->ParametersCount,
 			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
 	}
 

@@ -8,14 +8,14 @@ StringVector* SvInit()
 	return vec;
 }
 
-static char* SvGet(const StringVector* const vector, const uint index)
+static const char* SvGet(const StringVector* const vector, const uint index)
 {
 	return vector->Table[index];
 }
 
 bool SvContains(const StringVector* const vector, const char* const value, uint* foundId)
 {
-	return VecContains(&vector->VecBase, value, (compare_func)strcmp, SvGet, vector, foundId);
+	return VecContains(&vector->VecBase, value, (compare_func)strcmp, (getter_func)SvGet, vector, foundId);
 }
 
 void SvFree(StringVector** vector)

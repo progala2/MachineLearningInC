@@ -60,14 +60,14 @@ static int IntComp(const int* a, const int* b)
 {
 	return *a == *b ? 0 : 1;
 }
-static int* IntGet(const IntVector* const vector, const uint index)
+static const int* IntGet(const IntVector* const vector, const uint index)
 {
 	return &vector->Data[index];
 }
 
 bool IntVecContains(const IntVector* const vector, const int value, uint* index)
 {
-	return VecContains(&vector->VecBase, &value, IntComp, IntGet, vector, index);
+	return VecContains(&vector->VecBase, &value, (compare_func)IntComp, (getter_func)IntGet, vector, index);
 }
 
 void IntVecFreeMemory(IntVector** vector)

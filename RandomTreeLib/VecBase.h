@@ -6,10 +6,10 @@
 #include <stdbool.h>
 typedef char** pointer_ptr;
 typedef int (*compare_func)(const void* a, const void* b);
-typedef void* gen_value_ptr;
-typedef const void*const gen_value_cptr;
+typedef const void* gen_value_cptr;
+typedef const void*const gen_param_cptr;
 typedef const void*const gen_vector_cptr;
-typedef gen_value_ptr (*getter_func)(const void*const vectorPtr, const uint index);
+typedef gen_value_cptr (*getter_func)(const void* vectorPtr, uint index);
 
 typedef struct VecBase{
     size_t Size;
@@ -22,10 +22,11 @@ typedef const VecBase* const VectorConstPtr;
 
 VecBase VecInit(pointer_ptr ptr, const size_t typeSize);
 VecBase VecInit_C(pointer_ptr ptr, const size_t typeSize, size_t capacity);
-void VecAppend(VecBase* vector, gen_value_cptr value);
-bool VecContains(VectorConstPtr vecBase, gen_value_cptr value, compare_func eqFuncPtr, getter_func getter, gen_vector_cptr vector, uint* foundId);
-void VecAppendRange(VecBase* vector, gen_value_cptr value, const size_t len);
-void VecRepOrInsRangeAt(VecBase* vector, const uint index, gen_value_cptr value, const size_t len);
+void VecAppend(VecBase* vector, gen_param_cptr value);
+bool VecContains(VectorConstPtr vecBase, gen_param_cptr value, const compare_func eqFuncPtr,
+                 const getter_func getterFunc, gen_vector_cptr vector, uint* foundId);
+void VecAppendRange(VecBase* vector, gen_param_cptr value, const size_t len);
+void VecRepOrInsRangeAt(VecBase* vector, const uint index, gen_param_cptr value, const size_t len);
 void VecResize(VecBase *vector);
 void VecResizeRange(VecBase *vector, const size_t len);
 

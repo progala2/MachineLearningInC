@@ -9,10 +9,8 @@ typedef struct
 	size_t N;
 } ConfMatrix;
 
-ConfMatrix* CmCreate(const int actual[], const int predicted[], const char*const* classNames, const size_t headSize, const size_t predSize);
+ConfMatrix* CmCreate(const int actual[], const int predicted[], const char*const* classNames, const size_t headSize, const size_t preSize);
 void CmPrint(const ConfMatrix* matrix);
-double CmCalculateError(const ConfMatrix* const matrix);
-double CmCalculatePrecision(const ConfMatrix* const matrix);
-double CmCalculateRecall(const ConfMatrix* const matrix);
+double CmCalculateAccuracy(const ConfMatrix* const matrix);
 void CmFree(ConfMatrix**const matrix);
 #endif

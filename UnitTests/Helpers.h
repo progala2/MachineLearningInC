@@ -29,6 +29,8 @@ namespace Helpers
 
 		FILE* fp;
 		fopen_s(&fp, fileName, "w+");
+		if (fp == nullptr)
+			return lines;
 		fprintf(fp, "%s", ss.str().c_str());
 		fclose(fp);
 		return lines;

@@ -41,16 +41,17 @@ void VecResizeRange(VecBase* vector, const size_t len)
 	
 }
 
-void VecAppend(VecBase * vector, gen_value_cptr value)
+void VecAppend(VecBase * vector, gen_param_cptr value)
 {
 	VecAppendRange(vector, value, 1);
 }
 
-bool VecContains(VectorConstPtr vecBase, gen_value_cptr value, compare_func eqFuncPtr, getter_func getter, gen_vector_cptr vector, uint * foundId)
+bool VecContains(VectorConstPtr vecBase, gen_param_cptr value, const compare_func eqFuncPtr,
+                 const getter_func getterFunc, gen_vector_cptr vector, uint * foundId)
 {
 	for (uint i = 0; i < vecBase->Size; ++i)
 	{
-		if (0 == eqFuncPtr(getter(vector, i), value))
+		if (0 == eqFuncPtr(getterFunc(vector, i), value))
 		{
 			if (foundId != NULL) *foundId = i;
 			return true;
@@ -60,12 +61,12 @@ bool VecContains(VectorConstPtr vecBase, gen_value_cptr value, compare_func eqFu
 	return false;
 }
 
-void VecAppendRange(VecBase* vector, gen_value_cptr value, const size_t len)
+void VecAppendRange(VecBase* vector, gen_param_cptr value, const size_t len)
 {
 	VecRepOrInsRangeAt(vector, vector->Size, value, len);
 }
 
-void VecRepOrInsRangeAt(VecBase* vector, const uint index, gen_value_cptr value, const size_t len)
+void VecRepOrInsRangeAt(VecBase* vector, const uint index, gen_param_cptr value, const size_t len)
 {
 	const size_t newSize = len - vector->Size + index;
 	VecResizeRange(vector, len - vector->Size + index);
