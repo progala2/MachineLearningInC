@@ -16,11 +16,11 @@ It is only compatible with **Windows 10/7** for now.
 TrainingFileName=data.csv
 ```
 
-- Let's name it **config.cfg**. The *data.csv* stands for the path to the file with training data. **The TrainingFileName is mandatory** as it can't be changed during the run. (More information about config parameters [here](https://github.com/progala2/MachineLearningInC/wiki/Configs))
+- Let's name it **config.cfg**. The *data.csv* stands for the path to the file with training data. **The TrainingFileName is mandatory** as it can't be changed during the run. (More about the config parameters [here](https://github.com/progala2/MachineLearningInC/wiki/Configs))
 
 - Now when you run the program, you will be prompt to give a path to the config file.
 - After that you have to choose if you want to normalize the data to [0,1] range or not. It cannot be changed during the run.
-- If everything is ok with your data (it needs to be in correct CSV format, look [here](https://github.com/progala2/MachineLearningInC/wiki/Data-format) for details) you will be prompt to write a [command](https://github.com/progala2/MachineLearningInC/wiki/Commands).
+- If everything is ok with your data (it needs to be in [correct CSV format](https://github.com/progala2/MachineLearningInC/wiki/Data-format) for details) you will be prompt to write a [command](https://github.com/progala2/MachineLearningInC/wiki/Commands).
 - Write *run* and hit the enter.
 - Enjoy the results!
 - write *save* to save the results
