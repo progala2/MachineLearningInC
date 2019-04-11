@@ -31,13 +31,14 @@ static LearnData* LrnTryInitWithHeaders(const CharsTable* trainingTable, const C
 	free(headers);
 
 	lrnData->ParametersCount = parLen;
-	lrnData->RowsCount = trainingTable->VecBase.Size - 1;
+	lrnData->TrainData.RowsCount = trainingTable->VecBase.Size - 1;
 	lrnData->TestData.RowsCount = testTable->VecBase.Size - 1;
-	lrnData->ClassesColumn = IntVecInit_C(lrnData->RowsCount);
-	lrnData->TestData.ClassesColumn = IntVecInit_C(lrnData->TestData.RowsCount);
+	lrnData->TrainData.ClassesColumn = IntVecInit_C(lrnData->TrainData.RowsCount + 1);
+	lrnData->TestData.ClassesColumn = IntVecInit_C(lrnData->TestData.RowsCount + 1);
 	LrnInitParameters(lrnData, parLen);
 	return lrnData;
 }
+
 static LearnData* LrnTryInitWithHeaders_NoTest(const CharsTable* trainingTable, uint* colLen)
 {
 	if (trainingTable->VecBase.Size < 2)
@@ -57,8 +58,8 @@ static LearnData* LrnTryInitWithHeaders_NoTest(const CharsTable* trainingTable, 
 	free(headers);
 
 	lrnData->ParametersCount = parLen;
-	lrnData->RowsCount = trainingTable->VecBase.Size - 1;
-	lrnData->ClassesColumn = IntVecInit_C(lrnData->RowsCount);
+	lrnData->TrainData.RowsCount = trainingTable->VecBase.Size - 1;
+	lrnData->TrainData.ClassesColumn = IntVecInit_C(lrnData->TrainData.RowsCount + 1);
 	lrnData->TestData.ClassesColumn = NULL;
 	lrnData->TestData.RowsCount = 0;
 	LrnInitParameters(lrnData, parLen);
@@ -108,7 +109,7 @@ LearnData* LrnReadData(const CharsTable* trainingTable, const CharsTable* testTa
 			free(parsedDoublesTest);
 		}
 		double* parsedDoubles = ParseNextRowAndSetUpName(&classValueTemp, lrnData->Classes, trainingTable->Table[i], colLen);
-		IntVecAppend(lrnData->ClassesColumn, classValueTemp);
+		IntVecAppend(lrnData->TrainData.ClassesColumn, classValueTemp);
 
 		for (uint j = 0; j < parLen; ++j)
 		{
@@ -134,7 +135,7 @@ LearnData* LrnReadData_NoTest(const CharsTable* trainingTable)
 	for (uint i = 1; i < trainingTable->VecBase.Size; ++i)
 	{
 		double* parsedDoubles = ParseNextRowAndSetUpName(&classValueTemp, lrnData->Classes, trainingTable->Table[i], colLen);
-		IntVecAppend(lrnData->ClassesColumn, classValueTemp);
+		IntVecAppend(lrnData->TrainData.ClassesColumn, classValueTemp);
 
 		for (uint j = 0; j < parLen; ++j)
 		{

@@ -47,9 +47,9 @@ static void CalculateTreeDecision(double* const predictionSumPerClass, const dou
 	CalculateTreeDecision(predictionSumPerClass, itemValues, rowIndex, nd, classesCount);
 }
 
-ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData* const table)
+ConfMatrix* FrstCalculateOnData(const Forest* const forest, const LearnData* const table, const Data* const data)
 {
-	const uint rowsCount = table->TestData.RowsCount;
+	const uint rowsCount = data->RowsCount;
 	const uint classesCount = table->Classes->VecBase.Size;
 	if (rowsCount == 0 || classesCount < 2)
 		return NULL;
@@ -59,45 +59,11 @@ ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData*
 	double* _malloc(sizeof(double) * classesCount, predictionSumPerClass);
 	for (uint i = 0; i < rowsCount; ++i)
 	{
-		actual[i] = table->TestData.ClassesColumn->Data[i];
+		actual[i] = data->ClassesColumn->Data[i];
 		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
 		for (uint j = 0; j < forest->TreesCount; ++j)
 		{
-			CalculateTreeDecision(predictionSumPerClass, (const double**)table->TestData.Parameters, i, forest->Trees[j], classesCount);
-		}
-		uint maxK = 0;
-		for (uint k = 0; k < classesCount; ++k)
-		{
-			if (predictionSumPerClass[k] > predictionSumPerClass[maxK])
-				maxK = k;
-		}
-		predicted[i] = maxK;
-	}
-	free(predictionSumPerClass);
-
-	ConfMatrix* matrix = CmCreate(actual, predicted, (const char**)table->Classes->Table, table->Classes->VecBase.Size, rowsCount);
-	free(actual);
-	free(predicted);
-	return matrix;
-}
-
-ConfMatrix* FrstCalculateOnTrainingData(const Forest* const forest, const LearnData* const table)
-{
-	const uint rowsCount = table->RowsCount;
-	const uint classesCount = table->Classes->VecBase.Size;
-	if (rowsCount == 0 || classesCount < 2)
-		return NULL;
-
-	int* _malloc(sizeof(int) * rowsCount, actual);
-	int* _malloc(sizeof(int) * rowsCount, predicted);
-	double* _malloc(sizeof(double) * classesCount, predictionSumPerClass);
-	for (uint i = 0; i < rowsCount; ++i)
-	{
-		actual[i] = table->ClassesColumn->Data[i];
-		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
-		for (uint j = 0; j < forest->TreesCount; ++j)
-		{
-			CalculateTreeDecision(predictionSumPerClass, (const double**)table->Parameters, i, forest->Trees[j], classesCount);
+			CalculateTreeDecision(predictionSumPerClass, (const double**)data->Parameters, i, forest->Trees[j], classesCount);
 		}
 		uint maxK = 0;
 		for (uint k = 0; k < classesCount; ++k)
@@ -121,11 +87,11 @@ Forest* FrstGenerateForest(const LearnData* const table)
 		return NULL;
 
 	Node** _malloc(sizeof(Node*) * _glConfigs->TreeCount, trees);
-	uint* countByClass = LrnCountByClass(table->ClassesColumn, table->Classes->VecBase.Size);
+	uint* countByClass = LrnCountByClass(table->TrainData.ClassesColumn, table->Classes->VecBase.Size);
 
 	for (uint i = 0; i < _glConfigs->TreeCount; ++i)
 	{
-		trees[i] = NdGenerateTree(table->ParametersCount, (const double**)table->Parameters, table->ClassesColumn, table->RowsCount, countByClass, table->Classes->VecBase.Size);
+		trees[i] = NdGenerateTree(table->ParametersCount, &table->TrainData, countByClass, table->Classes->VecBase.Size);
 	}
 	free(countByClass);
 	Forest* _malloc(sizeof(Forest), forest);

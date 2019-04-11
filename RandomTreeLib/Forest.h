@@ -10,8 +10,7 @@ typedef struct
 	uint TreesCount;
 } Forest;
 
-ConfMatrix* FrstCalculateOnTestData(const Forest* const forest, const LearnData* const table);
-ConfMatrix* FrstCalculateOnTrainingData(const Forest* const forest, const LearnData* const table);
+ConfMatrix* FrstCalculateOnData(const Forest* const forest, const LearnData* const table, const Data* const data);
 Forest* FrstGenerateForest(const LearnData* const table);
 void FrstFree(Forest**const forest);
 

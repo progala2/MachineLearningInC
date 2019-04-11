@@ -16,18 +16,17 @@ typedef struct
 	uint RowsCount;
 	double** Parameters;
 	IntVector *ClassesColumn;
-} TestData;
+} Data;
 
 typedef struct
 {
 	uint ParametersCount;
-	uint RowsCount;
 	char** Headers;
 	StringVector* Classes;
-	double** Parameters;
+	
 	MinMaxParameters* ColumnsMinMaxes;
-	TestData TestData;
-	IntVector*ClassesColumn;
+	Data TestData;
+	Data TrainData;
 	char* ClassName;
 	bool Normalized;
 } LearnData;

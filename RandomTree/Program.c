@@ -187,12 +187,12 @@ PRG_FLD_RDR_F(PRG_RUN_CMD)
 	PrgFreeLastTest(program);
 
 	Forest* forest = FrstGenerateForest(program->LearnData);
-	ConfMatrix* matrix1 = FrstCalculateOnTestData(forest, program->LearnData);
+	ConfMatrix* matrix1 = FrstCalculateOnData(forest, program->LearnData, &program->LearnData->TestData);
 	printf("Test data: \n");
 	CmPrint(matrix1);
 	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix1));
 
-	ConfMatrix* matrix2 = FrstCalculateOnTrainingData(forest, program->LearnData);
+	ConfMatrix* matrix2 = FrstCalculateOnData(forest, program->LearnData, &program->LearnData->TrainData);
 	printf("Training data: \n");	
 	CmPrint(matrix2);
 	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix2));

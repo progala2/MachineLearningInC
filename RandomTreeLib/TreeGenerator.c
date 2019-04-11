@@ -4,6 +4,7 @@
 #include <math.h>
 #include "RtConfigs.h"
 #include "DoubleVector.h"
+#include "ReadLearnData.h"
 
 void FreeDblVecTab(DoubleVector** tab, const size_t parametersCount)
 {
@@ -41,26 +42,26 @@ double CalculateProbability(const uint selected, const uint total)
 	return total == 0 ? 0 : (double)selected / total;
 }
 
-Node* NdGenerateTree(const uint parametersCount, const double** values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
+Node* NdGenerateTree(const uint parametersCount, const Data* const data, const unsigned countByClass[], const size_t classCount)
 {
 	if (parametersCount < 1)
 		return NULL;
 	Node* _malloc(sizeof(Node), tempNode);
 	tempNode->ClassesProbability = NULL;
-	tempNode->Entropy = CalculateEntropy(countByClass, classCount, rowsCount);
-	tempNode->ElementsCount = rowsCount;
+	tempNode->Entropy = CalculateEntropy(countByClass, classCount, data->RowsCount);
+	tempNode->ElementsCount = data->RowsCount;
 	tempNode->Left = NULL;
 	tempNode->Right = NULL;
 	DoubleVector** _malloc(sizeof(DoubleVector*) * parametersCount, valuesVector);
 	for (size_t i = 0; i < parametersCount; i++)
 	{
 		valuesVector[i] = DblVecInit();
-		DblVecAppendRange(valuesVector[i], values[i], rowsCount);
+		DblVecAppendRange(valuesVector[i], data->Parameters[i], data->RowsCount);
 	}
 
 	do
 	{
-		NdSplitNode(tempNode, parametersCount, (const DoubleVector * const*)valuesVector, classesColumn, countByClass, classCount, 0);
+		NdSplitNode(tempNode, parametersCount, (const DoubleVector * const*)valuesVector, data->ClassesColumn, countByClass, classCount, 0);
 	} while (TrIsLeaf(tempNode) == true);
 
 
