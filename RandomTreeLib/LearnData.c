@@ -31,7 +31,7 @@ void InitAndGetParameters(double*** parameterColumn, double*** testDataParameter
 	{
 		_malloc(sizeof(double*) * parLen, *testDataParameters);
 	}
-	else
+	else if (testDataParameters != NULL)
 	{
 		*testDataParameters = NULL;
 	}
@@ -95,13 +95,13 @@ void LrnNormalize(LearnData* table)
 	table->Normalized = true;
 }
 
-void DisparageDataBetweenTestAndTraining(const Data* const data, const size_t parLen,
+void RandomDisparageDataBetweenTestAndTraining(const Data * const data, const size_t parLen,
 	IntVector * const trainingClassesColumn, IntVector * const testClassesColumn, double* const* const trainingParameters,
 	double* const* const testParameters, const uint i)
 {
 	const uint capacityTest = testClassesColumn->VecBase.Capacity - 1;
 	const uint capacityTraining = trainingClassesColumn->VecBase.Capacity - 1;
-	if (((uint)rand() % HUNDRED_PERCENT < _glConfigs->CFG_FLD_TEST_EXTRACT_PERCENTAGE || capacityTraining == trainingClassesColumn->VecBase.Size) 
+	if (((uint)rand() % HUNDRED_PERCENT < _glConfigs->CFG_FLD_TEST_EXTRACT_PERCENTAGE || capacityTraining == trainingClassesColumn->VecBase.Size)
 		&& capacityTest > testClassesColumn->VecBase.Size)
 	{
 		for (uint j = 0; j < parLen; ++j)
@@ -121,7 +121,30 @@ void DisparageDataBetweenTestAndTraining(const Data* const data, const size_t pa
 	}
 }
 
-void LrnSetNewData(Data* data, double** parameters, const size_t rowsCount, IntVector*const classesColumn)
+#define COPY_DATA_MACRO(i, data, classColumn, parameters, parametersCount) \
+	for (uint j = 0; j < (parametersCount); ++j)\
+	{\
+			(parameters)[j][(classColumn)->VecBase.Size] = (data)->Parameters[j][i];\
+	}\
+	IntVecAppend(classColumn, (data)->ClassesColumn->Data[i]);
+
+void DisparageDataBetweenTestAndTraining(const Data * const data, const size_t parLen,
+	IntVector * const trainingClassesColumn, IntVector * const testClassesColumn, double* const* const trainingParameters,
+	double* const* const testParameters, const uint i)
+{
+	const uint capacityTest = testClassesColumn->VecBase.Capacity - 1;
+	const uint capacityTraining = trainingClassesColumn->VecBase.Capacity - 1;
+	if (capacityTraining == trainingClassesColumn->VecBase.Size && capacityTest > testClassesColumn->VecBase.Size)
+	{
+		COPY_DATA_MACRO(i, data, testClassesColumn, testParameters, parLen)
+	}
+	else
+	{
+		COPY_DATA_MACRO(i, data, trainingClassesColumn, trainingParameters, parLen)
+	}
+}
+
+void LrnSetNewData(Data * data, double** parameters, const size_t rowsCount, IntVector * const classesColumn)
 {
 	data->RowsCount = rowsCount;
 	data->ClassesColumn = classesColumn;
@@ -144,13 +167,13 @@ void LrnExtractTestData(LearnData * const learnData)
 
 	for (uint i = 0; i < learnData->TrainData.RowsCount; ++i)
 	{
-		DisparageDataBetweenTestAndTraining(&learnData->TrainData, learnData->ParametersCount,
+		RandomDisparageDataBetweenTestAndTraining(&learnData->TrainData, learnData->ParametersCount,
 			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
 	}
 
 	for (uint i = 0; i < learnData->TestData.RowsCount; ++i)
 	{
-		DisparageDataBetweenTestAndTraining(&learnData->TestData, learnData->ParametersCount,
+		RandomDisparageDataBetweenTestAndTraining(&learnData->TestData, learnData->ParametersCount,
 			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
 	}
 
@@ -166,28 +189,93 @@ void LrnExtractTestData(LearnData * const learnData)
 	LrnSetNewData(&learnData->TestData, testParameters, testClassesColumn->VecBase.Size, testClassesColumn);
 }
 
-Data* LrnExtractNewTrainAndTestData(Data* const learnData, const size_t )
+Data* LrnSortDataForCrossValidation(const Data * const data, const size_t parametersCount, const size_t classCount)
 {
-	const uint maxRowsCount = learnData->TrainData.RowsCount + learnData->TestData.RowsCount;
-	IntVector * testClassesColumn = IntVecInit_C(_glConfigs->CFG_FLD_TEST_EXTRACT_PERCENTAGE * maxRowsCount / HUNDRED_PERCENT + 1);
-	IntVector * trainingClassesColumn = IntVecInit_C(maxRowsCount - testClassesColumn->VecBase.Capacity + 2);
+	Data** _calloc(classCount, sizeof(Data*), countByClass);
+	Data* _malloc(sizeof(Data), result);
+	IntVector* classesColumn = IntVecInit_C(data->RowsCount + 1);
+
+	double** parameters;
+	InitAndGetParameters(&parameters, NULL, parametersCount, data->RowsCount, 0);
+
+	for (uint i = 0; i < classCount; ++i)
+	{
+		_calloc(1, sizeof(Data), countByClass[i]);
+		InitAndGetParameters(&countByClass[i]->Parameters, NULL, parametersCount, data->RowsCount, 0);
+		countByClass[i]->ClassesColumn = IntVecInit_C(data->RowsCount / 2 + 2);
+	}
+
+	for (size_t i = 0; i < data->RowsCount; ++i)
+	{
+		Data* const tempData = countByClass[data->ClassesColumn->Data[i]];
+		COPY_DATA_MACRO(i, data, tempData->ClassesColumn, tempData->Parameters, parametersCount);
+		++tempData->RowsCount;
+	}
+
+	uint* _calloc(classCount, sizeof(uint), indexes);
+	for (size_t i = 0; i < data->RowsCount;)
+	{
+		for (uint k = 0; k < classCount; ++k)
+		{
+			if (indexes[k] < countByClass[k]->RowsCount)
+			{
+				COPY_DATA_MACRO(indexes[k], countByClass[k], classesColumn, parameters, parametersCount);
+				indexes[k]++;
+				i++;
+			}
+		}
+	}
+	free(indexes);
+
+	for (uint i = 0; i < classCount; ++i)
+	{
+		FreeTab((void_tab_ptr)countByClass[i]->Parameters, parametersCount);
+		IntVecFreeMemory(&countByClass[i]->ClassesColumn);
+	}
+
+	LrnSetNewData(result, parameters, classesColumn->VecBase.Size, classesColumn);
+
+	return result;
+}
+
+Data* LrnExtractDataForCrossValidation(Data * const data, const size_t parametersCount, const uint kFold, const uint k)
+{
+	if (k >= kFold || k < 0 || kFold < 2)
+		exit(-1);
+
+	const uint maxRowsCount = data->RowsCount;
+	const uint trainRowsCount = maxRowsCount / kFold;
+	const uint trainBeginIndex = trainRowsCount * k;
+	const uint trainEndIndex = trainBeginIndex + trainRowsCount;
+	const uint testRowsCount = maxRowsCount - trainRowsCount;
+	IntVector * testClassesColumn = IntVecInit_C(testRowsCount + 1);
+	IntVector * trainingClassesColumn = IntVecInit_C(trainRowsCount + 1);
 
 	double** testParameters;
 	double** trainingParameters;
-	InitAndGetParameters(&trainingParameters, &testParameters, learnData->ParametersCount,
+	InitAndGetParameters(&trainingParameters, &testParameters, parametersCount,
 		trainingClassesColumn->VecBase.Capacity - 1, testClassesColumn->VecBase.Capacity - 1);
-
-	for (uint i = 0; i < learnData->TrainData.RowsCount; ++i)
+	uint i = 0;
+	for (; i < trainBeginIndex; ++i)
 	{
-		DisparageDataBetweenTestAndTraining(&learnData->TrainData, learnData->ParametersCount,
-			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
+		COPY_DATA_MACRO(i, data, testClassesColumn, testParameters, parametersCount)
 	}
 
-	for (uint i = 0; i < learnData->TestData.RowsCount; ++i)
+	for (; i < trainEndIndex; ++i)
 	{
-		DisparageDataBetweenTestAndTraining(&learnData->TestData, learnData->ParametersCount,
-			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
+		COPY_DATA_MACRO(i, data, trainingClassesColumn, trainingParameters, parametersCount)
 	}
+
+	for (; i < maxRowsCount; ++i)
+	{
+		COPY_DATA_MACRO(i, data, testClassesColumn, testParameters, parametersCount)
+	}
+
+	Data* _malloc(sizeof(Data) * 2, testAndTrain);
+
+	LrnSetNewData(&testAndTrain[0], trainingParameters, trainingClassesColumn->VecBase.Size, trainingClassesColumn);
+	LrnSetNewData(&testAndTrain[1], testParameters, testClassesColumn->VecBase.Size, testClassesColumn);
+	return testAndTrain;
 }
 
 unsigned* LrnCountByClass(const IntVector * classesColumn, const size_t classesCount)
@@ -201,7 +289,7 @@ unsigned* LrnCountByClass(const IntVector * classesColumn, const size_t classesC
 	return countByClass;
 }
 
-void LrnPrintHeader(FILE* const stream, const LearnData* const table)
+void LrnPrintHeader(FILE * const stream, const LearnData * const table)
 {
 	fprintf(stream, "%s, ", table->ClassName);
 	for (uint j = 0; j < table->ParametersCount; j++)
@@ -211,8 +299,8 @@ void LrnPrintHeader(FILE* const stream, const LearnData* const table)
 	fprintf(stream, "\n");
 }
 
-void LrnPrintData_F(FILE* const stream, const Data*const data, const size_t parametersCount, 
-	const StringVector*const classes)
+void LrnPrintData_F(FILE * const stream, const Data * const data, const size_t parametersCount,
+	const StringVector * const classes)
 {
 	const uint parametersCountMinOne = parametersCount - 1;
 	for (uint i = 0; i < data->RowsCount; i++)
@@ -226,26 +314,26 @@ void LrnPrintData_F(FILE* const stream, const Data*const data, const size_t para
 	}
 }
 
-void LrnPrintTestData_F(FILE* const stream, const LearnData* const table)
+void LrnPrintTestData_F(FILE * const stream, const LearnData * const table)
 {
 	LrnPrintHeader(stream, table);
 	LrnPrintData_F(stream, &table->TestData, table->ParametersCount, table->Classes);
 }
 
-void LrnPrintTrainingData_F(FILE* const stream, const LearnData* const table)
+void LrnPrintTrainingData_F(FILE * const stream, const LearnData * const table)
 {
 	LrnPrintHeader(stream, table);
 	LrnPrintData_F(stream, &table->TrainData, table->ParametersCount, table->Classes);
 }
 
-void LrnPrintTestAndTrainingData(const LearnData* const table)
+void LrnPrintTestAndTrainingData(const LearnData * const table)
 {
 	LrnPrintTrainingData_F(stdout, table);
 	fprintf(stdout, "TestData: \n");
 	LrnPrintTestData_F(stdout, table);
 }
 
-void LrnFreeMemory(LearnData** const tbl)
+void LrnFreeMemory(LearnData * *const tbl)
 {
 	LearnData* table = *tbl;
 	if (table == NULL)

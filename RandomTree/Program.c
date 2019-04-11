@@ -187,7 +187,10 @@ PRG_FLD_RDR_F(PRG_RUN_CMD)
 
 	PrgFreeLastTest(program);
 
-	Forest* forest = FrstGenerateForest(&program->LearnData->TrainData, program->LearnData->ParametersCount, program->LearnData->Classes->VecBase.Size);
+	const size_t classCount = program->LearnData->Classes->VecBase.Size;
+	program->LearnData->TrainData = *LrnSortDataForCrossValidation(&program->LearnData->TrainData, program->LearnData->ParametersCount, classCount);
+	
+	Forest* forest = FrstGenerateForest(&program->LearnData->TrainData, program->LearnData->ParametersCount, classCount);
 	ConfMatrix* matrix1 = FrstCalculateOnData(forest, program->LearnData, &program->LearnData->TestData);
 	printf("Test data: \n");
 	CmPrint(matrix1);
