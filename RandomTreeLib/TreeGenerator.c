@@ -1,4 +1,4 @@
-#include "NodeGenerator.h"
+#include "TreeGenerator.h"
 #include "Node.h"
 #include <stdlib.h>
 #include <math.h>
@@ -41,7 +41,7 @@ double CalculateProbability(const uint selected, const uint total)
 	return total == 0 ? 0 : (double)selected / total;
 }
 
-extern Node* NdGenerateTree(const uint parametersCount, const double** values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
+Node* NdGenerateTree(const uint parametersCount, const double** values, const IntVector * classesColumn, const size_t rowsCount, const unsigned countByClass[], const size_t classCount)
 {
 	if (parametersCount < 1)
 		return NULL;

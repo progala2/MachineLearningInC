@@ -1,5 +1,5 @@
 #include "Forest.h"
-#include "NodeGenerator.h"
+#include "TreeGenerator.h"
 #include <float.h>
 
 

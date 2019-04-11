@@ -33,7 +33,7 @@
     <ClInclude Include="VecBase.h" />
     <ClCompile Include="DoubleVector.c" />
     <ClCompile Include="Forest.c" />
-    <ClCompile Include="NodeGenerator.h" />
+    <ClCompile Include="TreeGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StringVector.c" />
@@ -43,7 +43,7 @@
     <ClCompile Include="CharRow.c" />
     <ClCompile Include="CharsTable.c" />
     <ClCompile Include="ReadLearnData.c" />
-    <ClCompile Include="NodeGenerator.c" />
+    <ClCompile Include="TreeGenerator.c" />
     <ClCompile Include="RtConfigs.c" />
     <ClCompile Include="Utils.c" />
     <ClCompile Include="VecBase.c" />

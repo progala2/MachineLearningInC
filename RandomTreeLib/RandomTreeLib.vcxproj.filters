@@ -71,12 +71,6 @@
     <ClCompile Include="RtConfigs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NodeGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeGenerator.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ConfMatric.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -106,6 +100,12 @@
     </ClCompile>
     <ClCompile Include="DoubleVector.c">
       <Filter>Source Files\Vectors</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeGenerator.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

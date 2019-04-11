@@ -22,6 +22,9 @@ LearnData* LrnInit()
 
 void InitAndGetParameters(double*** parameterColumn, double*** testDataParameters, const size_t parLen, const size_t trainingSize, const size_t testSize)
 {
+	if (trainingSize < 1 || parLen < 1)
+		exit(-1);
+
 	_malloc(sizeof(double*) * parLen, *parameterColumn);
 	if (testSize > 0)
 	{
@@ -169,6 +172,50 @@ unsigned* LrnCountByClass(const IntVector * classesColumn, const size_t classesC
 		countByClass[classesColumn->Data[i]]++;
 	}
 	return countByClass;
+}
+
+void LrnPrintHeader(FILE* const stream, const LearnData* const table)
+{
+	fprintf(stream, "%s, ", table->ClassName);
+	for (uint j = 0; j < table->ParametersCount; j++)
+	{
+		fprintf(stream, "%s, ", table->Headers[j]);
+	}
+	fprintf(stream, "\n");
+}
+
+void LrnPrintData_F(FILE* const stream, const double* const*const parameters, const size_t parametersCount, 
+	const size_t rowsCount, const StringVector*const classes, const IntVector* const classesColumn)
+{
+	const uint parametersCountMinOne = parametersCount - 1;
+	for (uint i = 0; i < rowsCount; i++)
+	{
+		fprintf(stream, "%s, ", classes->Table[classesColumn->Data[i]]);
+		for (uint j = 0; j < parametersCountMinOne; j++)
+		{
+			fprintf(stream, "%.12g, ", parameters[j][i]);
+		}
+		fprintf(stream, "%.12g\n", parameters[parametersCountMinOne][i]);
+	}
+}
+
+void LrnPrintTestData_F(FILE* const stream, const LearnData* const table)
+{
+	LrnPrintHeader(stream, table);
+	LrnPrintData_F(stream, (const double**)table->TestData.Parameters, table->ParametersCount, table->TestData.RowsCount, table->Classes, table->TestData.ClassesColumn);
+}
+
+void LrnPrintTrainingData_F(FILE* const stream, const LearnData* const table)
+{
+	LrnPrintHeader(stream, table);
+	LrnPrintData_F(stream, (const double**)table->Parameters, table->ParametersCount, table->RowsCount, table->Classes, table->ClassesColumn);
+}
+
+void LrnPrintTestAndTrainingData(const LearnData* const table)
+{
+	LrnPrintTrainingData_F(stdout, table);
+	fprintf(stdout, "TestData: \n");
+	LrnPrintTestData_F(stdout, table);
 }
 
 void LrnFreeMemory(LearnData** const tbl)

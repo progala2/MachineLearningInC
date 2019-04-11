@@ -1,6 +1,6 @@
 #include "Program.h"
 #include <stdlib.h>
-#include "../RandomTreeLib/NodeGenerator.h"
+#include "../RandomTreeLib/TreeGenerator.h"
 #include "../RandomTreeLib/Forest.h"
 
 #define BUFFER_LEN 256u
