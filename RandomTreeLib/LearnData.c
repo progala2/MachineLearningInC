@@ -214,24 +214,20 @@ Data* LrnSortDataForCrossValidation(const Data * const data, const size_t parame
 
 	uint* _calloc(classCount, sizeof(uint), indexes);
 	for (size_t i = 0; i < data->RowsCount;)
-	{
 		for (uint k = 0; k < classCount; ++k)
-		{
 			if (indexes[k] < countByClass[k]->RowsCount)
 			{
 				COPY_DATA_MACRO(indexes[k], countByClass[k], classesColumn, parameters, parametersCount);
 				indexes[k]++;
 				i++;
 			}
-		}
-	}
+
 	free(indexes);
 
 	for (uint i = 0; i < classCount; ++i)
-	{
-		FreeTab((void_tab_ptr)countByClass[i]->Parameters, parametersCount);
-		IntVecFreeMemory(&countByClass[i]->ClassesColumn);
-	}
+		LrnFreeData(countByClass[i], parametersCount);
+
+	free(countByClass);
 
 	LrnSetNewData(result, parameters, classesColumn->VecBase.Size, classesColumn);
 
@@ -244,10 +240,10 @@ Data* LrnExtractDataForCrossValidation(Data * const data, const size_t parameter
 		exit(-1);
 
 	const uint maxRowsCount = data->RowsCount;
-	const uint trainRowsCount = maxRowsCount / kFold;
-	const uint trainBeginIndex = trainRowsCount * k;
-	const uint trainEndIndex = trainBeginIndex + trainRowsCount;
-	const uint testRowsCount = maxRowsCount - trainRowsCount;
+	const uint testRowsCount = maxRowsCount / kFold;
+	const uint trainBeginIndex = testRowsCount * k;
+	const uint trainEndIndex = trainBeginIndex + testRowsCount;
+	const uint trainRowsCount = maxRowsCount - testRowsCount;
 	IntVector * testClassesColumn = IntVecInit_C(testRowsCount + 1);
 	IntVector * trainingClassesColumn = IntVecInit_C(trainRowsCount + 1);
 
@@ -258,17 +254,17 @@ Data* LrnExtractDataForCrossValidation(Data * const data, const size_t parameter
 	uint i = 0;
 	for (; i < trainBeginIndex; ++i)
 	{
-		COPY_DATA_MACRO(i, data, testClassesColumn, testParameters, parametersCount)
+		COPY_DATA_MACRO(i, data, trainingClassesColumn, trainingParameters, parametersCount)
 	}
 
 	for (; i < trainEndIndex; ++i)
 	{
-		COPY_DATA_MACRO(i, data, trainingClassesColumn, trainingParameters, parametersCount)
+		COPY_DATA_MACRO(i, data, testClassesColumn, testParameters, parametersCount)
 	}
 
 	for (; i < maxRowsCount; ++i)
 	{
-		COPY_DATA_MACRO(i, data, testClassesColumn, testParameters, parametersCount)
+		COPY_DATA_MACRO(i, data, trainingClassesColumn, trainingParameters, parametersCount)
 	}
 
 	Data* _malloc(sizeof(Data) * 2, testAndTrain);
@@ -283,9 +279,8 @@ unsigned* LrnCountByClass(const IntVector * classesColumn, const size_t classesC
 	uint* _calloc(classesCount, sizeof(uint), countByClass);
 
 	for (size_t i = 0; i < classesColumn->VecBase.Size; ++i)
-	{
 		countByClass[classesColumn->Data[i]]++;
-	}
+	
 	return countByClass;
 }
 
@@ -293,9 +288,8 @@ void LrnPrintHeader(FILE * const stream, const LearnData * const table)
 {
 	fprintf(stream, "%s, ", table->ClassName);
 	for (uint j = 0; j < table->ParametersCount; j++)
-	{
 		fprintf(stream, "%s, ", table->Headers[j]);
-	}
+	
 	fprintf(stream, "\n");
 }
 
@@ -307,9 +301,8 @@ void LrnPrintData_F(FILE * const stream, const Data * const data, const size_t p
 	{
 		fprintf(stream, "%s, ", classes->Table[data->ClassesColumn->Data[i]]);
 		for (uint j = 0; j < parametersCountMinOne; j++)
-		{
 			fprintf(stream, "%.12g, ", data->Parameters[j][i]);
-		}
+		
 		fprintf(stream, "%.12g\n", data->Parameters[parametersCountMinOne][i]);
 	}
 }
@@ -333,18 +326,23 @@ void LrnPrintTestAndTrainingData(const LearnData * const table)
 	LrnPrintTestData_F(stdout, table);
 }
 
+void LrnFreeData(Data *const data, const size_t parametersCount)
+{
+	FreeTab((void_tab_ptr)data->Parameters, parametersCount);
+	data->Parameters = NULL;
+	IntVecFreeMemory(&data->ClassesColumn);
+}
+
 void LrnFreeMemory(LearnData * *const tbl)
 {
 	LearnData* table = *tbl;
 	if (table == NULL)
 		return;
 
-	FreeTab((void_tab_ptr)table->TestData.Parameters, table->ParametersCount);
-	FreeTab((void_tab_ptr)table->TrainData.Parameters, table->ParametersCount);
+	LrnFreeData(&table->TestData, table->ParametersCount);
+	LrnFreeData(&table->TrainData, table->ParametersCount);
 	FreeTab((void_tab_ptr)table->Headers, table->ParametersCount);
 	free(table->ColumnsMinMaxes);
-	IntVecFreeMemory(&table->TrainData.ClassesColumn);
-	IntVecFreeMemory(&table->TestData.ClassesColumn);
 	free(table->ClassName);
 	SvFree(&table->Classes);
 	free(table);

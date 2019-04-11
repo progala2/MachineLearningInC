@@ -38,11 +38,13 @@ void LrnSetTestParameterColumn(LearnData* table, const uint i, const uint j, con
 void LrnNormalize(LearnData* table);
 void LrnExtractTestData(LearnData*const learnData);
 Data* LrnSortDataForCrossValidation(const Data * const data, const size_t parametersCount, const size_t classCount);
+Data* LrnExtractDataForCrossValidation(Data * const data, const size_t parametersCount, const uint kFold, const uint k);
 unsigned* LrnCountByClass(const IntVector* classesColumn, const size_t classesCount);
 
 void LrnPrintTrainingData_F(FILE* const stream, const LearnData* const table);
 void LrnPrintTestData_F(FILE* const stream, const LearnData* const table);
 
+void LrnFreeData(Data *const data, const size_t parametersCount);
 void LrnFreeMemory(LearnData** const tbl);
 
 #endif

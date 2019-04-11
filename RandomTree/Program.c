@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "../RandomTreeLib/TreeGenerator.h"
 #include "../RandomTreeLib/Forest.h"
+#include <math.h>
+#include <float.h>
 
 #define BUFFER_LEN 256u
 #define DBL_BUFFER_LEN 512u
@@ -57,7 +59,7 @@ Program* PrgLoadData()
 			continue;
 		}
 		CharsTable* charsTable = NULL;
-		if ((charsTable = TReadFile(fp, BUFFER_LEN*4)) == NULL)
+		if ((charsTable = TReadFile(fp, BUFFER_LEN * 4)) == NULL)
 		{
 			printf("Something wrong with your training file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
 			printf("You have to provide at least two columns: first is class columns and the rest are used as parameters\n");
@@ -86,7 +88,7 @@ Program* PrgLoadData()
 				continue;
 			}
 			CharsTable* testCharsTable = NULL;
-			if ((testCharsTable = TReadFile(fp, BUFFER_LEN*4)) == NULL ||
+			if ((testCharsTable = TReadFile(fp, BUFFER_LEN * 4)) == NULL ||
 				(lrnData = LrnReadData(charsTable, testCharsTable)) == NULL)
 			{
 				printf("Something wrong with your test file...\nEnsure that commas are used as separators and the numbers of columns in each row\n");
@@ -188,20 +190,72 @@ PRG_FLD_RDR_F(PRG_RUN_CMD)
 	PrgFreeLastTest(program);
 
 	const size_t classCount = program->LearnData->Classes->VecBase.Size;
-	program->LearnData->TrainData = *LrnSortDataForCrossValidation(&program->LearnData->TrainData, program->LearnData->ParametersCount, classCount);
-	
-	Forest* forest = FrstGenerateForest(&program->LearnData->TrainData, program->LearnData->ParametersCount, classCount);
-	ConfMatrix* matrix1 = FrstCalculateOnData(forest, program->LearnData, &program->LearnData->TestData);
+	const size_t parametersCount = program->LearnData->ParametersCount;
+
+	Forest * bestForest = NULL;
+	ConfMatrix * matrix2 = NULL;
+	if (_glConfigs->CFG_FLD_CV_TYPE > 0)
+	{
+		Data* newData = LrnSortDataForCrossValidation(&program->LearnData->TrainData, program->LearnData->ParametersCount, classCount);
+		const uint kFold = _glConfigs->CFG_FLD_CV_TYPE > 1 ? _glConfigs->CFG_FLD_CV_TYPE : newData->RowsCount;
+
+		double bestTestAcc = 0;
+		double bestTrainAcc = 0;
+		for (uint i = 0; i < kFold; ++i)
+		{
+			Data* testAndTrainData = LrnExtractDataForCrossValidation(newData, parametersCount, kFold, i);
+			Forest* forest = FrstGenerateForest(&testAndTrainData[0], parametersCount, classCount);
+
+			ConfMatrix* matrix1 = FrstCalculateOnData(forest, program->LearnData, &testAndTrainData[1]);
+			printf("Test data: \n");
+			CmPrint(matrix1);
+			const double testAcc = CmCalculateAccuracy(matrix1);
+			printf("Accuracy: %f\n\n", testAcc);
+
+			ConfMatrix* matrix22 = FrstCalculateOnData(forest, program->LearnData, &testAndTrainData[0]);
+			printf("Training data: \n");
+			CmPrint(matrix22);
+			const double trainAcc = CmCalculateAccuracy(matrix22);
+			printf("Accuracy: %f\n\n", trainAcc);
+			if (bestTestAcc < testAcc || fabs(bestTestAcc - testAcc) < DBL_EPSILON && bestTrainAcc < trainAcc)
+			{
+				FrstFree(&bestForest);
+				bestForest = forest;
+				bestTestAcc = testAcc;
+				bestTrainAcc = trainAcc;
+				CmFree(&matrix2);
+				matrix2 = matrix22;
+			}
+			else
+			{
+				FrstFree(&forest);
+				CmFree(&matrix22);
+			}
+
+			CmFree(&matrix1);
+			LrnFreeData(&testAndTrainData[0], parametersCount);
+			LrnFreeData(&testAndTrainData[1], parametersCount);
+			free(testAndTrainData);
+		}
+		LrnFreeData(newData, parametersCount);
+		free(newData);
+	}
+	else
+	{
+		bestForest = FrstGenerateForest(&program->LearnData->TrainData, program->LearnData->ParametersCount, classCount);
+		matrix2 = FrstCalculateOnData(bestForest, program->LearnData, &program->LearnData->TrainData);
+		printf("Training data: \n");
+		CmPrint(matrix2);
+		printf("Accuracy: %f\n", CmCalculateAccuracy(matrix2));
+	}
+
+	ConfMatrix* matrix1 = FrstCalculateOnData(bestForest, program->LearnData, &program->LearnData->TestData);
 	printf("Test data: \n");
 	CmPrint(matrix1);
 	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix1));
 
-	ConfMatrix* matrix2 = FrstCalculateOnData(forest, program->LearnData, &program->LearnData->TrainData);
-	printf("Training data: \n");	
-	CmPrint(matrix2);
-	printf("Accuracy: %f\n", CmCalculateAccuracy(matrix2));
 
-	program->LastForest = forest;
+	program->LastForest = bestForest;
 	program->LastTestMatrix = matrix1;
 	program->LastTrainMatrix = matrix2;
 	return true;
@@ -222,7 +276,7 @@ PRG_FLD_RDR_F(PRG_CONF_CMD)
 
 PRG_FLD_RDR_F(PRG_SAVE_CMD)
 {
-	#define PRINT_TO_FILE_MACRO(suffix, printFunc) \
+#define PRINT_TO_FILE_MACRO(suffix, printFunc) \
 		strcpy_s(buffer2, DBL_BUFFER_LEN, _glConfigs->CFG_FLD_OUTPUT_FOLDER);\
 		strcat_s(buffer2, DBL_BUFFER_LEN, buffer);\
 		strcat_s(buffer2, DBL_BUFFER_LEN, suffix);\
@@ -242,9 +296,9 @@ PRG_FLD_RDR_F(PRG_SAVE_CMD)
 		buffer[BUFFER_LEN - 1] = 0;
 
 		PRINT_TO_FILE_MACRO("_test_data.csv", LrnPrintTestData_F(fp, program->LearnData))
-		PRINT_TO_FILE_MACRO("_training_data.csv", LrnPrintTrainingData_F(fp, program->LearnData))
-		PRINT_TO_FILE_MACRO("_test_confusion_matrix.csv", CmPrint_F(fp, program->LastTestMatrix))
-		PRINT_TO_FILE_MACRO("_training_confusion_matrix.csv", CmPrint_F(fp, program->LastTrainMatrix))
+			PRINT_TO_FILE_MACRO("_training_data.csv", LrnPrintTrainingData_F(fp, program->LearnData))
+			PRINT_TO_FILE_MACRO("_test_confusion_matrix.csv", CmPrint_F(fp, program->LastTestMatrix))
+			PRINT_TO_FILE_MACRO("_training_confusion_matrix.csv", CmPrint_F(fp, program->LastTrainMatrix))
 	}
 	return true;
 #undef PRINT_TO_FILE_MACRO
