@@ -159,6 +159,7 @@ static void PrgFreeLastTest(Program* program)
 	CmFree(&program->LastTrainMatrix);
 	FrstFree(&program->LastForest);
 }
+
 void PrgFree(Program** const program)
 {
 	if (*program == NULL)
@@ -186,7 +187,7 @@ PRG_FLD_RDR_F(PRG_RUN_CMD)
 
 	PrgFreeLastTest(program);
 
-	Forest* forest = FrstGenerateForest(program->LearnData);
+	Forest* forest = FrstGenerateForest(&program->LearnData->TrainData, program->LearnData->ParametersCount, program->LearnData->Classes->VecBase.Size);
 	ConfMatrix* matrix1 = FrstCalculateOnData(forest, program->LearnData, &program->LearnData->TestData);
 	printf("Test data: \n");
 	CmPrint(matrix1);

@@ -166,6 +166,30 @@ void LrnExtractTestData(LearnData * const learnData)
 	LrnSetNewData(&learnData->TestData, testParameters, testClassesColumn->VecBase.Size, testClassesColumn);
 }
 
+Data* LrnExtractNewTrainAndTestData(Data* const learnData, const size_t )
+{
+	const uint maxRowsCount = learnData->TrainData.RowsCount + learnData->TestData.RowsCount;
+	IntVector * testClassesColumn = IntVecInit_C(_glConfigs->CFG_FLD_TEST_EXTRACT_PERCENTAGE * maxRowsCount / HUNDRED_PERCENT + 1);
+	IntVector * trainingClassesColumn = IntVecInit_C(maxRowsCount - testClassesColumn->VecBase.Capacity + 2);
+
+	double** testParameters;
+	double** trainingParameters;
+	InitAndGetParameters(&trainingParameters, &testParameters, learnData->ParametersCount,
+		trainingClassesColumn->VecBase.Capacity - 1, testClassesColumn->VecBase.Capacity - 1);
+
+	for (uint i = 0; i < learnData->TrainData.RowsCount; ++i)
+	{
+		DisparageDataBetweenTestAndTraining(&learnData->TrainData, learnData->ParametersCount,
+			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
+	}
+
+	for (uint i = 0; i < learnData->TestData.RowsCount; ++i)
+	{
+		DisparageDataBetweenTestAndTraining(&learnData->TestData, learnData->ParametersCount,
+			trainingClassesColumn, testClassesColumn, trainingParameters, testParameters, i);
+	}
+}
+
 unsigned* LrnCountByClass(const IntVector * classesColumn, const size_t classesCount)
 {
 	uint* _calloc(classesCount, sizeof(uint), countByClass);

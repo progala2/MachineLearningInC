@@ -2,28 +2,24 @@
 #include "TreeGenerator.h"
 #include <float.h>
 
-
 void WinnerTakesAllDecision(double* const predictionSumPerClass, const double* const classesProbability, const uint classesCount)
 {
 	uint bestK = 0;
 	double max = classesProbability[0];
 	for (uint k = 1; k < classesCount; ++k)
-	{
 		if (max < classesProbability[k])
 		{
 			bestK = k;
 			max = classesProbability[k];
 		}
-	}
+	
 	predictionSumPerClass[bestK] += 1;
 }
 
 void SumAllPredictionsDecision(double* const predictionSumPerClass, const double* const classesProbability, const uint classesCount)
 {
 	for (uint k = 0; k < classesCount; ++k)
-	{
 		predictionSumPerClass[k] += classesProbability[k];
-	}
 }
 
 static void CalculateTreeDecision(double* const predictionSumPerClass, const double* const* const itemValues, const uint rowIndex, const Node* const node, const uint classesCount)
@@ -31,7 +27,6 @@ static void CalculateTreeDecision(double* const predictionSumPerClass, const dou
 	const Node* nd = CheckIfItIsLeftElem_T(itemValues, rowIndex, node->ParameterIndexes, node->ParameterValueSeparators, node->ParameterSeparatorTypes) ? node->Left : node->Right;
 
 	if (TrIsLeaf(nd))
-	{
 		switch (_glConfigs->CFG_FLD_VOTING_TYPE)
 		{
 		default:
@@ -41,8 +36,7 @@ static void CalculateTreeDecision(double* const predictionSumPerClass, const dou
 		case 1:
 			WinnerTakesAllDecision(predictionSumPerClass, nd->ClassesProbability, classesCount);
 			return;
-		}			
-	}
+		}
 
 	CalculateTreeDecision(predictionSumPerClass, itemValues, rowIndex, nd, classesCount);
 }
@@ -62,15 +56,13 @@ ConfMatrix* FrstCalculateOnData(const Forest* const forest, const LearnData* con
 		actual[i] = data->ClassesColumn->Data[i];
 		memset(predictionSumPerClass, 0, classesCount * sizeof(double));
 		for (uint j = 0; j < forest->TreesCount; ++j)
-		{
 			CalculateTreeDecision(predictionSumPerClass, (const double**)data->Parameters, i, forest->Trees[j], classesCount);
-		}
+		
 		uint maxK = 0;
 		for (uint k = 0; k < classesCount; ++k)
-		{
 			if (predictionSumPerClass[k] > predictionSumPerClass[maxK])
 				maxK = k;
-		}
+		
 		predicted[i] = maxK;
 	}
 	free(predictionSumPerClass);
@@ -81,18 +73,17 @@ ConfMatrix* FrstCalculateOnData(const Forest* const forest, const LearnData* con
 	return matrix;
 }
 
-Forest* FrstGenerateForest(const LearnData* const table)
+Forest* FrstGenerateForest(const Data* const table, const size_t parametersCount, const size_t classesCount)
 {
 	if (_glConfigs->TreeCount < 1)
 		return NULL;
 
 	Node** _malloc(sizeof(Node*) * _glConfigs->TreeCount, trees);
-	uint* countByClass = LrnCountByClass(table->TrainData.ClassesColumn, table->Classes->VecBase.Size);
+	uint* countByClass = LrnCountByClass(table->ClassesColumn, classesCount);
 
 	for (uint i = 0; i < _glConfigs->TreeCount; ++i)
-	{
-		trees[i] = NdGenerateTree(table->ParametersCount, &table->TrainData, countByClass, table->Classes->VecBase.Size);
-	}
+		trees[i] = NdGenerateTree(parametersCount, table, countByClass, classesCount);
+	
 	free(countByClass);
 	Forest* _malloc(sizeof(Forest), forest);
 	forest->TreesCount = _glConfigs->TreeCount;
@@ -104,11 +95,11 @@ void FrstFree(Forest** const forest)
 {
 	if (*forest == NULL)
 		return;
+	
 	Forest * help = *forest;
 	for (uint i = 0; i < help->TreesCount; ++i)
-	{
 		TrFreeNode(&help->Trees[i]);
-	}
+	
 	free(help->Trees);
 	_FreeN(forest);
 }

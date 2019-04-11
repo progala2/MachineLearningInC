@@ -37,6 +37,7 @@ void LrnSetParameterColumn(LearnData* table, const uint i, const uint j, const d
 void LrnSetTestParameterColumn(LearnData* table, const uint i, const uint j, const double value);
 void LrnNormalize(LearnData* table);
 void LrnExtractTestData(LearnData*const learnData);
+Data* LrnExtractNewTrainAndTestData(LearnData*const learnData);
 unsigned* LrnCountByClass(const IntVector* classesColumn, const size_t classesCount);
 
 void LrnPrintTrainingData_F(FILE* const stream, const LearnData* const table);
