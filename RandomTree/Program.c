@@ -261,7 +261,7 @@ PRG_FLD_RDR_F(PRG_RUN_CMD)
 		}
 		printf("Cross Validation Test Average Accuracy: %f\n\n", testAccSum/kFold);
 		printf("Cross Validation Train Average Accuracy: %f\n\n", trainAccSum/kFold);
-		printf("Cross Validation Best Tree Test/Train Accuracy: %f/%f\n\n", bestTestAcc, bestTrainAcc);
+		printf("Cross Validation Best Forest Test/Train Accuracy: %f/%f\n\n", bestTestAcc, bestTrainAcc);
 		LrnFreeData(newData, parametersCount);
 		free(newData);
 
