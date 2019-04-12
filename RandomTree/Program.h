@@ -19,6 +19,8 @@ typedef struct
 	ConfMatrix* LastTestMatrix;
 	ConfMatrix* LastTrainMatrix;
 	Forest* LastForest;
+	ConfMatrix*** CrossValidationResults;
+	uint CvType;
 }Program;
 
 typedef struct

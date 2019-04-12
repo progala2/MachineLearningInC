@@ -32,7 +32,12 @@ void CmPrint(const ConfMatrix* matrix)
 
 void CmPrint_F(FILE* file, const ConfMatrix* matrix)
 {
-	fprintf(file,"%10s, ", " ");
+	CmPrint_FC(file, matrix, " ");
+}
+
+void CmPrint_FC(FILE* file, const ConfMatrix* matrix, const char*const cornerText)
+{
+	fprintf(file,"%10s, ", cornerText);
 	const uint n1 = matrix->N - 1;
 	for (size_t i = 0; i < n1; ++i)
 	{

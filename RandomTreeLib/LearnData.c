@@ -47,6 +47,9 @@ void InitAndGetParameters(double*** parameterColumn, double*** testDataParameter
 
 void InitMinMaxes(LearnData* table, const size_t parLen)
 {
+	if (parLen < 1)
+		exit(-1);
+
 	MinMaxParameters* _malloc(sizeof(MinMaxParameters) * parLen, parameterColumn);
 	for (uint j = 0; j < parLen; ++j)
 	{
@@ -225,7 +228,10 @@ Data* LrnSortDataForCrossValidation(const Data * const data, const size_t parame
 	free(indexes);
 
 	for (uint i = 0; i < classCount; ++i)
+	{
 		LrnFreeData(countByClass[i], parametersCount);
+		free(countByClass[i]);
+	}
 
 	free(countByClass);
 
